@@ -20,6 +20,7 @@ print_r($row);
 // Clean up
 mssql_free_result($query);
 
+
 //    protected $user   = "root" ;          //projektor";
 //    protected $pass   = "spravce";             //Vekt0r";
 //    protected $dbhost =  "localhost" ;     //"radon" ;       // "xenon" ;   ;"localhost"
