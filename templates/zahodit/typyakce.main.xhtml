@@ -1,0 +1,27 @@
+<div style="border: solid 1px black; margin: 1em">
+
+<h3>Seznam typů akcí</h3>
+
+<span tal:repeat="tlacitko typyakce_tlacitka">
+			<a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+</span>
+
+<table tal:condition="typyakce_seznam | nothing">
+        <tr>
+		<th tal:repeat="sloupec typyakce_th/sloupce">
+			<a href="" tal:attributes="href sloupec/sestupne">
+				<img src="img/desc.png" alt="Sestupně" title="Řadit sestupně" />
+			</a>
+			<span tal:content="sloupec/popisek" />
+			<a href="" tal:attributes="href sloupec/vzestupne">
+				<img src="img/asc.png" alt="Vzestupně" title="Řadit vzestupně" />
+			</a>
+		</th>
+	</tr>
+	<tr tal:repeat="radek typyakce_seznam">
+                <td tal:repeat="sloupecek radek" tal:content="sloupecek" />
+	</tr>
+</table>
+
+<!-- %NEXT%  -->
+</div>

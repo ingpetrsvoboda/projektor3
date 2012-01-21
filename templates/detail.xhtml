@@ -1,0 +1,20 @@
+<div class="detail">
+<h3 tal:content="%STRANKA%/nadpis | nothing" />
+
+<p tal:condition="%STRANKA%/ulozeno | nothing">Úspěšně uloženo!</p>
+<p tal:condition="%STRANKA%/ulozeno_chyba | nothing">Při ukládání došlo k chybě!</p>
+
+<p tal:content="%STRANKA%/hlaseni | nothing" />
+
+<p tal:content="%STRANKA%/prihlaseni_na_akci | nothing" />
+
+
+<span tal:repeat="tlacitko %STRANKA%/tlacitka">
+			<a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+</span>
+
+<!-- %FORM% -->
+
+<!-- %NEXT%  -->
+
+</div>

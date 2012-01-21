@@ -1,0 +1,20 @@
+<div id="ucastnik" class="detail">
+
+<h4>"ucastnik.detail.xhtml</h4>
+<a href="" tal:attributes="href ucastnik_detail_zpet">Zpět</a>
+<h3 tal:content="ucastnik_detail_nadpis">nadpis</h3>
+<span tal:content="ucastnik_prihlaseni | nothing" />
+<ul>
+	<li tal:repeat="ucastnik_detail_obsah/polozka"></li>
+
+	<span tal:condition="ucastnik_detail_potomek_neni">
+	<li tal:content="ucastnik_detail_obsah/ucastnik_id"></li>
+	</span>
+	<span tal:condition="ucastnik_detail_potomek_neni">
+	<li>Registrační dotazník účastníka 
+	<a href="" tal:content="ucastnik_detail_obsah/identifikator" tal:attributes="href ucastnik_detail_obsah/odkaz | nothing" />
+	</li>
+	</span>
+</ul>
+
+<!-- %NEXT%  --></div>

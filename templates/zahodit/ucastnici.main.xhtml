@@ -1,0 +1,43 @@
+<div id="ucastnici" class="seznam">
+<a href="" tal:attributes="href ucastnici_main_zpet">Zpět</a>
+<h3 tal:content="ucastnici_main_nadpis">nadpis</h3>
+<table>
+	<thead>
+		<th tal:repeat="sloupec ucastnici_th/sloupce">
+			<a href="" tal:attributes="href sloupec/sestupne">
+				<img src="img/desc.png" alt="Sestupně" title="Řadit sestupně" />
+			</a>
+			<span tal:content="sloupec/popisek" />
+			<a href="" tal:attributes="href sloupec/vzestupne">
+				<img src="img/asc.png" alt="Vzestupně" title="Řadit vzestupně" />
+			</a>
+		</th>
+	</thead>
+	<tbody>
+		<tr tal:repeat="ucastnik ucastnici_main_seznam">
+			<td tal:content="ucastnik/id" />
+			<td>
+				<a href="" tal:content="ucastnik/identifikator"	tal:attributes="href ucastnik/odkaz | nothing" />
+			</td>
+			<td tal:content="ucastnik/cisloUcastnika" />
+			<td tal:content="ucastnik/Projekt" />
+			<td tal:content="ucastnik/Beh" />
+			<td tal:content="ucastnik/Kancelar" />
+			<td tal:repeat="tlacitko ucastnik/tlacitka">
+			 <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<div id="cesta" class="cesta"><span>Soubor šablony: </span> <span
+	tal:content="ucastnici_main_kontext/souborSablony"></span> <span>
+| metoda: </span> <span tal:content="ucastnici_main_kontext/metoda"></span> <span>
+| třída potomka: </span> <span
+	tal:content="ucastnici_main_kontext/tridaPotomka"></span> <span>
+| metoda potomka: </span> <span
+	tal:content="ucastnici_main_kontext/metodaPotomka"></span> <span>
+| volá se: </span> <span tal:content="ucastnici_main_kontext/volaSe"></span></div>
+
+<!-- %NEXT%  -->
+</div>

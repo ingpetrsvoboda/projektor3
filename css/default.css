@@ -1,0 +1,162 @@
+@CHARSET "UTF-8";
+
+body {
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 0.8em;
+	background-color: #CCDDEE;
+}
+
+.seznam {
+	border: 1px solid black;
+	padding: 0.5em;
+	margin: 0.5em;
+	background-color: #88BBDD;
+}
+
+.detail {
+	border: 1px solid black;
+	padding: 0.5em;
+	margin: 0.5em;
+	background-color: #DDBB88;
+}
+
+.formular {
+	border: 1px solid black;
+	padding: 0.5em;
+	margin: 0.5em;
+	background-color: #DDDDDD;
+}
+
+.kontext {
+	border: 1px solid black;
+	padding: 0.1em;
+	margin: 0.1em;
+	background-color: #DDAADD;        
+}
+
+.kontext #selecty {
+        float: right;
+}
+
+.cesta {
+	border: 1px solid blue;
+	font-size: 0.7em;
+	padding: 0.5em;
+	margin: 0.5em;
+}
+
+.tlacitko a:link,a:visited,a:active {
+	text-decoration: none;
+	border: 1px outset #DDDD00;
+	color: #555500;
+        background-color: #AAAAFF;
+
+}
+
+.tlacitko a:hover {
+	text-decoration: none;
+	border: 1px outset #FFFF00;
+	color: #FFFF00;
+        background-color: #AAAAFF;
+}
+
+
+table,th,tr,td {
+        border: 1px solid lightgray;
+	border-collapse: collapse;
+	padding: 0.15em;}
+
+table {
+	margin: 1em;
+        font-size: 1em;
+}
+
+/**/
+a:link,a:visited,a:active {
+	text-decoration: none;
+	border: 1px outset #555500;
+	color: #555500;
+}/*/
+
+/**/
+a:hover {
+	text-decoration: none;
+	border: 1px outset #FFFF00;
+	color: #FFFF00;
+}/**/
+
+ul {
+	margin: 2em 1em 2em 2em;
+}
+
+ul li {
+	display: inline;
+	background-color: #6699CC;
+	margin: 0.2em;
+	padding: 0.1em;
+}
+
+ul li a:link,ul li a:visited,ul li a:active {
+	text-decoration: none;
+	border: 3px outset #FFFF00;
+	color: #FFFF00;
+}
+
+ul li a:hover {
+	text-decoration: none;
+	border: 3px outset #555500;
+	color: #555500;
+}
+
+th a:link, th a:visited, th a:active, th a:hover {
+	text-decoration: none;
+}
+
+#index_con {
+	color: white;
+	font-size: 12px;
+}
+
+#nadpis
+{
+	display: block;
+	width: 75%;
+	float: left;
+}
+
+#zprava {
+	color: red;
+	font-size: 1em;
+        background-color: #ccffcc;
+        font-weight: bold;
+        text-align: center;
+        float: left;
+}
+
+#logout-ie {
+	TEXT-ALIGN: right;
+        float:right;
+}
+
+#logout {
+	background: red;
+	TEXT-ALIGN: center;
+	vertical-align: middle;
+	padding-top: 3px;
+	width: 100px;
+	height: 35px;
+	overflow: hidden;
+}
+
+#debuguj
+{
+	width: 50%;
+	float: left;
+	text-align: left;
+}
+
+#menu
+{
+	float: none;
+	clear: both;
+}

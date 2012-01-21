@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="stylesheet" type="text/css" href="css/default.css" />
+	<link rel="stylesheet" type="text/css" href="css/highlight.css" />
+
+</head>
+<body>
+
+<p tal:content="%STRANKA%/con | nothing" id="index_con">con</p>
+
+
+<h1 tal:content="%STRANKA%/nadpis | nothing" id="nadpis">Projektor test</h1>
+
+<p tal:content="%STRANKA%/zprava | nothing" id="zprava"></p>
+<div  tal:condition="%STRANKA%/tlacitka | nothing">
+<h2 id="menu">Menu</h2>
+
+<ul>
+	<li tal:repeat="tlacitko %STRANKA%/tlacitka">
+			<a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+	</li>
+</ul>
+</div>
+
+
+<!-- %NEXT%  -->
+
+</body>
+</html>

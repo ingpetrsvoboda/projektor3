@@ -1,0 +1,257 @@
+/* CSS Document */
+BODY {
+	PADDING-BOTTOM: 0px;
+	MARGIN: 10px;
+	PADDING-TOP: 0px;
+	MARGIN-TOP: 0px;
+}
+
+/*MENU HORNI*/
+ul#menu,ul {
+	color: white;
+	padding: 0px;
+	margin: 10px;
+	list-style-type: none;
+}
+
+ul#menu li {
+	float: center;
+	display: block;
+	width: 150px;
+	margin: 0px;
+}
+
+ul#menu li a {
+	color: white;
+	text-decoration: none;
+	display: block;
+	float: none;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 150px;
+	text-align: center;
+	background-color: #336699;
+	font: normal bold 11px Verdana, Geneva, Arial, Helvetica, sans-serif;
+	border: solid white 1px;
+}
+
+ul#menu li ul li a {
+	background-color: #336699;
+}
+
+ul#menu li ul li ul li a {
+	background-color: #336699;
+}
+
+ul#menu li ul li ul li ul li a {
+	background-color: #336699;
+}
+
+ul#menu li a:hover {
+	background-color: #CE0000;
+}
+
+ul#menu li ul li a {
+	float: none;
+}
+
+ul#menu li ul {
+	visibility: hidden;
+	position: absolute;
+	width: 150px;
+	padding-top: 1px;
+}
+
+ul#menu li:hover ul,ul#menu li.hover ul {
+	visibility: visible;
+}
+
+ul#menu li ul li ul,ul#menu li:hover ul li ul,ul#menu li.hover ul li ul
+	{
+	visibility: hidden;
+	position: absolute;
+	left: 50px;
+	margin-top: -25px;
+	_margin-top: -24px;
+	width: 150px;
+}
+
+ul#menu li ul li:hover ul,ul#menu li ul li.hover ul {
+	visibility: visible;
+}
+
+ul#menu li ul li ul li ul,ul#menu li ul li:hover ul li ul,ul#menu li ul li.hover ul li ul
+	{
+	visibility: hidden;
+	position: absolute;
+	left: 50px;
+	margin-top: -24px;
+	width: 150px;
+}
+
+ul#menu li ul li ul li:hover ul,ul#menu li ul li ul li.hover ul {
+	visibility: visible;
+}
+
+ul li {
+	background-color: expression(this.onmouseover =   new Function("this.className += ' hover';"
+		), this.onmouseout =   new
+		Function("this.className = this.className.replace(' hover', '')") );
+}
+
+/*KONEC MENU HORNI*/
+#zaznamy {
+	font-size: 14px;
+	color: black;
+	border: solid gray 1px;
+	width: 1000px;     /*880px;*/
+	background-color: rgb(200, 200, 200);
+}
+
+#zaznamy table{
+	padding:3px;
+	margin: 2px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif; 
+	font-size: 11px;
+}
+
+#zaznamy td {
+	padding-left: 1px;
+	padding-right:1px;
+	padding-top:4px;
+	padding-bottom:4px;	
+}
+
+#zaznamy .identifikator {
+	font-weight: bold;
+	}
+
+
+#zaznamy .jmeno {
+	font-size: 120%;
+	color: #222222;
+	padding-left: 8px;
+	padding-right:5px;
+	}
+#zaznamy .editace td {
+	background-color: #FFFF99;
+}
+
+#zaznamy .editace_kolize td {
+	background-color: #FFC0F0;
+	border-color: blue;
+}
+
+#zaznamy .uzavreny td {
+	background-color: #FFFF99;
+}
+
+#zaznamy .uzavreny span {
+	background-color: #FFFFFF;
+	color: blue;
+	border: 2px outset #FFFF99;
+	padding: 3px;
+}
+
+#zaznamy .novy td {
+	background-color: #99FFFF;
+}
+
+#zaznamy a {
+	text-decoration: none;
+	}
+
+#zaznamy .editace a {
+	color: blue;
+	background-color: #99FFFF;
+	border: 2px outset #99FFFF;
+	padding: 3px;
+}
+	
+#zaznamy .editace a:hover {
+	background-color: #77DDDD;
+}
+
+
+#zaznamy .editace_kolize a {
+	color: blue;
+	background-color: #FFC0F0;
+	border: 2px outset #99FFFF;
+	padding: 3px;
+}
+	
+#zaznamy .editace_kolize a:hover {
+	background-color: #FF60F0;
+}
+
+
+
+#zaznamy .novy a {
+	color: red;
+	background-color: #FFFF99;
+	border: 2px outset #FFFF99;
+	padding: 3px;
+}
+
+#zaznamy .novy a:hover {
+	background-color: #DDDD77;
+}
+
+
+#zaznamy-stat {
+	font-size: 18px;
+	color: black;
+	border: solid gray 1px;
+	width: 700px;
+	background-color: rgb(200, 200, 200);
+}
+
+#zaznamy-stat a {
+	font-size: 12px;
+	color: blue;
+}
+
+#con {
+	color: white;
+	font-size: 12px;
+}
+
+#logout-ie {
+	TEXT-ALIGN: right;
+}
+
+#logout {
+	background: red;
+	TEXT-ALIGN: center;
+	vertical-align: middle;
+	padding-top: 3px;
+	width: 100px;
+	height: 35px;
+	overflow: hidden;
+}
+
+h2 {
+	font-family: Verdana;
+	font-size: 17px;
+	color: #295294;
+}
+
+h3 {
+	font-family: Verdana, Arial, Courier, sans-serif;
+	font-size: 15px;
+}
+
+.kolize {
+	color:  #CA0000;
+}
+
+.kolize-E {
+	color:  #CA0000;
+}
+.kolize-W {
+	color:  #336633;
+}
+.kolize-rev {
+	font-size: 80%;
+	color:  white;
+}
