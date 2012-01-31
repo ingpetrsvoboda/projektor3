@@ -1,10 +1,15 @@
-<div  class="seznam">
+<span tal:condition="%STRANKA%/jsFilePath1 | nothing" >  <script tal:attributes="src %STRANKA%/jsFilePath1"></script>  </span>        
+<span tal:condition="%STRANKA%/jsFilePath2 | nothing" >  <script tal:attributes="src %STRANKA%/jsFilePath2"></script>  </span>        
+<span tal:condition="%STRANKA%/jsFilePath3 | nothing" >  <script tal:attributes="src %STRANKA%/jsFilePath3"></script>  </span>          
+<div tal:attributes="id %STRANKA%/id"  class="seznam">
 
 <h3 tal:content="%STRANKA%/nadpis | nothing" />
 
 <span tal:repeat="tlacitko %STRANKA%/tlacitka">
 			<a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
 </span>
+
+<!-- %FORM% -->
 
 <span tal:condition="not: %STRANKA%/skryjfiltr | nothing">
 <!-- %FILTR%  -->

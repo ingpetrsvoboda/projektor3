@@ -1,7 +1,7 @@
 <?php
 class Stranka_ISCOM extends Stranka implements Stranka_Interface
 {
-	const SABLONA_MAIN = "seznam.xhtml";
+	const SABLONA_MAIN = "iscom.xhtml";
 
         protected $vyhledanaIsco;
         
@@ -20,6 +20,10 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
+                $this->novaPromenna("jsFilePath1", "js/ajax_request.js");                
+                $this->novaPromenna("jsFilePath2", "js/isco_vyhledani.js");                
+                $this->novaPromenna("id", $this->nazev);                
+                        
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Seznam ISCO");
 

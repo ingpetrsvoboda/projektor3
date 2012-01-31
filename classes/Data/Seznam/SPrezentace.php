@@ -50,7 +50,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 
 	public static function najdiPodleId($id, $vsechnyRadky = FALSE)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3" . ($vsechnyRadky ? "" : " AND valid = 1");
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -71,9 +71,9 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "", $vsechnyRadky = FALSE)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT ~1 FROM ~2".
-			($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$filtr} " : "WHERE valid = 1 AND {$filtr}")).
+			($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? " WHERE {$filtr} " : " WHERE valid = 1 AND {$filtr}")).
 			($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
 		$radky = $dbh->prepare($query)->execute(self::ID, self::TABULKA)->fetchall_assoc();
 
@@ -89,7 +89,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 
 	public function uloz()
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 	$this->id;
 	$this->hlavniObjekt;
 	$this->objektVlastnost;
@@ -130,7 +130,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 	 */
 	public static function smaz()
 	{
-            $dbh = App_Kontext::getDbMySQL();
+            $dbh = App_Kontext::getDbMySQLProjektor();
             $query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
             $dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
 	}        
@@ -142,7 +142,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
                 $mapovani = $datovyObjekt->_mapovaniObjektTabulka;
                 $prefix = $datovyObjekt->prefix;
                 
-                $dbh = App_Kontext::getDbMySQL();
+                $dbh = App_Kontext::getDbMySQLProjektor();
                 foreach ($mapovani as $jmenoObjektuVlastnosti => $tabulka) {
                     // Kontrola existence tabulky v databázi
                     $query = "SHOW TABLES LIKE :1";

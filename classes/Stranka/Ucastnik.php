@@ -111,8 +111,6 @@ class Stranka_Ucastnik extends Stranka implements Stranka_Interface
 		{
                     $elementy["default"]["id"] = $hlavniObjekt->id;
                     $elementy["default"]["identifikator"] = $hlavniObjekt->identifikator;
-//                    $elementy["default"]["idSBehProjektuFK"] = $hlavniObjekt->idSBehProjektuFK;
-//                    $elementy["default"]["idCKancelarFK"] = $hlavniObjekt->idCKancelarFK;
                     $elementy["default"]["projekt"] = $hlavniObjekt->projektKod;
                     $elementy["default"]["turnusText"] = $hlavniObjekt->turnusText;
                     $elementy["default"]["kancelarText"] = $hlavniObjekt->kancelarText;
@@ -126,6 +124,7 @@ class Stranka_Ucastnik extends Stranka implements Stranka_Interface
                 // element ucastnik_id musí být hidden nebo static
                 if($hlavniObjekt) {
                     //zde jsou přidány ručně elementy - mohou být prakticky libovolné
+                    //přidány elementy pro zobrazení vlastností hlavního objektu                    
                     $form->addElement("hidden", "id");
                     $form->addElement("hidden", "cisloObjektu");
                     $form->addElement("static", "identifikatorObjektu", "Identifikátor účastníka");

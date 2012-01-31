@@ -3,7 +3,7 @@
 //
 // echo "projekt-id: " . $Projekt->id ;
 
-$dbh = App_Kontext::getDbMySQL();
+$dbh = App_Kontext::getDbMySQLProjektor();
 
 //******************* vyplnit sloupce id_s_typ_kurzu_rk_FK_1...3 podle nazvu typu kurzu a  id projektu
 // v behu (tj. v behu projektu)

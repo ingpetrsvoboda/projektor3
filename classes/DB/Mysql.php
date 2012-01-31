@@ -1,4 +1,4 @@
-<?php
+<?php 
 class DB_Mysql implements DB_Connection {
   protected $user;
   protected $pass;
@@ -14,31 +14,31 @@ class DB_Mysql implements DB_Connection {
     $this->dbname = $dbname;
   }
   protected function connect() {
-    $this->dbh = mysql_pconnect($this->dbhost, $this->user, $this->pass);
+    $this->dbh = mysql_connect($this->dbhost, $this->user, $this->pass);
     if(!is_resource($this->dbh)) {
       throw new DB_Mysql_Exception;
     }
-    if(!mysql_select_db($this->dbname, $this->dbh)) {
-      throw new DB_Mysql_Exception;
-    }
+//    if(!mysql_select_db($this->dbname, $this->dbh)) {
+//      throw new DB_Mysql_Exception;
+//    }
   }
 
-  public function execute($query) {
-    if(!$this->dbh) {
-      $this->connect();
-    }
-    $ret = mysql_query($query, $this->dbh); 
-    if(!$ret) {
-      throw new DB_Mysql_Exception;
-    }
-    else if(!is_resource($ret)) {
-      return TRUE;
-    } else {
-      $stmt = new DB_Mysql_Statement($this->dbh, $query);
-      $stmt->result = $ret;
-      return $stmt;
-    }
-  }
+//  public function execute($query) {
+//    if(!$this->dbh) {
+//      $this->connect();
+//    }
+//    $ret = mysql_query($query, $this->dbh); 
+//    if(!$ret) {
+//      throw new DB_Mysql_Exception;
+//    }
+//    else if(!is_resource($ret)) {
+//      return TRUE;
+//    } else {
+//      $stmt = new DB_Mysql_Statement($this->dbh, $query);
+//      $stmt->result = $ret;
+//      return $stmt;
+//    }
+//  }
   /**
    *
    * @param <string> $query
@@ -53,32 +53,31 @@ class DB_Mysql implements DB_Connection {
     if(!$this->dbh) {
       $this->connect();
       //Nastaaveni znakove sady pro přenos dat
-      mysql_query("SET CHARACTER SET utf8");
+//      mysql_query("SET CHARACTER SET utf8");
     }
-    //Nastaveni uzivatele pro zaznam do tabulky aktualizaci
-    if(!$user) {
-        mysql_query("SET @uz_jmeno = 1",$this->dbh);
-    }
-    else {
-        $this->user = $user;
-        mysql_query("SET @uz_jmeno = ".$this->user->id.";",$this->dbh);
-    }
+//    //Nastaveni uzivatele pro zaznam do tabulky aktualizaci
+//    if(!$user) {
+//        mysql_query("SET @uz_jmeno = 1",$this->dbh);
+//    }
+//    else {
+//        mysql_query("SET @uz_jmeno = ".$this->user->id.";",$this->dbh);
+//    }
     
         
     
-    return new DB_Mysql_Statement($this->dbh, $query);
+    return new DB_Mysql_Statement($this->dbh, $this->dbname, $query);
   }
 
 
-    public function __get($name) {
-        if (isset($name)) 
-        {
-        	return $this->$name;
-        }
-        else
-        {
-            return false;
-        }
-    }
+//    public function __get($name) {
+//        if (isset($name)) 
+//        {
+//        	return $this->$name;
+//        }
+//        else
+//        {
+//            return false;
+//        }
+//    }
 }
 ?>

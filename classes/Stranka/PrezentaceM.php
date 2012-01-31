@@ -22,6 +22,7 @@ class Stranka_PrezentaceM extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
+                $this->novaPromenna("id", $this->nazev);                
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Seznam parametrů pro prezentaci ve formulářích");
 

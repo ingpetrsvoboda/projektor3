@@ -7,26 +7,34 @@
 
 abstract class App_Kontext
 {
-	private static $dbMySQL;
-	private static $dbMSSQL;
+	private static $DbMySQLProjektor;
+	private static $DbMySQLPersonalService;
+	private static $dbMSSQLProjektor;
         private static $kontext;
         private static $jeDebug;
 
-	public static function getDbMySQL()
+	public static function getDbMySQLProjektor()
 	{
-		if(!self::$dbMySQL)
-		self::$dbMySQL = new DB_Mysql_Projektor();
-		return self::$dbMySQL;
+		if(!self::$DbMySQLProjektor)
+		self::$DbMySQLProjektor = new DB_Mysql_Projektor();
+		return self::$DbMySQLProjektor;
 	}
 
-	public static function getDbMSSQL()
+	public static function getDbMySQLPersonalService()
 	{
-		if(!self::$dbMSSQL){
+		if(!self::$DbMySQLPersonalService)
+		self::$DbMySQLPersonalService = new DB_Mysql_PersonalService();
+		return self::$DbMySQLPersonalService;
+	}
+        
+	public static function getDbMSSQLProjektor()
+	{
+		if(!self::$dbMSSQLProjektor){
                     $a = 0;
-		self::$dbMSSQL = new DB_Mssql_Projektor();
+		self::$dbMSSQLProjektor = new DB_Mssql_Projektor();
                     
                 }
-		return self::$dbMSSQL;
+		return self::$dbMSSQLProjektor;
 	}
         
         public static function setUserKontext(User_Kontext $userKontext = NULL)

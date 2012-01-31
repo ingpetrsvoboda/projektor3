@@ -24,10 +24,22 @@ abstract class Stranka
          */
         static $instance = 0;
 
+	/**
+	 * Ukazatel na globalni cestu.
+	 */
+	protected $cesta;
+
         /**
          * Nazev stranky
          */
         public $nazev;
+        
+        public $nazev_flattable;
+        public $nazev_jednotne;
+        public $nazev_mnozne;
+        public $vsechny_radky;
+        public $dbh;
+        
 
 	/**
 	 * HTML kod stranky.
@@ -38,11 +50,6 @@ abstract class Stranka
 	 * Promenne stranky.
 	 */
 	public $promenne;
-
-	/**
-	 * Ukazatel na globalni cestu.
-	 */
-	protected $cesta;
 
 	/**
 	 * Ukazatel na cestu sem.
@@ -68,13 +75,17 @@ abstract class Stranka
 	 * Konstruktor stranky.
 	 * @param $cesta Ukazatel na na globalni cestu.
 	 */
-	protected function __construct($cesta, $nazev = null)
+	protected function __construct($cesta, $nazev = null, $nazev_flattable="", $nazev_jednotne="", $nazev_mnozne="", $vsechny_radky=FALSE, $dbh=NULL)
 	{
 		$this->cesta = $cesta; // ulozime si cestu
 		$this->cestaSem = $this->cesta->sem(); // ulozime si cestu k teto strance/tride
 		$this->dalsi = $this->cesta->dalsi(); // posuneme se v ceste na dalsi pozici a ulozime si ji do promenne
-                $this->nazev = $nazev;
-                $this->instance = ++self::$instance;
+                $this->nazev = $nazev.++self::$instance; //název třídy s číslem instance třídy
+                $this->nazev_flattable = $nazev_flattable;
+                $this->nazev_jednotne = $nazev_jednotne;
+                $this->nazev_mnozne = $nazev_mnozne;
+                $this->vsechny_radky = $vsechny_radky;
+                $this->dbh = $dbh;
                 
 	}
 
@@ -139,7 +150,7 @@ abstract class Stranka
 
                 /* Uprava pro dynamicke sablony */
                 if($this->nazev)
-                    $this->html = str_replace(self::SLOT_PRO_NAZEV_STRANKY, $this->nazev.$this->instance, $this->html);
+                    $this->html = str_replace(self::SLOT_PRO_NAZEV_STRANKY, $this->nazev, $this->html);
 	}
 
 	/**
@@ -192,7 +203,7 @@ abstract class Stranka
          */
         public function novaPromenna($klic, $hodnota)
         {
-            $this->promenne[$this->nazev.$this->instance][$klic] = $hodnota;
+            $this->promenne[$this->nazev][$klic] = $hodnota;
         }
 
         /**

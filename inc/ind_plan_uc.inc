@@ -140,7 +140,7 @@ echo "<BR>" ; print_r($Ucastnik->projekt->kod);
 echo "<BR>" ; print_r($Ucastnik->beh->beh_cislo);
  */
 
-$dbh = App_Kontext::getDbMySQL();
+$dbh = App_Kontext::getDbMySQLProjektor();
 
 //***priprava pro vsechny selecty, radky nereprezentujici kurz (---.., nezarazen, odmitl ucast)***
 $query="SELECT * FROM s_kurz where

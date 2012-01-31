@@ -28,6 +28,7 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
+                $this->novaPromenna("id", $this->nazev);                            
             /* Nadpis stranky */
             $this->novaPromenna("nadpis", "Předpoklady");
 

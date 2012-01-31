@@ -65,7 +65,7 @@ class Data_Ciselnik extends Data_Iterator
 			//        echo "Caught TestException ('{$e->getMessage()}')\n{$e}\n";
 			echo $e."<BR>";
 		}
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT * FROM ~1 WHERE ~2 LIKE :3" . ($vsechnyRadky ? "" : " AND valid = 1");
 		$radek = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku,
                                                         self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku,
@@ -98,7 +98,7 @@ class Data_Ciselnik extends Data_Iterator
 		{
 			echo $e.'<BR>';
 		}
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr);
                 $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "")." ORDER BY razeni ASC";
 //                $query = "SELECT * FROM ~1 WHERE ".($filtr == "" ? "valid = 1" : "(valid = 1 AND {$filtr})")." ORDER BY razeni ASC";
@@ -133,7 +133,7 @@ class Data_Ciselnik extends Data_Iterator
 			throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Parametr název  číselniku musí být zadán");
 		}
 		// Musí existovat tabulka číselníku v DB
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SHOW TABLES LIKE :1";
 		$data = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetch_row();
 		if ($data[0] != self::PREFIX_NAZEV_C.$nazevCiselniku)
@@ -142,7 +142,7 @@ class Data_Ciselnik extends Data_Iterator
 			throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Tabulka s nazvem ".self::PREFIX_NAZEV_C.$nazevCiselniku." v databazi neexistuje.");
 		}
 		// DB tabulka číselníku musí obsahovat pouze povolené sloupce a název sloupce s id musí začínat PREFIX_NAZEV_ID
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SHOW COLUMNS FROM ".self::PREFIX_NAZEV_C.$nazevCiselniku;
 		$result= $dbh->prepare($query)->execute('');
 		/*  Příkaz SHOW vrací informace o sloupcích a v případě sloupce s indexem (primary key) je v $Data toto:

@@ -22,10 +22,9 @@ class Stranka_Index extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
-            $dbh = App_Kontext::getDbMySQL();
+            $dbh = App_Kontext::getDbMySQLProjektor();
             $kontextUser = App_Kontext::getUserKontext();
-            $this->novaPromenna("con",  "Uživatel ".$kontextUser->user->username.", což je ".$kontextUser->user->name." pracuje s databází "
-                                        . $dbh->__get(dbhost) . "/" . $dbh->__get(dbname));
+            $this->novaPromenna("con",  "Přihlášen uživatel ".$kontextUser->user->username.", což je ".$kontextUser->user->name.".");
             $this->novaPromenna("nadpis", $this->parametry["nadpis"]);
             $this->novaPromenna("zprava", $this->parametry["zprava"]);
 
@@ -53,7 +52,8 @@ class Stranka_Index extends Stranka implements Stranka_Interface
                     new Stranka_Element_Tlacitko("Předpoklady", $this->cestaSem->generujUriDalsi("Stranka_Predpoklady.main")),
                     new Stranka_Element_Tlacitko("ISCO", $this->cestaSem->generujUriDalsi("Stranka_ISCOM.main")),
                     new Stranka_Element_Tlacitko("Prezentace", $this->cestaSem->generujUriDalsi("Stranka_PrezentaceM.main")),
-                    new Stranka_Element_Tlacitko("Firmy", $this->cestaSem->generujUriDalsi("Stranka_Firmy.main"))                    
+                    new Stranka_Element_Tlacitko("Firmy", $this->cestaSem->generujUriDalsi("Stranka_Firmy.main")),
+                    new Stranka_Element_Tlacitko("Staffer pozice", $this->cestaSem->generujUriDalsi("Stranka_StafferPoziceM.main"))
                 );
             };            
             $this->novaPromenna("tlacitka", $tlacitka);
@@ -103,5 +103,10 @@ class Stranka_Index extends Stranka implements Stranka_Interface
 	{
 
 	}        
+
+	protected function main°potomek°Stranka_StafferPoziceM°main()
+	{
+
+	}  
     }
         

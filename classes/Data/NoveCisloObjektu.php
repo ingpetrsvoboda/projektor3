@@ -8,7 +8,7 @@ class Data_NoveCisloObjektu {
     
     
     public static function dejNoveCislo($hlavniObjekt) {
-           $dbh = App_Kontext::getDbMySQL();
+           $dbh = App_Kontext::getDbMySQLProjektor();
 
            //-----------------------novy ucastnik - nahrada za uloz proceduru-----------------
             $query = "SELECT Max(~1) AS maxU  FROM ~2

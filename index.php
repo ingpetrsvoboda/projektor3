@@ -63,33 +63,26 @@ $kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, $ka
 }
 
 
-?>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Grafia.cz | Projektor | <?php echo $projekt->text." | ".$kancelar->text." | ".$beh->text ?></title>
-    <link rel="stylesheet" type="text/css" href="css/default.css" />
-    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
-    <SCRIPT type="text/javascript"  LANGUAGE=JavaScript>
-    <!--
-      var navratovy_objekt
-      function kzam_okno(nova_url, jmeno)
-      {
-      navratovy_objekt = document.getElementById(jmeno);
-        window.open(nova_url,"Vyber_kzam");
-      }
-    //-->
-    </SCRIPT>
-</head>
-<body bgcolor="silver">
-    <div id="logout-ie">
-        <div id="logout">
-        <form name="Logout" id="Logout" action="./logout.php" method="get">
-            <input type="Submit" value="Odhlásit">
-        </form>
-        </div>
-    </div>
-<?php
+$html1 = print_r('
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+                <title>Grafia.cz | Projektor |</title>
+                <link rel="stylesheet" type="text/css" href="css/default.css" />
+                <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+            <script src="js/kzam_okno.js"></script>
+            </head>
+            <body>
+                <div id="logout-ie">
+                    <div id="logout">
+                    <form name="Logout" id="Logout" action="./logout.php" method="get">
+                        <input type="Submit" value="Odhlásit">
+                    </form>
+                    </div>
+                </div>
+            ', TRUE);           
+echo $html1;
+
 if (isset($cookieJeDebug) AND $cookieJeDebug) {
         App_Kontext::setJeDebug();
         if ($_GET["debug"] == "0") App_Kontext::unsetJeDebug(); 
@@ -100,11 +93,13 @@ if (isset($cookieJeDebug) AND $cookieJeDebug) {
 $d = App_Kontext::getDebug();
 echo Generator::getContent(Stranka_Kontext::JMENO, Stranka_Kontext::MAIN, array("debugpovolen" => App_Kontext::getDebug(), "nadpis" => "Výběr projektu, kanceláře a běhu", "zprava" => $zprava));
 echo Generator::getContent(Stranka_Index::JMENO, Stranka_Index::MAIN, array("username" => $user->username, "name" => $user->name, "nadpis" => "Projektor", "zprava" => $zprava));
-?>
-</body>
-</html>
-<?php
-	$kontextUser = App_Kontext::getUserKontext();
+$html2 = print_r('
+    </body>
+    </html>
+            ', TRUE);           
+echo $html2;
+
+$kontextUser = App_Kontext::getUserKontext();
         setcookie("projektId",$kontextUser->projekt->id);
 	setcookie("kancelarId",$kontextUser->kancelar->id);
 	setcookie("behId",$kontextUser->beh->id);

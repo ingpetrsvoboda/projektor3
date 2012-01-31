@@ -28,7 +28,7 @@ class ExportExcel
                 echo 'Nepodařilo se nastavit lokalizaci '.$locale." - zůstává nastavena výchozí en_us<br />\n";
         }
 
-        $dbh = App_Kontext::getDbMySQL();
+        $dbh = App_Kontext::getDbMySQLProjektor();
         $query = "SHOW COLUMNS FROM ~1";
         $res= $dbh->prepare($query)->execute($this->tabulka);
 

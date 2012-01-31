@@ -22,7 +22,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
-
+                $this->novaPromenna("id", $this->nazev);                
 	}
 
 	protected function main°potomekNeni()
@@ -69,6 +69,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 
 	protected function prihlasovaci°vzdy()
 	{ 
+                $this->novaPromenna("id", $this->nazev);                            
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Výběr účastníka");
 
@@ -112,7 +113,8 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 	}
 
 	protected function prihlaseni°vzdy()
-	{ 
+	{
+                $this->novaPromenna("id", $this->nazev);                            
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Účastníci přihlášení na akci");
 

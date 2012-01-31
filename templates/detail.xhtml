@@ -8,10 +8,11 @@
 
 <p tal:content="%STRANKA%/prihlaseni_na_akci | nothing" />
 
-
-<span tal:repeat="tlacitko %STRANKA%/tlacitka">
-			<a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
-</span>
+<span tal:condition="%STRANKA%/tlacitka | nothing">
+    <span tal:repeat="tlacitko %STRANKA%/tlacitka">
+                            <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+    </span>
+</span>      
 
 <!-- %FORM% -->
 

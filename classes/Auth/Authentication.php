@@ -4,7 +4,7 @@
 //class Authentication {
 class Auth_Authentication {
     function check_credentials($name,$password) {
-        $dbh = App_Kontext::getDbMySQL();
+        $dbh = App_Kontext::getDbMySQLProjektor();
         $query = "SELECT authtype,id_sys_users FROM sys_users WHERE username=:1";
         $data = $dbh->prepare($query)->execute($name)->fetch_assoc();
         if($data['authtype']!=NULL){

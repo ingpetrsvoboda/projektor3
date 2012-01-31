@@ -2,6 +2,7 @@
 class Data_Flat_FlatTable extends Data_Iterator {
     public $id;
     public $jmenoTabulky;
+    public $dbh;
     public $objektJeVlastnostiHlavnihoObjektu;
     public $jmenoTabulkyHlavnihoObjektu;
     public $jmenoSloupceIdHlavnihoObjektu;
@@ -37,8 +38,9 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param boolean $vsechnyRadky Konstuktor vytvoří objekt pro všechny řádky tabulky bez ohledu na hodnotu ve sloupci valid
      * @param int $id V závislosti na $objektJeVlastnostiHlavnihoObjektu primární klíč tabulky nebo cizí klíč - id hlavního objektu
      */
-    public function __construct($jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky, $id=NULL)
+    public function __construct($jmenoTabulky, $dbh=NULL, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky, $id=NULL)
     {
+        $this->dbh = $dbh;
         $this->jmenoTabulky = $jmenoTabulky;
         $this->objektJeVlastnostiHlavnihoObjektu = $objektJeVlastnostiHlavnihoObjektu;
         $this->jmenoTabulkyHlavnihoObjektu = $jmenoTabulkyHlavnihoObjektu;
@@ -49,7 +51,6 @@ class Data_Flat_FlatTable extends Data_Iterator {
         
         $this->chyby = new App_Chyby();
         
-        $dbh = App_Kontext::getDbMySQL();
     // Kontrola existence tabulky v databázi
         $query = "SHOW TABLES LIKE :1";
         if (!$dbh->prepare($query)->execute($this->jmenoTabulky)){
@@ -99,15 +100,16 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param boolean $vsechnyRadky Metoda vrací objekty pro všechny řádky tabulky bez ohledu na hodnotu ve sloupci valid
      * @return object Data_Flat_FlatTable 
      */
-    public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE)
+    public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $dbh=NULL)
     {
-        $dbh = App_Kontext::getDbMySQL();
+        //TODO: defaultní databáze by měla být zadána jen na jednom místě!!
+        if (!$dbh) $dbh = App_Kontext::getDbMySQLProjektor();       
         // Kontrola existence tabulky v databázi
         $query = "SHOW TABLES LIKE :1";
         if (!$dbh->prepare($query)->execute($jmenoTabulky)){
             throw new Exception("V databázi neexistuje tabulka ".$jmenoTabulky);
         }
-        return new Data_Flat_FlatTable($jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $id); 
+        return new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $id); 
     }
     
     /**
@@ -121,9 +123,10 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param boolean $vsechnyRadky Metoda vrací objekty pro všechny řádky tabulky bez ohledu na hodnotu ve sloupci valid
      * @return array() Pole objektů Data_Flat_FlatTable odpovidajicich radkum v DB
      */    
-    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE)
+    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $dbh=NULL)
     {
-        $dbh = App_Kontext::getDbMySQL();
+        //TODO: defaultní databáze by měla být zadána jen na jednom místě!!
+        if (!$dbh) $dbh = App_Kontext::getDbMySQLProjektor();          
         $query = "SELECT ~1 FROM ~2".
                 ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$filtr} " : "WHERE valid = 1 AND {$filtr}")).
                 ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;            
@@ -143,10 +146,10 @@ class Data_Flat_FlatTable extends Data_Iterator {
         }
             $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
             foreach($radky as $radek)
-            $vypis[] = new Data_Flat_FlatTable($jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $radek[$jmenoId]);		 
+            $vypis[] = new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $radek[$jmenoId]);		 
         return $vypis;
     }      
-        
+    
     /**
      * Getter -
      * pro vlastnost je přímo vlastností objektu (nikoli v polích s databázovou tabulkou) vrací hodnotu vlastnosti,
@@ -265,7 +268,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         }
         if(!$this->primaryKeyFieldValue) {
         // INSERT
-            $dbh = App_Kontext::getDbMySQL();
+//            $dbh = App_Kontext::getDbMySQLProjektor();
             $query_column_names = "";       //část SQL příkazu INSERT se jmény sloupců
             $query_values = "";             //část SQL příkazu INSERT s daty
             foreach($this->field as $key=>$column_name) {
@@ -282,7 +285,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
             $query="INSERT INTO ".$this->jmenoTabulky." (".$query_column_names.") VALUES (".$query_values.");";
         } else {
         // UPDATE
-            $dbh = App_Kontext::getDbMySQL();
+//            $dbh = App_Kontext::getDbMySQLProjektor();
             $query="UPDATE ".$this->jmenoTabulky." SET ";
             foreach($this->field as $column_name) {
                 if ($column_name != $this->primaryKeyFieldName) {
@@ -295,7 +298,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
             $query=substr($query,0,strlen($query)-1);
             $query.=" WHERE ".$this->primaryKeyFieldName." = ".$this->primaryKeyFieldValue;
         }
-        $dbh->prepare($query)->execute("");
+        $this->dbh->prepare($query)->execute("");
         return true;
     }
 
@@ -305,22 +308,22 @@ class Data_Flat_FlatTable extends Data_Iterator {
     //metoda by mohla zamykat, ale asi to chce transakci na celý hlavní objekt
 	
         if (!$this->precteno_z_db) {
-            $dbh = App_Kontext::getDbMySQL();
+//            $dbh = App_Kontext::getDbMySQLProjektor();
 
             if ($this->objektJeVlastnostiHlavnihoObjektu) {
                 if ($this->vsechnyRadky) {
                     $data["valid"] = TRUE;
                 } else {
                     $hlavniObjektOuery="SELECT valid FROM ~1 WHERE ~2 = :3";
-                    $dataValid = $dbh->prepare($hlavniObjektOuery)->execute($this->jmenoTabulkyHlavnihoObjektu, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();
+                    $dataValid = $this->dbh->prepare($hlavniObjektOuery)->execute($this->jmenoTabulkyHlavnihoObjektu, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();
                 }
                 if ($dataValid["valid"]) {
                 $query="SELECT * FROM ~1 WHERE ~2 = :3";
-                    $data = $dbh->prepare($query)->execute($this->jmenoTabulky, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();                    
+                    $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();                    
                 }
             } else {
                 $query="SELECT * FROM ~1 WHERE ~2 = :3" . ($this->vsechnyRadky ? "" : " AND valid = 1");
-                $data = $dbh->prepare($query)->execute($this->jmenoTabulky, $this->primaryKeyFieldName, $this->id)->fetch_assoc();
+                $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->primaryKeyFieldName, $this->id)->fetch_assoc();
             }
             if ($data) {
                 foreach($this->field as $columnID => $columnName)

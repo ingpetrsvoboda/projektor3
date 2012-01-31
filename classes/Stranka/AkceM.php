@@ -20,6 +20,7 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
+                $this->novaPromenna("id", $this->nazev);                
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Akce");
 
@@ -65,7 +66,8 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 	}
 
 	protected function akceUcastnika°vzdy()
-	{ 
+	{
+                $this->novaPromenna("id", $this->nazev);                            
                 /* Ovladaci tlacitka stranky */
 		$tlacitka = array
 		(

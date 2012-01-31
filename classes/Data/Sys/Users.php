@@ -39,7 +39,7 @@ class Data_Sys_Users extends Data_Iterator
 
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -58,7 +58,7 @@ class Data_Sys_Users extends Data_Iterator
 
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "")
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		
 		$query = "SELECT ~1 FROM ~2".
 			($filtr == "" ? "" : " WHERE ({$filtr})").
@@ -80,7 +80,7 @@ class Data_Sys_Users extends Data_Iterator
 
 	public static function smaz()
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
 	}
@@ -93,7 +93,7 @@ class Data_Sys_Users extends Data_Iterator
 
 	public function uloz()
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 
 		if($this->id == null)
 		{

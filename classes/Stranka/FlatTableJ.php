@@ -1,36 +1,24 @@
  <?php
-class Stranka_Zajemce extends Stranka implements Stranka_Interface
+abstract class Stranka_FlatTableJ extends Stranka implements Stranka_Interface
 {
 	const SABLONA_DETAIL = "detail.xhtml";
-        const HLAVNI_OBJEKT = "Zajemce";
-
+        const NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE = "Flat_FlatTable";
+        
         const SEPARATOR = "_X_";
         const MAX_POCET_ZNAKU_TYPU_TEXT = 48; //max. počet znaků, pro který se při automatickém nastavení typu elementů nastaví "text", pro větší "textarea"
         const MAX_SIRKA_TYPU_TEXT = 68;
         const POCET_SLOUPCU_TYPU_TEXTAREA = 51;
         const MAX_POCET_RADKU_TYPU_TEXTAREA = 5;
 
-//TODO: Stranka_Zajemce a Stranka_Ucastnik -> upravit na jednu univerzální třídu Stranka_Osoba (??)        
-	public static function priprav($cesta)
-	{
-		return new self($cesta, __CLASS__);
-	}
-
 	public function detail($parametry = null)
 	{
 
                 /* Konstrukce objektu formulare a datoveho objektu */
-		$form = new HTML_QuickForm("hlavniobjekt", "post", $this->cestaSem->generujUri());
-                $tridaHlavnihoObjektu = "Data_".self::HLAVNI_OBJEKT;
+		$form = new HTML_QuickForm("objekt", "post", $this->cestaSem->generujUri());
                 if ($parametry["id"]) {
-                    $hlavniObjekt = $tridaHlavnihoObjektu::najdiPodleId($parametry["id"]);                    
+                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, $parametry["id"], FALSE, "", NULL, $this->vsechny_radky, $this->dbh);                    
                 } else {
-                    $kontext = App_Kontext::getUserKontext();
-                    $hlavniObjekt = new $tridaHlavnihoObjektu(NULL, NULL, $kontext->projekt->id, $kontext->beh->id, $kontext->kancelar->id);                                        
-                }
-
-                if ($hlavniObjekt AND array_key_exists("objektVlastnost", $parametry)){
-                    $objektVlastnost = $hlavniObjekt->$parametry["objektVlastnost"];
+                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, NULL, FALSE, "", NULL, $this->vsechny_radky, $this->dbh);                                        
                 }
 
 		/* Příprava defaultnich stavů, typů a titulků prvků formuláře pro objektVlastnost */
@@ -50,22 +38,22 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
                 //DOPORUČENÍ: při psaná programového kódu stránky se tak nejprve napíše kód s použitím automatického vyplnění pole elementy
                 //v níže zapsaném cyklu foreach, zobrazí se stránka
                 //a podle zobrazení stránky se postupně doplní do pole elementy typy a titulky elementů
-                if($hlavniObjekt AND $objektVlastnost)
+                if($dataObjekt)
 		{ 
-                    $klice = $objektVlastnost->dejKlice();
-                    $nazvy = $objektVlastnost->dejNazvy();
-                    $typy = $objektVlastnost->dejTypy();
-                    $delky = $objektVlastnost->dejDelky();
+                    $klice = $dataObjekt->dejKlice();
+                    $nazvy = $dataObjekt->dejNazvy();
+                    $typy = $dataObjekt->dejTypy();
+                    $delky = $dataObjekt->dejDelky();
                     
                     foreach ($nazvy as $key => $jmenoVlastnosti) {
-                        $index = self::HLAVNI_OBJEKT . self::SEPARATOR . $parametry["objektVlastnost"] . self::SEPARATOR . $jmenoVlastnosti;      //$jmenoVlastnosti = název sloupce v db
+                        $index = self::NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE . self::SEPARATOR . $dataObjekt->jmenoTabulky . self::SEPARATOR . $jmenoVlastnosti;      //$jmenoVlastnosti = název sloupce v db
                         if ($klice[$key]) {             //elementy, které odpovídají sloupcům db tabulky obsahujícím klíče musí být hidden nebo static
                             $elementy["typ"][$index] = "static";                            
                         } else {
                             if ($typy[$key] == "date") {
                                 $elementy["typ"][$index] = "date";
                                 $elementy["atributy"][$index] = array("format" => "d.m.Y", "minYear" => "1900", "maxYear" => "2050");
-                                $elementy["default"][$index] = Data_Konverze_Datum::zSQL($objektVlastnost->$jmenoVlastnosti)->dejDatumProQuickForm() ;
+                                $elementy["default"][$index] = Data_Konverze_Datum::zSQL($dataObjekt->$jmenoVlastnosti)->dejDatumProQuickForm() ;
                             } else {
                                 if (intval($delky[$key]) <= self::MAX_POCET_ZNAKU_TYPU_TEXT) {
                                     $elementy["typ"][$index] = "text";
@@ -79,15 +67,15 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
                             }
                         }
                         if (!$elementy["default"][$index]) {
-                            $elementy["default"][$index] = $objektVlastnost->$jmenoVlastnosti;
+                            $elementy["default"][$index] = htmlspecialchars($dataObjekt->$jmenoVlastnosti);
                         }
                         
                         $elementy["titulek"][$index] = $jmenoVlastnosti;
                     }
                     // Konec cyklu pro nastavení pole elementů - za tento řádek je možno psát jiné nastavení typů a titulků elementů
                     //
-                    $filtr = Data_Seznam_SPrezentace::HLAVNI_OBJEKT." = \"".self::HLAVNI_OBJEKT."\"".
-                             " AND ".Data_Seznam_SPrezentace::OBJEKT_VLASTNOST." = \"".$parametry["objektVlastnost"]."\"";
+                    $filtr = Data_Seznam_SPrezentace::HLAVNI_OBJEKT." = \"".self::NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE."\"".
+                             " AND ".Data_Seznam_SPrezentace::OBJEKT_VLASTNOST." = \"".$dataObjekt->jmenoTabulky."\"";
                     $prezentace = Data_Seznam_SPrezentace::vypisVse($filtr, $this->parametry["razeniPodle"], $this->parametry["razeni"]);
                     if ($prezentace) {      //SVOBODA - neefektivní - před cyklem zapsat do pole a zde vybárat z pole dle index
                         foreach($prezentace as $polozka)
@@ -107,34 +95,18 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
 		}
 
 		/* Defaultni stavy formulare */
-		if($hlavniObjekt)
+		if($dataObjekt)
 		{
-                    //hodnoty pro ručně přidané elementy (níže)
-                    $elementy["default"]["identifikator"] = $hlavniObjekt->identifikator;
-                    $elementy["default"]["projekt"] = $hlavniObjekt->projektKod;
-                    $elementy["default"]["turnusText"] = $hlavniObjekt->turnusText;
-                    $elementy["default"]["kancelarText"] = $hlavniObjekt->kancelarText;
-                    $elementy["default"]["jmeno"] = $hlavniObjekt->smlouva->jmeno;
-                    $elementy["default"]["prijmeni"] = $hlavniObjekt->smlouva->prijmeni;
-
+//                    $elementy["default"]["id"] = $dataObjekt->id;
                     $form->setDefaults($elementy["default"]);
 		}
 
 		/* Vytvareni elementu formulare */
                 // element ucastnik_id musí být hidden nebo static
-                if($hlavniObjekt) {
+                if($dataObjekt) {
                     //zde jsou přidány ručně elementy - mohou být prakticky libovolné
-                    //přidány elementy pro zobrazení vlastností hlavního objektu
-                    $form->addElement("hidden", "id");
-                    $form->addElement("hidden", "cisloObjektu");
-                    $form->addElement("static", "identifikatorObjektu", "Identifikátor");
-                    $form->addElement("static", "projekt", "Projekt");
-                    $form->addElement("static", "turnusText", "Turnus");
-                    $form->addElement("static", "kancelarText", "Kancelář");
-                    $form->addElement("static", "jmeno", "Jméno");
-                    $form->addElement("static", "prijmeni", "Příjmení");
+//                    $form->addElement("hidden", "id");
                     // zde se přidávají automaticky generované elementy - tyto elementy odpovídají sloupců db tabulek s vlastnostmi
-                    if ($objektVlastnost) {
                         $form->addElement("header", $parametry["textDoNadpisuStranky"]);
                         foreach ($elementy["default"] as $key => $jmenoVlastnosti) {
                         //    if ($elementy["atributy"][$key]) {
@@ -144,13 +116,6 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
                         //    }
                             
                         }
-                    }
-                } else {
-//                    $form->addElement("hidden", "id");
-//                    $form->addElement("hidden", "cisloUcastnika");
-//                    $form->addElement("hidden", "identifikator");
-//                    $form->addElement("hidden", "idSBehProjektuFK", "idSBehProjektuFK");
-//                    $form->addElement("hidden", "idCKancelarFK", "idCKancelarFK");
                 }
 
 		/* Rozhodovani detail/uprav */
@@ -163,7 +128,7 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
 		else
                 {
                     $form->addElement("submit", "submit", "Ulozit");
-                    if($hlavniObjekt)
+                    if($dataObjekt)
                         $this->novaPromenna("nadpis", "Úprava údajů: ".$parametry["textDoNadpisuStranky"]);
                     else
                         $this->novaPromenna("nadpis", "Nový");
@@ -188,22 +153,22 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
                         }
                     }
  
-                    $tridaData = "Data_".self::HLAVNI_OBJEKT;
-                    if ($hlavniObjekt) {
-                        // starý - již existující účastník
-                        $objektZFormulare = $tridaData::najdiPodleId($parametry["id"]);
+//                    $tridaData = Data_Flat_FlatTable::najdiPodleId(self::NAZEV_FLAT_TABLE, $parametry["id"]);
+                    if ($dataObjekt) {
+                        // starý - již existující záznam
+                        $objektZFormulare = Data_Flat_FlatTable::najdiPodleId(self::NAZEV_FLAT_TABLE, $parametry["id"]);
                     } else {
-                        // nový účastník
-                        $objektZFormulare = new $tridaData($data["cisloObjektu"], $data["identifikatorObjektu"], $data["idSBehProjektuFK"], $data["idCKancelarFK"], 1, $data["id"]);
+                        // nový záznam
+                        $objektZFormulare = new Data_Flat_FlatTable(self::NAZEV_FLAT_TABLE);
                     }
 
                     // hodnoty v elementech typu "static" se metodou exportValues neexportují, ostatní hodnoty (včetně typu "hidden") ano
                     foreach ($data as $key => $value) {
-                        $vlastnost = explode(self::SEPARATOR, $key, 2);
-                        if (!$vlastnost[1]){
+                        $vlastnost = explode(self::SEPARATOR, $key, 3);
+                        if (!$vlastnost[1]){  //pro ručně přidané elementy
                             $objektZFormulare->$vlastnost[0] = $value;
                         } else {
-                            $objektZFormulare->$vlastnost[0]->$vlastnost[1] = $value;
+                            $objektZFormulare->$vlastnost[2] = $value;
                         }
                     }
                     if($objektZFormulare->uloz())
@@ -230,36 +195,6 @@ class Stranka_Zajemce extends Stranka implements Stranka_Interface
 	{
             /*$this->promenne["ucastnik_detail"] = Data_Akce::najdiPodleId($this->parametry["id"]);
             $this->promenne["ucastnik_zpet"] = $this->cestaSem->generujUriZpet();*/
-	}
-
-    /* prihlaseni */
-	public function prihlaseni($parametry = null)
-	{
-		return $this->vytvorStranku("prihlaseni", self::SABLONA_DETAIL, $parametry);
-	}
-
-	protected function prihlaseni°vzdy()
-	{
-		$akce = Data_Akce::najdiPodleId($this->parametry["id_akce"]);
-                $this->novaPromenna("nadpis", "Přihlášení na akci");
-
-                try
-		{
-                    //TODO: Nedodělek - pevně zadaný parament 2!
-			$akce->prihlas(Data_Zajemce::najdiPodleId($this->parametry["id"]), Data_Seznam_SStavUcastnikAkce::najdiPodleId(2), Data_Seznam_SStavUcastnikAkceDen::najdiPodleId(2));
-                        $this->novaPromenna("prihlaseni_na_akci", "Prihlaseni bylo uspesne!");
-		}
-		catch(Exception $e)
-		{
-                        $this->novaPromenna("prihlaseni_na_akci", $e->getMessage());
-		}
-
-		$this->detail°vzdy();
-	}
-
-	protected function prihlaseni°potomekNeni()
-	{
-		$this->detail°potomekNeni();
 	}
 
 }

@@ -1,7 +1,7 @@
 <?php
 class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
 {
-	const SABLONA_MAIN = "iscom.xhtml";
+	const SABLONA_MAIN = "seznam.xhtml";
 
         protected $hledanyText;
         
@@ -17,13 +17,21 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
 	{ 
                 /* Vygenerovani vyhledavaciho formulare */
                 $dalsi = $this->dalsi;
+                $formAjax = print_r('
+                    <form>
+                    Sem pište hledaný text: <input type="text" onkeyup="naseptavani(this.value)" size="40" />
+                    </form>
+                ', TRUE);           
+
                 $vyhledavaciFormular = $this->hledani($dalsi->parametry['hledanyText']);
-                return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry, "", $vyhledavaciFormular->toHtml());
+                return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry, $formAjax, $vyhledavaciFormular->toHtml());
 //            return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry);
 	}
 
 	protected function main°vzdy()
 	{
+                $this->novaPromenna("id", $this->nazev);                //pro javascript
+
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Seznam vyhledaných ISCO");
 

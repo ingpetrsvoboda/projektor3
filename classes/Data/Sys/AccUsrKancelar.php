@@ -27,7 +27,7 @@ class Data_Sys_AccUsrKancelar extends Data_Iterator
 	 */
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -46,7 +46,7 @@ class Data_Sys_AccUsrKancelar extends Data_Iterator
 	 */
 	public static function dejPovoleneKancelare($userid)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT ~1 FROM ~2 WHERE ~3 = :4";
                 $povoleneKancelare = $dbh->prepare($query)->execute(Data_Sys_AccUsrKancelar::ID, Data_Sys_AccUsrKancelar::TABULKA,
                 Data_Sys_AccUsrKancelar::ID_SYS_USERS, $userid

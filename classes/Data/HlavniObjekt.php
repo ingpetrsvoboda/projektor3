@@ -91,7 +91,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
     public static function najdiPodleId($id, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
     {
 //TODO: nekontrolují se parametry jmenolavnihoObjektu, tabulka, nazevIdTabulky, nazevCislaObjektu            
-            $dbh = App_Kontext::getDbMySQL();
+            $dbh = App_Kontext::getDbMySQLProjektor();
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, self::ID_C_KANCELAR_FK, self::ID_S_BEH_PROJEKTU_FK);
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3".($kontextFiltr ? " AND ".$kontextFiltr : "");
                 $radek = $dbh->prepare($query)->execute($tabulka, $nazevIdTabulky, $id)->fetch_assoc();
@@ -112,7 +112,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
     {
 //TODO: nekontrolují se parametry jmenolavnihoObjektu, tabulka, nazevCislaObjektu            
             if ($jmenoHlavnihoObjektu AND $tabulka) {
-                $dbh = App_Kontext::getDbMySQL();
+                $dbh = App_Kontext::getDbMySQLProjektor();
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, self::ID_C_KANCELAR_FK, self::ID_S_BEH_PROJEKTU_FK, $filtr, $orderBy, $order);
     //TODO: tento query do všech datových tříd - metoda vypisVse
                 $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "");
@@ -210,7 +210,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
 	 */
 	public static function smaz()
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
 	}      
@@ -221,7 +221,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
      */
     public static function vypisPrihlaseneNaAkci($idAkce="", $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
     {
-            $dbh = App_Kontext::getDbMySQL();
+            $dbh = App_Kontext::getDbMySQLProjektor();
             $query = "SELECT ~1 FROM ~2 WHERE ~3=:4";
             $radky = $dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK, Data_Vzb_UcastnikAkce::TABULKA,
             Data_Vzb_UcastnikAkce::ID_AKCE_FK, $idAkce)->fetchall_assoc();

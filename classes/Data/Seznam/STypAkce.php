@@ -44,7 +44,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3 AND valid = 1";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -64,7 +64,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "")
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT ~1 FROM ~2".
 			($filtr == "" ? " WHERE (valid = 1)" : " WHERE (valid = 1 AND {$filtr})").
 			($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
@@ -84,7 +84,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public static function smaz($sTypAkce)
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $sTypAkce->id);
 	}
@@ -97,7 +97,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public function uloz()
 	{
-		$dbh = App_Kontext::getDbMySQL();
+		$dbh = App_Kontext::getDbMySQLProjektor();
 
 		if($this->id == null)
 		{
