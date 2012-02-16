@@ -21,6 +21,7 @@ class Data_Zajemce extends Data_HlavniObjekt
 {
     const HLAVNI_OBJEKT = "Zajemce";
     const TABULKA = "zajemce"; 
+//TODO: přejmenovat sloupec v db na id_zajemce_FK a změnit konstantu
     const ID = "id_zajemce";
     const CISLO_OBJEKTU = "cislo_zajemce";
     //tento prefix musi mit nazvy vsech db tabulek s vlastnostmi objektu
@@ -35,6 +36,7 @@ class Data_Zajemce extends Data_HlavniObjekt
              'plan' => 'plan_flat_table',
              'ukonceni' => 'ukonc_flat_table',
              'zamestnani' => 'zam_flat_table',
+             'test' => 'test_flat_table',
 
         );
     
@@ -45,7 +47,15 @@ class Data_Zajemce extends Data_HlavniObjekt
     public $behCislo;
     public $projektKod;
     public $kancelarText;
+    
     public $celeJmeno;
+    public $vzdelani1;
+    public $KZAM_cislo1;
+    public $KZAM_cislo2;
+    public $KZAM_cislo3;
+    public $KZAM_cislo4;
+    public $KZAM_cislo5;
+    public $zamestnani_pozice1;
 
 
     public function __construct($cisloHlavnihoObjektu = 0, $identifikator =0, $idCProjektFK = null, $idSBehProjektuFK = null, $idCKancelarFK = null,
@@ -55,9 +65,9 @@ class Data_Zajemce extends Data_HlavniObjekt
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id);
             //TODO: vyřešit konflikt projekt z behu se liší od projekt
-            // projekt se vytvori na zaklade id_c_projekt z tabulky s_beh_projektu (sloupec id_c_projekt_FK v tabulce ucastnik se nepouzije)
             //TODO: zrušit sloupec id_c_projekt_FK v tabulkce ucastnik a přejmenovat id_c_projekt v tabulce s_beh_projektu na id_c_projekt_FK
 //        if ()
+            // projekt se vytvori na zaklade id_c_projekt z tabulky s_beh_projektu (sloupec id_c_projekt_FK v tabulce ucastnik se nepouzije)
 //            $this->Projekt = Ciselnik_CiselnikB::najdiPodleId("projekt", $this->Beh->idCProjekt);
             $this->Projekt = Data_Ciselnik::najdiPodleId("projekt", $idCProjektFK);            
             $this->Kancelar = Data_Ciselnik::najdiPodleId("kancelar", $idCKancelarFK);
@@ -68,10 +78,11 @@ class Data_Zajemce extends Data_HlavniObjekt
             $this->kancelarText = $this->Kancelar->text;
             $this->projektKod = $this->Projekt->kod;       
 //            $this->Beh = Data_Seznam_SBehProjektu::najdiPodleId($idSBehProjektuFK);
-            //poze pro účely vytvoření celého jména včetně titulů se vytvoří a pak zruší vlastnost smlouva
+            //pouze pro účely vytvoření dalších vlastností pro zobrazení v seznamu se vytvoří a pak zruší vlastnost smlouva
             $this->celeJmeno = $this->smlouva->prijmeni." ".$this->smlouva->jmeno;
             if ($this->smlouva->titul != '') $this->celeJmeno = $this->celeJmeno.", ".$this->smlouva->titul;
             if ($this->smlouva->titul_za != '') $this->celeJmeno = $this->celeJmeno.", ".$this->smlouva->titul_za;
+            $this->zamestnani_pozice1 = substr($this->smlouva->zamestnani_pozice1, 0, 40).((strlen($this->smlouva->zamestnani_pozice1)>41 ? " ..." : ""));
             unset($this->_vlatnostiObjekty['smlouva']);  
     }
     //($id, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")

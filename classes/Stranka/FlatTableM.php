@@ -18,8 +18,8 @@ abstract class Stranka_FlatTableM extends Stranka implements Stranka_Interface
 
 	protected function main°potomekNeni()
 	{
-		$firmy = Data_Flat_FlatTable::vypisVse($this->nazev_flattable, $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], FALSE, "", NULL, $this->vsechny_radky, $this->dbh);
-                $this->generujSeznamSTlacitky($firmy);
+		$poleFlatTable = Data_Flat_FlatTable::vypisVse($this->nazev_flattable, $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], FALSE, "", NULL, $this->vsechny_radky, $this->dbh);
+                $this->generujSeznamSTlacitky($poleFlatTable);
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", $this->nazev_mnozne);
                 /* Ovladaci tlacitka stranky */
@@ -59,11 +59,7 @@ abstract class Stranka_FlatTableM extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_".$this->nazev_jednotne.".detail", array("id" => $polozka->id, "textDoNadpisuStranky" => "Detail ".strtolower($this->nazev_mnozne), "zmraz" => 1))),
                             new Stranka_Element_Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_".$this->nazev_jednotne.".detail", array("id" => $polozka->id, "textDoNadpisuStranky" => "Úprava údajů ".strtolower($this->nazev_mnozne)))),
                         );
-
-                        $polozka->odeberVsechnyVlastnosti();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $polozka->pridejVlastnost($sloupec->nazevVlastnosti);
-                        }
+                        $this->pouzijHlavicku($polozka, $hlavickaTabulky);
                         $this->novaPromenna("polozka", $polozka);
                     }
                 }
@@ -84,10 +80,7 @@ abstract class Stranka_FlatTableM extends Stranka implements Stranka_Interface
                         (
                             new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_".$this->nazev_jednotne.".detail", array("id" => $polozkaFlatTable->id, "textDoNadpisuStranky" => "Detail ".strtolower($this->nazev_mnozne), "zmraz" => 1))),
                         );
-                        $polozkaFlatTable->odeberVsechnyVlastnosti();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $polozkaFlatTable->pridejVlastnost($sloupec->nazevVlastnosti);
-                        }
+                        $this->pouzijHlavicku($polozkaFlatTable, $hlavickaTabulky);
                     }    
                     $this->novaPromenna("seznam", $poleFlatTable);
                 } else {

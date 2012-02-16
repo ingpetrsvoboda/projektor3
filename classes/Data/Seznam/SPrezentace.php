@@ -18,6 +18,10 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 	public $titulek;
 	public $zobrazovat;
 	public $valid;
+        
+        // pseudo název hlavního objektu pro objekty načítané třídou Data_FlatTable
+        const FLAT_TABLE = "flat table";
+        
 
 	// Nazev tabulky a sloupcu v DB
 	const TABULKA = "s_prezentace";
@@ -135,7 +139,8 @@ class Data_Seznam_SPrezentace extends Data_Iterator
             $dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
 	}        
         
-        public static function nactiNazvy($jmenaHlavnichObjektu) {
+        public static function nactiNazvy($jmenaHlavnichObjektu = NULL, $jmenaFlatTabulek = NULL) {
+            //načtení hlavních objektů
             foreach ($jmenaHlavnichObjektu as $jmenoHlavnihoObjektu) {
                 $jmenoDatovehoObjektu = "Data_".$jmenoHlavnihoObjektu;
                 $datovyObjekt = new $jmenoDatovehoObjektu;
@@ -155,18 +160,19 @@ class Data_Seznam_SPrezentace extends Data_Iterator
                              " WHERE ".self::HLAVNI_OBJEKT."='".$jmenoHlavnihoObjektu.
                                      "' AND ".self::OBJEKT_VLASTNOST."='".$jmenoObjektuVlastnosti.
                                      "' AND ".self::NAZEV_SLOUPCE."= :1";
-                    $radky= $dbh->prepare($query)->execute($prefix . $tabulka)->fetchall_assoc();
-                    if ($radky) {
-                        foreach ($radky as $radek) {
-                            if (!$radek['Key']) {
-                                if (!$dbh->prepare($querySelectCount)->execute($radek['Field'])->fetch_assoc()) {
+                    $sloupce= $dbh->prepare($query)->execute($prefix . $tabulka)->fetchall_assoc();
+                    if ($sloupce) {
+                        foreach ($sloupce as $sloupec) {
+                            if (!$sloupec['Key']) {
+                                //pokud v tabulce prezentace neexistuje záznam pro hlavní objekt, objekt vlastnost, název sloupce, vloží se nový záznam
+                                if (!$dbh->prepare($querySelectCount)->execute($sloupec['Field'])->fetch_assoc()) {
                                     $query = "INSERT INTO ~1 (~2, ~3, ~4, ~5, ~6, ~7) VALUES (:8, :9, :10, :11, :12, :13)";
                                     //zobrazovat je nastaveno na 1, aby se obsah zobrazoval ve formuláři, 
                                     //valid je nastaveno na 0, aby se v objektu stránky použila defaultní hodnota titulku 
                                     $dbh->prepare($query)->execute(
                                             self::TABULKA,
                                             self::HLAVNI_OBJEKT, self::OBJEKT_VLASTNOST, self::NAZEV_SLOUPCE, self::TITULEK, self::ZOBRAZOVAT, self::VALID,
-                                            $jmenoHlavnihoObjektu, $jmenoObjektuVlastnosti, $radek['Field'], NULL, 1, 0
+                                            $jmenoHlavnihoObjektu, $jmenoObjektuVlastnosti, $sloupec['Field'], NULL, 1, 0
                                             )->last_insert_id();
                                     
                                 }
@@ -175,6 +181,44 @@ class Data_Seznam_SPrezentace extends Data_Iterator
                     }    
                 }
             }
-        } 
+            //načtení tabulek flat table
+//            foreach ($jmenaFlatTabulek as $jmenoFlatTabulky) {
+//                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, NULL, FALSE, "", NULL, $this->vsechny_radky, $this->dbh);                                        
+//                
+//                $datovyObjekt = new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, FALSE, NULL);
+//                
+//                $dbh = App_Kontext::getDbMySQLProjektor();
+//                    // Kontrola existence tabulky v databázi
+//                    $query = "SHOW TABLES LIKE :1";
+//                     if (!$dbh->prepare($query)->execute($tabulka)){
+//                        throw new Exception("V databázi neexistuje tabulka " . $jmenoFlatTabulky);
+//                    }
+//                    //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky
+//                    $query = "SHOW COLUMNS FROM ~1";
+//                    $querySelectCount = "SELECT ".self::ID." FROM ".self::TABULKA.
+//                             " WHERE ".self::HLAVNI_OBJEKT."='".$jmenoHlavnihoObjektu.
+//                                     "' AND ".self::OBJEKT_VLASTNOST."='".$jmenoObjektuVlastnosti.
+//                                     "' AND ".self::NAZEV_SLOUPCE."= :1";
+//                    $sloupce= $dbh->prepare($query)->execute($jmenoFlatTabulky)->fetchall_assoc();
+//                    if ($sloupce) {
+//                        foreach ($sloupce as $sloupec) {
+//                            if (!$sloupec['Key']) {
+//                                //pokud v tabulce prezentace neexistuje záznam pro hlavní objekt, objekt vlastnost, název sloupce, vloží se nový záznam
+//                                if (!$dbh->prepare($querySelectCount)->execute($sloupec['Field'])->fetch_assoc()) {
+//                                    $query = "INSERT INTO ~1 (~2, ~3, ~4, ~5, ~6, ~7) VALUES (:8, :9, :10, :11, :12, :13)";
+//                                    //zobrazovat je nastaveno na 1, aby se obsah zobrazoval ve formuláři, 
+//                                    //valid je nastaveno na 0, aby se v objektu stránky použila defaultní hodnota titulku 
+//                                    $dbh->prepare($query)->execute(
+//                                            self::TABULKA,
+//                                            self::HLAVNI_OBJEKT, self::OBJEKT_VLASTNOST, self::NAZEV_SLOUPCE, self::TITULEK, self::ZOBRAZOVAT, self::VALID,
+//                                            $jmenoHlavnihoObjektu, $jmenoObjektuVlastnosti, $sloupec['Field'], NULL, 1, 0
+//                                            )->last_insert_id();
+//                                    
+//                                }
+//                            }    
+//                        }
+//                    }    
+//            }
+       } 
 }
 ?>

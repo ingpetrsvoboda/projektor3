@@ -2,8 +2,8 @@
 class DB_Mysql_Test extends DB_Mysql {
     protected $user   = "root";
     protected $pass   = "root";
-    protected $dbhost = "localhost";
-    protected $dbname = "default";
+    protected $dbHost = "localhost";
+    protected $dbName = "default";
 
     public function __construct() { }
 } 

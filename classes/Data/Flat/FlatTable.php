@@ -56,7 +56,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         if (!$dbh->prepare($query)->execute($this->jmenoTabulky)){
             throw new Exception("V databázi neexistuje tabulka ".$this->jmenoTabulky);
         }
-    //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky
+    //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky        
         $query = "SHOW COLUMNS FROM ~1";
         $res= $dbh->prepare($query)->execute($this->jmenoTabulky);
         while ($data = $res->fetch_assoc()){
@@ -84,11 +84,12 @@ class Data_Flat_FlatTable extends Data_Iterator {
             }
         }
 
-           if (!$this->precteno_z_db)
-           {
-               $this->precti_zaznam();
-               parent::__construct(__CLASS__);   //doplni objektu flat table rozhrani iterator
-           }
+
+        if (!$this->precteno_z_db)
+        {
+            $this->precti_zaznam();
+            parent::__construct(__CLASS__);   //doplni objektu flat table rozhrani iterator
+        }
     }
     
     /**
@@ -98,6 +99,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param boolean $objektJeVlastnostiHlavnihoObjektu TRUE zadaní id je chápáno jako id hlavního objektu, FALSE zadané id je chápáno jako id tabulky
      * @param string $jmenoSloupceIdHlavnihoObjektu Pokud $objektJeVlastnostiHlavnihoObjektu=TRUE musi obsahovat název db sloupce s primárním klíčem v tabulce hlavního objektu
      * @param boolean $vsechnyRadky Metoda vrací objekty pro všechny řádky tabulky bez ohledu na hodnotu ve sloupci valid
+     * @param $dbh handler databáze
      * @return object Data_Flat_FlatTable 
      */
     public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $dbh=NULL)
@@ -121,31 +123,42 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param boolean $objektJeVlastnostiHlavnihoObjektu TRUE id vytvořených objektů je id hlavního objektu, FALSE id vytvořených objektů je id tabulky
      * @param string $jmenoSloupceIdHlavnihoObjektu Pokud $objektJeVlastnostiHlavnihoObjektu=TRUE musi obsahovat název db sloupce s primárním klíčem v tabulce hlavního objektu
      * @param boolean $vsechnyRadky Metoda vrací objekty pro všechny řádky tabulky bez ohledu na hodnotu ve sloupci valid
+     * @param $dbh handler databáze
      * @return array() Pole objektů Data_Flat_FlatTable odpovidajicich radkum v DB
      */    
     public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $dbh=NULL)
     {
-        //TODO: defaultní databáze by měla být zadána jen na jednom místě!!
         if (!$dbh) $dbh = App_Kontext::getDbMySQLProjektor();          
-        $query = "SELECT ~1 FROM ~2".
-                ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$filtr} " : "WHERE valid = 1 AND {$filtr}")).
-                ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;            
         if ($objektJeVlastnostiHlavnihoObjektu)
         {
             $jmenoId = $jmenoSloupceIdHlavnihoObjektu;
         } else {            
             //Nacteni názvu sloupce s primárním klíčem tabulky
-            $columnsQuery = "SHOW COLUMNS FROM ~1";
-            $res= $dbh->prepare($columnsQuery)->execute($jmenoTabulky);
-            while ($data = $res->fetch_assoc()){
-                if ($data['Key'] == "PRI")
-                {
-                    $jmenoId = $data['Field'];
-                }
-            }            
-        }
-            $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
-            foreach($radky as $radek)
+//            $columnsQuery = "SHOW COLUMNS FROM ~1";
+//            $res= $dbh->prepare($columnsQuery)->execute($jmenoTabulky);
+//            while ($data = $res->fetch_assoc()){
+//                if ($data['Key'] == "PRI")
+//                {
+//                    $jmenoId = $data['Field'];
+//                }
+//            }        
+            $dbhm = App_Kontext::getDbMySQLInformationSchema();            
+            $columnsQuery = "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE (TABLE_SCHEMA=:1) AND (TABLE_NAME=:2) AND (COLUMN_KEY='PRI')";
+            $data = $dbhm->prepare($columnsQuery)->execute($dbh->dbName, $jmenoTabulky)->fetch_assoc();
+//            $d = $dbhm->prepare($columnsQuery);
+//            $d = $d->execute($dbh->dbName, $jmenoTabulky);
+//            $data = $d->fetch_assoc();
+            $jmenoId = $data['COLUMN_NAME'];
+        } 
+        
+//TODO: defaultní databáze by měla být zadána jen na jednom místě!!
+        $query = "SELECT ~1 FROM ~2".
+                ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$filtr} " : "WHERE valid = 1 AND {$filtr}")).
+                ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;            
+        
+
+        $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
+        foreach($radky as $radek)
             $vypis[] = new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $radek[$jmenoId]);		 
         return $vypis;
     }      

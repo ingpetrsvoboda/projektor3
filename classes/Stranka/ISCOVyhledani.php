@@ -19,7 +19,7 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
                 $dalsi = $this->dalsi;
                 $formAjax = print_r('
                     <form>
-                    Sem pište hledaný text: <input type="text" onkeyup="naseptavani(this.value)" size="40" />
+                    Sem pište ajaxem hledaný text: <input type="text" onkeyup="naseptavani(this.value)" size="40" />
                     </form>
                 ', TRUE);           
 
@@ -42,15 +42,10 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
 		);
                 $this->novaPromenna("tlacitka", $tlacitka);
 
-                /* Hlavicka tabulky */
-		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
-		$hlavickaTabulky->pridejSloupec("ID", Data_Seznam_SISCO::ID);
-		$hlavickaTabulky->pridejSloupec("kód", Data_Seznam_SISCO::KOD);
-                $hlavickaTabulky->pridejSloupec("Název", Data_Seznam_SISCO::NAZEV);
-
-		$this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);
             if ($this->hledanyText AND strlen($this->hledanyText)>2)
             {
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);   
                 $filtr = Data_Seznam_SISCO::NAZEV . " LIKE '%".$this->hledanyText."%'";
                 $vyhledanaIsco = Data_Seznam_SISCO::vypisVse($filtr,  $this->parametry["razeniPodle"], $this->parametry["razeni"]);            
                 if ($vyhledanaIsco)
@@ -66,7 +61,8 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
                             );
                         } else {
                             $jednoisco->tlacitka = array();
-                        }   
+                        }
+                        $this->pouzijHlavicku($jednoisco, $hlavickaTabulky);                        
                     }
                     $this->novaPromenna("seznam", $vyhledanaIsco);
                 } else {
@@ -98,5 +94,16 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
 
             return $form;
         }
-        
+
+        private function generujHlavickuTabulky() 
+        {
+                /* Hlavicka tabulky */
+		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
+		$hlavickaTabulky->pridejSloupec("id", "ID", Data_Seznam_SISCO::ID);
+		$hlavickaTabulky->pridejSloupec("kod", "kód", Data_Seznam_SISCO::KOD);
+                $hlavickaTabulky->pridejSloupec("nazev", "Název", Data_Seznam_SISCO::NAZEV);                
+                
+                return $hlavickaTabulky;
+        }        
+                
 }

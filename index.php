@@ -92,7 +92,7 @@ if (isset($cookieJeDebug) AND $cookieJeDebug) {
 }
 $d = App_Kontext::getDebug();
 echo Generator::getContent(Stranka_Kontext::JMENO, Stranka_Kontext::MAIN, array("debugpovolen" => App_Kontext::getDebug(), "nadpis" => "Výběr projektu, kanceláře a běhu", "zprava" => $zprava));
-echo Generator::getContent(Stranka_Index::JMENO, Stranka_Index::MAIN, array("username" => $user->username, "name" => $user->name, "nadpis" => "Projektor", "zprava" => $zprava));
+echo Generator::getContent(Stranka_Index::JMENO, Stranka_Index::MAIN, array("debugpovolen" => App_Kontext::getDebug(), "username" => $user->username, "name" => $user->name, "nadpis" => "Projektor", "zprava" => $zprava));
 $html2 = print_r('
     </body>
     </html>

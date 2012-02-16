@@ -176,9 +176,9 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $ucastnik->id)))
                         );
 
-                        $ucastnik->odeberVsechnyVlastnosti();
+                        $ucastnik->odeberVsechnyVlastnostiIterator();
                         foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $ucastnik->pridejVlastnost($sloupec->nazevVlastnosti);
+                            $ucastnik->pridejVlastnostIterator($sloupec->nazevVlastnosti);
                         }
                         $this->novaPromenna("polozka", $ucastnik);
                     }
@@ -201,9 +201,9 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 //                            new Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id)), "tlacitko")
                             new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $ucastnik->id)))
                         );
-                        $ucastnik->odeberVsechnyVlastnosti();
+                        $ucastnik->odeberVsechnyVlastnostiIterator();
                         foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $ucastnik->pridejVlastnost($sloupec->nazevVlastnosti);
+                            $ucastnik->pridejVlastnostIterator($sloupec->nazevVlastnosti);
                         }
                     }
                     $this->novaPromenna("seznam", $ucastnici);

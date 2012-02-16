@@ -312,7 +312,7 @@ class Data_Akce extends Data_Iterator
 	 * @return array() Pole instanci Akce
 	 */
 
-	public static function vsechnyUcastnika($ucastnik)
+	public static function vsechnyAkceUcastnika($ucastnik)
 	{
 		$dbh = App_Kontext::getDbMySQLProjektor();
 		$query = "SELECT ~1 FROM ~2 WHERE ~3=:4";

@@ -2,7 +2,7 @@
 class Data_Vzb_UcastnikAkceDen
 {
 	const TABULKA = "vzb_ucastnik_akce_den";
-	const ID = "id_vyb_ucastnik_akce_den";
+	const ID = "id_vzb_ucastnik_akce_den";
 	const ID_AKCE_DEN_FK = "id_akce_den_FK";
 	const ID_UCASTNIK_FK = "id_ucastnik_FK";
 	const ID_S_STAV_UCASTNIK_AKCE_DEN_FK = "id_s_stav_ucastnik_akce_den_FK";

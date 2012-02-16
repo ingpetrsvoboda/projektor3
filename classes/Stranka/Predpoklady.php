@@ -134,8 +134,8 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
                 $predpoklad->sTypAkceFK = Data_Seznam_STypAkce::najdiPodleId($predpoklad->idSTypAkceFK)->nazev;
                 $predpoklad->sTypAkcePredFK = Data_Seznam_STypAkce::najdiPodleId($predpoklad->idSTypAkcePredFK)->nazev;
                 $predpoklad->sStavUcastnikAkcePredFK = Data_Seznam_SStavUcastnikAkce::najdiPodleId($predpoklad->idSStavUcastnikAkcePredFK)->text;
-                $predpoklad->odeberVlastnost("idSTypAkceFK")->odeberVlastnost("idSTypAkcePredFK")->odeberVlastnost("idSStavUcastnikAkcePredFK");
-                $predpoklad->pridejVlastnost("sTypAkceFK")->pridejVlastnost("sTypAkcePredFK")->pridejVlastnost("sStavUcastnikAkcePredFK");
+                $predpoklad->odeberVlastnostIterator("idSTypAkceFK")->odeberVlastnostIterator("idSTypAkcePredFK")->odeberVlastnostIterator("idSStavUcastnikAkcePredFK");
+                $predpoklad->pridejVlastnostIterator("sTypAkceFK")->pridejVlastnostIterator("sTypAkcePredFK")->pridejVlastnostIterator("sStavUcastnikAkcePredFK");
             }
             
            return $data;

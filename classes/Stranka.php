@@ -6,7 +6,9 @@
  */
 abstract class Stranka
 {
-	/**
+        const SEPARATOR = "_X_";    //separuje název objektuVlastnosti a vlastnosti v objektu HlavickaTabulky (např. pro vlastnost smlouva->jmeno je v hlaviččce smlouva.self::SEPARATOR.jmeno
+
+        /**
 	 * Nastaveni slozky kde prebyvaji vsechny sablony.
 	 */
 	const SLOZKA_SABLON = "templates/";
@@ -269,5 +271,40 @@ abstract class Stranka
 // zakomentuj následující řádek pro jiný renderer než default
         return $form;
         }
+
         
+    protected function pouzijHlavicku($dataObjekt, $hlavickaTabulky) 
+        {        
+            $dataObjekt->odeberVsechnyVlastnostiIterator();
+            foreach ($hlavickaTabulky->sloupce as $sloupec) {
+                $nazevVlastnostiVHlavicce = $sloupec->nazevVlastnosti;                
+
+ // musel bys přidat do hlavičky tabulky ještě prikazGenerujiciReferencovanyObjekt metodou najdiPodleId
+                    if ($sloupec->prikazGenerujiciReferencovanyObjekt AND $sloupec->nazevVlastnostiReferencovanehoObjektu)
+                    {
+                        //vytvoří se nová vlastnost data objektu s názvem složeným z názvu původní vlastnosti (s FK) a textu "_referencovanaHodnota"
+                        //vloží se do ní referencovanaHodnota a tato nová vlastnost se přidá do iterátoru
+                        $cmd = "\$referencovanyObjekt = ".str_replace("%ID%", $dataObjekt->$nazevVlastnostiVHlavicce, $sloupec->prikazGenerujiciReferencovanyObjekt).";";
+                        eval($cmd);
+                        $vlastnost = $sloupec->nazevVlastnostiReferencovanehoObjektu;
+                        $novaVlastnostDataObjektu = $nazevVlastnostiVHlavicce."_referencovanaHodnota";
+                        $dataObjekt->$novaVlastnostDataObjektu = $referencovanyObjekt->$vlastnost;
+                        $dataObjekt->pridejVlastnostIterator($novaVlastnostDataObjektu);                        
+                    } else {                
+                        if ($dataObjekt->$nazevVlastnostiVHlavicce == FALSE)
+                        {
+                            $ss = explode(self::SEPARATOR, $nazevVlastnostiVHlavicce);
+                            $dd = $dataObjekt;
+                            foreach ($ss as $value) 
+                            {
+                                $dd = $dd->$value;
+                            } 
+                            $dataObjekt->$nazevVlastnostiVHlavicce = $dd;
+                        } 
+                        $dataObjekt->pridejVlastnostIterator($nazevVlastnostiVHlavicce);                        
+                    }    
+                        
+            }        
+        }
+
 }

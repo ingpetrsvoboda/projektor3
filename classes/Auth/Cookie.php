@@ -33,7 +33,7 @@ class Auth_Cookie {
                $this->_unpack($_COOKIE[self::$cookiename]);
             }
             else {
-                throw new Auth_Exception ("No Cookie");
+                throw new Auth_Exception ("Není cookie");
             }
         }
     }
@@ -47,13 +47,13 @@ class Auth_Cookie {
     
     public function validate() {
         if(!$this->version || !$this->created || !$this->userid) {
-            throw new Auth_Exception("Malformed cookie");
+            throw new Auth_Exception("Poškozená cookie");
         }
         if($this->version != self::$myversion) {
-            throw new Auth_Eception("Version mismatch");
+            throw new Auth_Eception("Version cookie neodpovídá");
         }
         if (time() - $this->created > self::$expiration) {
-            throw new Auth_Exception("Cookie expired");
+            throw new Auth_Exception("Vypršl čas platnosti cookie");
         }
         else if (time() - $this->created > self::$warning) {
             $this->set();

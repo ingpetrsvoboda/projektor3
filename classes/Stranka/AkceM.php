@@ -53,6 +53,7 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 	{
 		$this->generujPolozkuSTlacitky("id_akce");
 	}
+
         /*
         *  ~~~~~~~~AKCE ÚČASTNÍKA~~~~~~~~~~
         */
@@ -80,7 +81,7 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 	protected function akceUcastnika°potomekNeni()
 	{
                 $ucastnik = Data_Ucastnik::najdiPodleId($this->parametry["id"]);
-                $akcem = Data_Akce::vsechnyUcastnika($ucastnik);
+                $akcem = Data_Akce::vsechnyAkceUcastnika($ucastnik);
                 $this->generujSeznamSTlacitky($akcem);               
         }
 
@@ -95,6 +96,48 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 		$this->generujPolozkuSTlacitky("id_akce");
         }
         
+        /*
+        *  ~~~~~~~~AKCE ZÁJEMCE~~~~~~~~~~
+        */
+	public function akceZajemce($parametry = null)
+	{ 
+            /* Vygenerovani filtrovaciho formulare */
+            $hlavickaTabulky = $this->generujHlavickuTabulky();
+            $filtrovaciFormular = $this->filtrovani("akcemAkceUcastnika", $hlavickaTabulky);
+            $formularHTML = $filtrovaciFormular->toHtml();
+            return $this->vytvorStranku("akceZajemce", self::SABLONA_MAIN, $parametry, "", $formularHTML);  
+	}
+
+	protected function akceZajemce°vzdy()
+	{
+                $this->novaPromenna("id", $this->nazev);                            
+                /* Ovladaci tlacitka stranky */
+		$tlacitka = array
+		(
+                    new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
+		);
+                $this->novaPromenna("tlacitka", $tlacitka);
+                /* Nadpis stranky */
+                $this->novaPromenna("nadpis", "Akce zájemce");         }
+	
+	protected function akceZajemce°potomekNeni()
+	{
+                $zajemce = Data_Zajemce::najdiPodleId($this->parametry["id"]);
+                $akcem = Data_Akce::vsechnyAkceUcastnika($zajemce);
+                $this->generujSeznamSTlacitky($akcem);               
+        }
+
+        protected function akceZajemce°potomek°Stranka_Ucastnici°prihlaseni() 
+        {
+		$this->generujPolozkuSTlacitky("id_akce");
+        }
+
+
+        protected function akceZajemce°potomek°Stranka_Ucastnici°prihlasovaci() 
+        {
+		$this->generujPolozkuSTlacitky("id_akce");
+        }
+                
         /**
         *  ~~~~~~~~PRIHLASOVACI~~~~~~~~~~
         */
@@ -157,9 +200,9 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                         new Stranka_Element_Tlacitko("Přihlásit účastníka", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlasovaci", array("id_akce" => $akcej->id))),
                         new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlaseni", array("id_akce" => $akcej->id)))
                     );
-                    $akcej->odeberVsechnyVlastnosti();
+                    $akcej->odeberVsechnyVlastnostiIterator();
                     foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                        $akcej->pridejVlastnost($sloupec->nazevVlastnosti);
+                        $akcej->pridejVlastnostIterator($sloupec->nazevVlastnosti);
                     }
                     $this->novaPromenna("polozka", $akcej);
                 }
@@ -183,9 +226,9 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Přihlásit účastníka", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlasovaci", array("id_akce" => $akcej->id))),
                             new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlaseni", array("id_akce" => $akcej->id)))
                         );
-                        $akcej->odeberVsechnyVlastnosti();
+                        $akcej->odeberVsechnyVlastnostiIterator();
                         foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $akcej->pridejVlastnost($sloupec->nazevVlastnosti);
+                            $akcej->pridejVlastnostIterator($sloupec->nazevVlastnosti);
                         }
                     }
                     $this->novaPromenna("seznam", $akcem);

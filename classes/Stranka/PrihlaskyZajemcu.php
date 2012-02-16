@@ -1,9 +1,9 @@
 <?php
-class Stranka_StafferPoziceM extends Stranka_FlatTableM
+class Stranka_PrihlaskyZajemcu extends Stranka_FlatTableM
 {
-	const NAZEV_FLAT_TABLE = "staffer_pozice";
-        const NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE = "StafferPoziceJ";
-        const NAZEV_DATOVEHO_OBJEKTU_MNOZNE = "StafferPoziceM";
+	const NAZEV_FLAT_TABLE = "prihlasky_zajemce";
+        const NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE = "PrihlaskaZajemce";
+        const NAZEV_DATOVEHO_OBJEKTU_MNOZNE = "PrihlaskyZajemce";
 	
         public static function priprav($cesta)
 	{
@@ -25,20 +25,25 @@ class Stranka_StafferPoziceM extends Stranka_FlatTableM
 //            $formularHTML = $filtrovaciFormular->toHtml();
             return parent::main($parametry, "", $this->filtrovani(self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE, $hlavickaTabulky)->toHtml());
 	}
-        
-        public function main°potomek°Stranka_StafferPoziceJ°detail()
+                
+	protected function main°potomek°Stranka_PrihlaskaZajemce°detail()
         {
             parent::main°potomek°Stranka_FlatTableJ°detail();
-        }
+        }        
 
         protected function generujHlavickuTabulky() 
         {
                 /* Hlavicka tabulky */
 		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
                 $hlavickaTabulky->pridejSloupec("id", "ID", "id");
-                $hlavickaTabulky->pridejSloupec("nazev", "Název", "nazev");
-                $hlavickaTabulky->pridejSloupec("pozice_s_odmenou", "Pozice s odměnou", "pozice_s_odmenou");                
-                $hlavickaTabulky->pridejSloupec("aktiv", "Aktivní pozice", "aktiv");
+                $hlavickaTabulky->pridejSloupec("jmeno", "Jméno", "jmeno");
+                $hlavickaTabulky->pridejSloupec("prijmeni", "Příjmení", "prijmeni");
+                $hlavickaTabulky->pridejSloupec("titul", "Titul", "titul");
+                $hlavickaTabulky->pridejSloupec("obec", "Obec", "obec");
+                $hlavickaTabulky->pridejSloupec("sdeleni", "Sdělení", "sdeleni");                
+                $hlavickaTabulky->pridejSloupec("id_c_region_FK", "idCRegion", 
+                            "id_c_region_FK", "Data_Ciselnik::vypisVse('region', '', '', '', '', TRUE, TRUE, 'PersonalService')",
+                            "Data_Ciselnik::najdiPodleId('region', %ID%, TRUE, TRUE, 'PersonalService')","text");
                 return $hlavickaTabulky;
                 
         }

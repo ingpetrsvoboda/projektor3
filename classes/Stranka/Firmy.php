@@ -2,12 +2,12 @@
 class Stranka_Firmy extends Stranka_FlatTableM
 {
 	const NAZEV_FLAT_TABLE = "s_firma";
-        const NAZEV_JENOTNE = "Firma";
-        const NAZEV_MNOZNE = "Firmy";
+        const NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE = "Firma";
+        const NAZEV_DATOVEHO_OBJEKTU_MNOZNE = "Firmy";
 	
         public static function priprav($cesta)
 	{
-            return new self($cesta, __CLASS__, self::NAZEV_FLAT_TABLE, self::NAZEV_JENOTNE, self::NAZEV_MNOZNE);
+            return new self($cesta, __CLASS__, self::NAZEV_FLAT_TABLE, self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE, self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE);
 	}
 
         /*
@@ -18,7 +18,7 @@ class Stranka_Firmy extends Stranka_FlatTableM
             
             /* Vygenerovani filtrovaciho formulare */
             $hlavickaTabulky = $this->generujHlavickuTabulky();
-            $filtrovaciFormular = $this->filtrovani(self::NAZEV_MNOZNE, $hlavickaTabulky);
+            $filtrovaciFormular = $this->filtrovani(self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE, $hlavickaTabulky);
             $formularHTML = $filtrovaciFormular->toHtml();
             return parent::main($parametry, "", $formularHTML);
 	}

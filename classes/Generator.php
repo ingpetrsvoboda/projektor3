@@ -32,6 +32,7 @@ abstract class Generator
 // 				echo "</xmp><br>";
 
             $content = "";
+            if(App_Kontext::getDebug()) $content .= Generator::debuguj($obsah);
             $tpl = new PHPTAL();
             $tpl->setSource($obsah->html);
             if($obsah->promenne) foreach($obsah->promenne as $klic => $hodnota) $tpl->$klic = $hodnota;
@@ -51,13 +52,12 @@ abstract class Generator
                     return $content;
             }
 
-            if(App_Kontext::getDebug()) $content .= Generator::debuguj($obsah);
             return $content;
     }
 
     protected static function debuguj($obsah)
     {
-            $content .= "<h1>Debugovaci vypis</h1>\n";
+            $content = "<h1>Debugovaci vypis</h1>\n";
             $content .= "<h2>Logger:</h2>";
             $content .= "<pre>";
             $content .= App_Logger::getLogText();

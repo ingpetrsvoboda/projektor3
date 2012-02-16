@@ -35,19 +35,13 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
                     
 		);
                 $this->novaPromenna("tlacitka", $tlacitka);
-
-                /* Hlavicka tabulky */
-		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
-		$hlavickaTabulky->pridejSloupec("ID", Data_Seznam_SISCO::ID);
-		$hlavickaTabulky->pridejSloupec("kód", Data_Seznam_SISCO::KOD);
-                $hlavickaTabulky->pridejSloupec("Název", Data_Seznam_SISCO::NAZEV);
-
-		$this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);
 	}
 
 	protected function main°potomekNeni()
 	{
-		$seznamisco = Data_Seznam_SISCO::vypisVse("LENGTH(".Data_Seznam_SISCO::KOD.")=1", $this->parametry["razeniPodle"], $this->parametry["razeni"]);
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);   
+                $seznamisco = Data_Seznam_SISCO::vypisVse("LENGTH(".Data_Seznam_SISCO::KOD.")=1", $this->parametry["razeniPodle"], $this->parametry["razeni"]);
 		foreach($seznamisco as $jednoisco)
 		{
 			$jednoisco->odkaz = $this->cestaSem->generujUriDalsi("Stranka_ISCOM.ISCO2", array("id" => $jednoisco->id, "prefixKodu" => substr($jednoisco->kod, 0, 1)));
@@ -55,6 +49,7 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
 			(
 				new Stranka_Element_Tlacitko("Úroveň 2", $jednoisco->odkaz),
 			);
+                        $this->pouzijHlavicku($jednoisco, $hlavickaTabulky);
                 }
 
                 $this->novaPromenna("seznam", $seznamisco);
@@ -156,6 +151,8 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
         
 	protected function ISCO5°potomekNeni()
 	{            
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);   
                 $pref = $this->parametry["prefixKodu"];
 		$seznamisco = Data_Seznam_SISCO::vypisVse("LENGTH(`".Data_Seznam_SISCO::KOD."`)=5 AND LEFT(`".Data_Seznam_SISCO::KOD."`, 4)='".$pref."'", $this->parametry["razeniPodle"], $this->parametry["razeni"]);
 		if ($seznamisco)
@@ -167,7 +164,8 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
                         (
                             new Stranka_Element_Tlacitko("Detail", $jednoisco->odkaz),
                         );
-                    }
+                        $this->pouzijHlavicku($jednoisco, $hlavickaTabulky);
+                        }
                     $this->novaPromenna("seznam", $seznamisco);
                 } else {
                     $this->novaPromenna("zprava", "Nic nenalezeno!");
@@ -185,19 +183,24 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
         
 	private function generujPolozkuSTlacitky($nazevID)
 	{
-		if($this->dalsi->parametry[$nazevID])
-		{
-			$seznamisco[] = Data_Seznam_SISCO::najdiPodleId($this->dalsi->parametry[$nazevID]);
-			$seznamisco[0]->tlacitka = array
-			(
-				new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_ISCOJ.detail", array("id" => $seznamisco[0]->id, "zmraz" => 1))),
-			);
-			$this->novaPromenna("seznam", $seznamisco);
-		}
+            if($this->dalsi->parametry[$nazevID])
+            {
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);   
+                $seznamisco[] = Data_Seznam_SISCO::najdiPodleId($this->dalsi->parametry[$nazevID]);
+                $seznamisco[0]->tlacitka = array
+                (
+                        new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_ISCOJ.detail", array("id" => $seznamisco[0]->id, "zmraz" => 1))),
+                );
+                $this->pouzijHlavicku($seznamisco[0], $hlavickaTabulky);
+                $this->novaPromenna("seznam", $seznamisco);
+            }
         }
 	
 	private function generujSeznamSTlacitky()
         {
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);   
                 $prefix = $this->parametry["prefixKodu"];
                 // vyhledává všechny kódy začínající na prefix a mající kód o jeden znak delší než prefix
                 $delkaPrefixu = strlen($prefix);
@@ -214,11 +217,24 @@ class Stranka_ISCOM extends Stranka implements Stranka_Interface
                         (
                             new Stranka_Element_Tlacitko("Úroveň ".($delkaKodu+1), $jednoisco->odkaz),
                         );
+                        $this->pouzijHlavicku($jednoisco, $hlavickaTabulky);
                     }
                     $this->novaPromenna("seznam", $seznamisco);
                 } else {
                     $this->novaPromenna("zprava", "Nic nenalezeno!");
                 }                 
         }
+        
+
+        private function generujHlavickuTabulky() 
+        {
+                /* Hlavicka tabulky */
+		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
+		$hlavickaTabulky->pridejSloupec("id", "ID", Data_Seznam_SISCO::ID);
+		$hlavickaTabulky->pridejSloupec("kod", "kód", Data_Seznam_SISCO::KOD);
+                $hlavickaTabulky->pridejSloupec("nazev", "Název", Data_Seznam_SISCO::NAZEV);                
+                
+                return $hlavickaTabulky;
+        }        
         
 }

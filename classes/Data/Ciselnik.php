@@ -6,7 +6,8 @@
 class Data_Ciselnik extends Data_Iterator
 {
 
-	public $nazev;
+	public $dbh;
+        public $nazev;
 	public $nazevId;
 	public $id;
 	public $razeni;
@@ -14,6 +15,9 @@ class Data_Ciselnik extends Data_Iterator
 	public $text;
 	public $plny_text;
 	public $valid;
+        
+        private $vsechnyRadky;
+
 
 	const PREFIX_NAZEV_ID = "id_";	//správný nazev sloupce s id je PREFIX_NAZEV_ID a nazev ciselniku
 	const PREFIX_NAZEV_C = "c_";	//počáteční písmena nazvu tabulek typu ciselnik v DB
@@ -30,9 +34,10 @@ class Data_Ciselnik extends Data_Iterator
 	 * @param unknown_type $nazevCiselniku
 	 * @return unknown_type
 	 */
-	public function __construct($nazevCiselniku, $razeni, $kod, $text, $plny_text, $valid, $id=NULL)
+	public function __construct($nazevCiselniku, $dbh, $razeni, $kod, $text, $plny_text, $valid, $vsechnyRadky, $id=NULL)
 	{
-		$this->nazev = $nazevCiselniku;
+                $this->nazev = $nazevCiselniku;
+		$this->dbh;
 		$this->nazevTabulkyCiselniku = self::PREFIX_NAZEV_C.$nazevCiselniku;
 		$this->nazevId = self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku;
                 $this->id = $id;
@@ -41,6 +46,8 @@ class Data_Ciselnik extends Data_Iterator
 		$this->text = $text;
 		$this->plny_text = $plny_text;
 		$this->valid = $valid;
+                $this->vsechnyRadky = $vsechnyRadky;
+
 
                 parent::__construct(__CLASS__);
 
@@ -49,13 +56,19 @@ class Data_Ciselnik extends Data_Iterator
 	/**
 	 * Najde a vrátí jeden řádek tabulky v DB se zadaným ID,
 	 * vrací jen řádky kde hodnota valid = 1.
-	 * @param int $id
-	 * @return boolean|Ciselnik
-	 */
-	public static function najdiPodleId($nazevCiselniku, $id, $vsechnyRadky = FALSE)
+         * @param type $nazevCiselniku
+         * @param int $id
+         * @param boolean $vsechnyRadky
+         * @param boolean $bezKontroly hodnota TRUE vypne kontrolu struktury tabulky číselníku, metoda vrací objekt obsahující pouze defaultní sloupce číselníku
+         * @param $databaze identifikátor databáze (viz App_Kontext::getDbh()
+         * @return object Data_Ciselnik 
+         */
+	public static function najdiPodleId($nazevCiselniku, $id, $vsechnyRadky = FALSE, $bezKontroly = FALSE, $databaze=NULL)
 	{
 //TODO: testování, zda je ciselnikOK trvá asi 5ms - chtělo by to ?? hlídat poslední změnu tabulky ?? možnost vypnout kontrolu pro produkční verzi ?? něco
-            try
+            if (!$bezKontroly)
+            {
+                try
 		{
 			self::jeCiselnikOK($nazevCiselniku);
 		}
@@ -65,7 +78,15 @@ class Data_Ciselnik extends Data_Iterator
 			//        echo "Caught TestException ('{$e->getMessage()}')\n{$e}\n";
 			echo $e."<BR>";
 		}
-		$dbh = App_Kontext::getDbMySQLProjektor();
+            }
+		if ($databaze)
+                {
+                    $dbh = App_Kontext::getDbh($databaze);
+                } 
+                else 
+                {
+                    $dbh = App_Kontext::getDbMySQLProjektor();
+                }
 		$query = "SELECT * FROM ~1 WHERE ~2 LIKE :3" . ($vsechnyRadky ? "" : " AND valid = 1");
 		$radek = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku,
                                                         self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku,
@@ -74,23 +95,27 @@ class Data_Ciselnik extends Data_Iterator
 		if(!$radek)
 		return false;
 
-		return new Data_Ciselnik($nazevCiselniku, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
-		$radek[self::VALID], $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
+		return new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
+		$radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
 	}
 
 	/**
 	 * Vrátí pole objektů obsahujících řádky číselníku,
 	 * vrací jen řádky odpovídající kontext filtru a případně zadanému filtru.
-	 * @param $nazevCiselniku
-	 * @param $filtr řetězec, který bude dosazen do klauzule WHERE
-         * @param type $nazevIdProjekt Zde je možno zadat název sloupce v číselníku obsahujícího jako cizí klíč id tabulky c_projekt pro vytvoření kontext filtru
-         * @param type $nazevIdKancelar Zde je možno zadat název sloupce v číselníku obsahujícího jako cizí klíč id tabulky c_kancelar pro vytvoření kontext filtru
-         * @param type $nazevIdBeh Zde je možno zadat název sloupce v číselníku obsahujícího jako cizí klíč id tabulky s_beh_projektu pro vytvoření kontext filtru
+	 * @param string $nazevCiselniku
+	 * @param string $filtr řetězec, který bude dosazen do klauzule WHERE
+         * @param string $nazevIdProjekt Zde je možno zadat název sloupce v číselníku obsahujícího jako cizí klíč id tabulky c_projekt pro vytvoření kontext filtru
+         * @param string $nazevIdKancelar Zde je možno zadat název sloupce v číselníku obsahujícího jako cizí klíč id tabulky c_kancelar pro vytvoření kontext filtru
+         * @param string $nazevIdBeh Zde je možno zadat název sloupce v číselníku obsahujícího jako cizí klíč id tabulky s_beh_projektu pro vytvoření kontext filtru
+         * @param boolean $bezKontroly hodnota TRUE vypne kontrolu struktury tabulky číselníku, metoda vrací objekt obsahující pouze defaultní sloupce číselníku
+         * @param $databaze identifikátor databáze (viz App_Kontext::getDbh()
          * @return array() Pole instanci tridy odpovidajici radkum v číselníku v DB
 	 */
-        public static function vypisVse($nazevCiselniku,$filtr = "", $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL)
+        public static function vypisVse($nazevCiselniku, $filtr = "", $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $vsechnyRadky = FALSE, $bezKontroly = FALSE, $databaze=NULL)
 	{
-		try
+            if (!$bezKontroly)
+            {
+                try
 		{
 			self::jeCiselnikOK($nazevCiselniku);
 		}
@@ -98,15 +123,24 @@ class Data_Ciselnik extends Data_Iterator
 		{
 			echo $e.'<BR>';
 		}
-		$dbh = App_Kontext::getDbMySQLProjektor();
+            }
+		if ($databaze)
+                {
+                    $dbh = App_Kontext::getDbh($databaze);
+                } 
+                else 
+                {
+                    $dbh = App_Kontext::getDbMySQLProjektor();
+                }
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr);
-                $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "")." ORDER BY razeni ASC";
-//                $query = "SELECT * FROM ~1 WHERE ".($filtr == "" ? "valid = 1" : "(valid = 1 AND {$filtr})")." ORDER BY razeni ASC";
+//                $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "")." ORDER BY razeni ASC";
+                $query = "SELECT * FROM ~1".
+                    ($kontextFiltr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$kontextFiltr} " : "WHERE valid = 1 AND {$kontextFiltr}"));                  
 		$radky = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetchall_assoc();
 
 		foreach($radky as $radek)
-		$vypis[] = new Data_Ciselnik($nazevCiselniku, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
-		$radek[self::VALID], $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
+		$vypis[] = new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
+		$radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
                     
                 //$vypis[] =     self::najdiPodleId($nazevCiselniku, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
 		 

@@ -1,0 +1,1 @@
+Text to send if user hits Cancel button

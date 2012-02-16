@@ -53,60 +53,35 @@ class Stranka_Index extends Stranka implements Stranka_Interface
                     new Stranka_Element_Tlacitko("ISCO", $this->cestaSem->generujUriDalsi("Stranka_ISCOM.main")),
                     new Stranka_Element_Tlacitko("Prezentace", $this->cestaSem->generujUriDalsi("Stranka_PrezentaceM.main")),
                     new Stranka_Element_Tlacitko("Firmy", $this->cestaSem->generujUriDalsi("Stranka_Firmy.main")),
-                    new Stranka_Element_Tlacitko("Staffer pozice", $this->cestaSem->generujUriDalsi("Stranka_StafferPoziceM.main"))
+                    new Stranka_Element_Tlacitko("Staffer pozice", $this->cestaSem->generujUriDalsi("Stranka_StafferPoziceM.main")),
+                    new Stranka_Element_Tlacitko("Přihlášky zájemců", $this->cestaSem->generujUriDalsi("Stranka_PrihlaskyZajemcu.main"))                    
                 );
             };            
             $this->novaPromenna("tlacitka", $tlacitka);
 	}
 
-	protected function main°potomekNeni()
-	{
-
-	}
+	protected function main°potomekNeni(){}
         
-        protected function main°potomek°Stranka_AkceM°main()
-	{
+        protected function main°potomek°Stranka_AkceM°main(){}
 
-	}
+	protected function main°potomek°Stranka_Ucastnici°main(){}
 
-	protected function main°potomek°Stranka_Ucastnici°main()
-	{
-
-	}
-
-	protected function main°potomek°Stranka_Zajemci°main()
-	{
-
-	}
+	protected function main°potomek°Stranka_Zajemci°main(){}
         
-        protected function main°potomek°Stranka_TypyAkce°main()
-	{
+        protected function main°potomek°Stranka_TypyAkce°main(){}
 
-	}
+	protected function main°potomek°Stranka_Predpoklady°main(){}
 
-	protected function main°potomek°Stranka_Predpoklady°main()
-	{
+	protected function main°potomek°Stranka_ISCOM°main(){}
 
-	}
+	protected function main°potomek°Stranka_PrezentaceM°main(){}
 
-	protected function main°potomek°Stranka_ISCOM°main()
-	{
+	protected function main°potomek°Stranka_Firmy°main(){}        
 
-	}
+	protected function main°potomek°Stranka_StafferPoziceM°main(){}  
 
-	protected function main°potomek°Stranka_PrezentaceM°main()
-	{
+	protected function main°potomek°Stranka_PrihlaskyZajemcu°main(){} 
 
-	}
-
-	protected function main°potomek°Stranka_Firmy°main()
-	{
-
-	}        
-
-	protected function main°potomek°Stranka_StafferPoziceM°main()
-	{
-
-	}  
-    }
+	protected function main°potomek°Stranka_PrihlaskaZajemce°detail(){}        
+}
         

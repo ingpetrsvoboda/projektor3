@@ -69,8 +69,8 @@ abstract class Data_HlavniObjekt extends Data_Iterator
             {
                 // požadovaná "lazy load" vlastnost (objekt) není v poli mapování objektů na tabulky
                 // v poli $_mapovaniObjektTabulka neexistuje db tabulka přiřazená k zadané vlastnosti
-                // - metoda vytvoří novou neobjektovou vlastnost (prázdnou) pomocí metody Iteratoru pridejVlastnost
-                return $this->pridejVlastnost($vlastnost);
+                // - metoda vrací FASLE
+                return FALSE;
             }
             else
             {
@@ -146,30 +146,27 @@ abstract class Data_HlavniObjekt extends Data_Iterator
             if (!$tabulka)
             {
                 throw new Data_Exception("Nebyla zadana tabulka pro uložení objektu - objekt neni mozno ulozit.");
-                $objektLzeUlozit = false;
             }
-            if (!($this->Projekt == $kontext->projekt))
+            if ($kontext->projekt AND !($this->Projekt == $kontext->projekt))
             {
-                throw new Data_Exception("Vlastnost Projekt objektu".__CLASS__." neodpovida kontextu: projekt ".$kontext->projekt->kod." - objekt neni mozno ulozit.");
-                $objektLzeUlozit = false;
+                throw new Data_Exception("Vlastnost Projekt objektu".__CLASS__." neodpovida kontextu: projekt ".$kontext->projekt->text." - objekt neni mozno ulozit.");
             }
-            if (!($this->Beh == $kontext->beh))
+            if ($kontext->beh AND !($this->Beh == $kontext->beh))
             {
-                echo ("Vlastnost Beh objektu".__CLASS__." neodpovida kontextu: beh ".$kontext->beh->text." - objekt neni mozno ulozit.<BR>");
-                $objektLzeUlozit = false;
+                throw new Data_Exception("Vlastnost Beh objektu".__CLASS__." neodpovida kontextu: beh ".$kontext->beh->text." - objekt neni mozno ulozit.<BR>");
             }
-            if (!($this->Kancelar == $kontext->kancelar))
+            if ($kontext->kancelar AND !($this->Kancelar == $kontext->kancelar))
             {
-                echo ("Vlastnost Beh objektu".__CLASS__." neodpovida kontextu: beh ".$kontext->beh->kod." - objekt neni mozno ulozit.<BR>");
-                $objektLzeUlozit = false;
+                throw new Data_Exception("Vlastnost Kancelar objektu".__CLASS__." neodpovida kontextu: kancelar ".$kontext->kancelar->text." - objekt neni mozno ulozit.<BR>");
             }
         } catch (Data_Exception $e) {
+            $objektLzeUlozit = false;
             echo "Zachycena výjimka Data_Exception ('{$e}')\n";
         }
         if($this->id == null)
-        { // nový účastník
+        { // nový hlavní objekt
             $noveCisloObjektu = Data_NoveCisloObjektu::dejNoveCislo($this);
-            // generování identifikátoru účastníka
+            // generování identifikátoru hlavního objektu
             $identifikator = Data_Identifikator::generuj(self::PRVNI_CISLICE_IDENTIFIKATORU, $this->Kancelar->id, $this->Projekt->id, $this->Beh->behCislo, $noveCisloObjektu);
             if (!$identifikator)
             {

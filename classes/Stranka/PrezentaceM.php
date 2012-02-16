@@ -51,38 +51,6 @@ class Stranka_PrezentaceM extends Stranka implements Stranka_Interface
 		$this->generujPolozkuSTlacitky("id");
 	}
 	
-//        protected function filtrovani()
-//        {
-//            $form = new HTML_QuickForm("prezentacem", "post", $this->cestaSem->generujUri());
-//
-//            $hlavickaTabulky = $this->generujHlavickuTabulky();
-//            foreach ($hlavickaTabulky->sloupce as $sloupec) {
-//                if ($sloupec->nazevSloupceDb)
-//                {
-//                    $form->addElement("text", $sloupec->nazevSloupceDb, $sloupec->popisek);
-//                }
-//            }            
-//
-//            $form->addElement("submit", "submitFiltrovat", "Filtrovat");
-//            $form->addElement("submit", "submitNefiltrovat", "Nefiltrovat");
-//
-//            $this->filtr = new Stranka_Element_Filtr();
-//            if($form->validate())
-//            {
-//		$data = $form->exportValues();
-//                if ($data["submitFiltrovat"]) {
-//                        unset($data["submitFiltrovat"]);
-//                        unset($data["submitNefiltrovat"]);
-//                        $this->filtr = Stranka_Element_Filtr::like($data);
-//                    } else {
-//                        unset($data["submitFiltrovat"]);
-//                        unset($data["submitNefiltrovat"]);
-//                        $this->filtr = Stranka_Element_Filtr::like();
-//                    }
-//            }
-//
-//            return $form;
-//        }
 //------ privátní funkce třídy ---------------------------------------------------------------------------------------------------------------        
 	private function generujPolozkuSTlacitky($nazevID)
 	{
@@ -99,19 +67,15 @@ class Stranka_PrezentaceM extends Stranka implements Stranka_Interface
 				new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_PrezentaceJ.detail", array("id" => $polozka->id, "zmraz" => 1))),
 				new Stranka_Element_Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_PrezentaceJ.detail", array("id" => $polozka->id))),
                     );
-                    $polozka->odeberVsechnyVlastnosti();
-                    foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                        $polozka->pridejVlastnost($sloupec->nazevVlastnosti);
-                    }
+                    $this->pouzijHlavicku($polozka, $hlavickaTabulky);
                     $this->novaPromenna("polozka", $polozka);
                 }
             }
 	}
   
-        private function generujSeznamSTlacitky($akcem)
+        private function generujSeznamSTlacitky($seznam)
         {
             Data_Seznam_SPrezentace::nactiNazvy(array("Ucastnik", "Zajemce"));
-            $seznam = Data_Seznam_SPrezentace::vypisVse($this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], TRUE);
             if ($seznam) {
                 $hlavickaTabulky = $this->generujHlavickuTabulky();
                 $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky); 
@@ -125,11 +89,7 @@ class Stranka_PrezentaceM extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Duplikuj", $this->cestaSem->generujUriDalsi("Stranka_PrezentaceJ.detail", array("id" => $polozka->id, "duplikuj" => 1))),
 
                     );
-                    $polozka->odeberVsechnyVlastnosti();
-                    foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                        $polozka->pridejVlastnost($sloupec->nazevVlastnosti);
-                    }                    
-                    
+                    $this->pouzijHlavicku($polozka, $hlavickaTabulky);
                 }
 
                 $this->novaPromenna("seznam", $seznam);

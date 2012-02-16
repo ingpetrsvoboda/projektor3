@@ -21,6 +21,7 @@ class Data_Ucastnik extends Data_HlavniObjekt
 {
     const HLAVNI_OBJEKT = "Ucastnik";
     const TABULKA = "ucastnik"; 
+//TODO: přejmenovat sloupec v db na id_ucastnik_FK a změnit konstantu    
     const ID = "id_ucastnik";
     const CISLO_OBJEKTU = "cislo_ucastnika";
     //tento prefix musi mit nazvy vsech db tabulek s vlastnostmi objektu

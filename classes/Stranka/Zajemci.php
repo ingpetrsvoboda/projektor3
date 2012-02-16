@@ -3,6 +3,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 {
 	const SABLONA_MAIN = "seznam.xhtml";
         const HLAVNI_OBJEKT = "Zajemce";
+        
 	
         public static function priprav($cesta)
 	{
@@ -44,15 +45,15 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 	protected function main°potomek°Stranka_Zajemce°detail()
 	{
                 $this->generujPolozkuSTlacitky();
-                $this->novaPromenna("tlacitka", $tlacitka);
+//                $this->novaPromenna("tlacitka", $tlacitka);
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Zájemce");
 	}
 
-        protected function main°potomek°Stranka_AkceM°akceUcastnika()
+        protected function main°potomek°Stranka_AkceM°akceZAjemce()
         {
                 $this->generujPolozkuSTlacitky();            
-                $this->novaPromenna("tlacitka", $tlacitka);
+//                $this->novaPromenna("tlacitka", $tlacitka);
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Zájemce");
         }
@@ -163,13 +164,11 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Uprav plán", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "plan", "textDoNadpisuStranky" => "plán"))),
                             new Stranka_Element_Tlacitko("Zaměstnání", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "zamestnani", "textDoNadpisuStranky" => "zaměstnání", "zmraz" => 1))),
                             new Stranka_Element_Tlacitko("Uprav zaměstnání", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "zamestnani", "textDoNadpisuStranky" => "zaměstnání"))),
-                            new Stranka_Element_Tlacitko("Akce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $zajemce->id)))
+                            new Stranka_Element_Tlacitko("Test", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "test", "textDoNadpisuStranky" => "test", "zmraz" => 1))),
+                            new Stranka_Element_Tlacitko("Uprav test", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "test", "textDoNadpisuStranky" => "test"))),
+                            new Stranka_Element_Tlacitko("Akce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceZajemce", array("id" => $zajemce->id)))
                         );
-
-                        $zajemce->odeberVsechnyVlastnosti();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $zajemce->pridejVlastnost($sloupec->nazevVlastnosti);
-                        }
+                        $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
                         $this->novaPromenna("polozka", $zajemce);
                     }
                 }
@@ -190,14 +189,9 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                         (
                                 new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "zmraz" => 1)), "tlacitko"),
 //                                new Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $ucastnik->id)), "tlacitko")
-                                new Stranka_Element_Tlacitko("Přihlaš", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.prihlaseni", array("id" => $zajemce->id)))
+                                new Stranka_Element_Tlacitko("Akce zájemce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceZajemce", array("id" => $zajemce->id)))
                         );
-                        $zajemce->odeberVsechnyVlastnosti();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $zajemce->pridejVlastnost($sloupec->nazevVlastnosti);
-                        }
-//                        $ucastnik->odeberVlastnost("cisloHlavnihoObjektu")->odeberVlastnost("idSBehProjektuFK")->odeberVlastnost("behCislo")->odeberVlastnost("idCProjektFK")->odeberVlastnost("idCKancelarFK")->odeberVlastnost("updated");
-//                        $ucastnik->odeberVlastnost('_mapovaniObjektTabulka')->odeberVlastnost('_jmenoId')->odeberVlastnost('_prefix');
+                        $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
                     }    
                     $this->novaPromenna("seznam", $zajemci);
                 } else {
@@ -214,6 +208,14 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                 $hlavickaTabulky->pridejSloupec("turnusText", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "text");
                 $hlavickaTabulky->pridejSloupec("kancelarText", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')","text");                
                 $hlavickaTabulky->pridejSloupec("celeJmeno", "Celé jméno");
+                $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."vzdelani1", "Vzdělání1");
+                $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo1", "KZAM 1");
+                $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo2", "KZAM 2");
+                $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo3", "KZAM 3");
+                $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo4", "KZAM 4");
+                $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo5", "KZAM 5");
+                $hlavickaTabulky->pridejSloupec("zamestnani_pozice1", "zaměstnání 1");
+                
                 
                 return $hlavickaTabulky;
         }

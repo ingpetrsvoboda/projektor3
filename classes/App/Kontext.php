@@ -7,12 +7,39 @@
 
 abstract class App_Kontext
 {
-	private static $DbMySQLProjektor;
+	private static $DbMySQLInformationSchema;
+        private static $DbMySQLProjektor;
 	private static $DbMySQLPersonalService;
-	private static $dbMSSQLProjektor;
+	private static $dbMSSQLCRM;
         private static $kontext;
         private static $jeDebug;
 
+	public static function getDbh($databaze)
+        {
+            switch($databaze){
+            case 'InformationSchema':
+                return self::getDbMySQLInformationSchema();
+                break;
+            case 'Projektor':
+                return self::getDbMySQLProjektor();
+                break;
+            case 'PersonalService':
+                return self::getDbMySQLPersonalService();
+                break;
+            case 'CRM':
+                return self::getDbMSSQLCRM();
+                break;
+            }
+        }
+
+
+        public static function getDbMySQLInformationSchema()
+	{
+		if(!self::$DbMySQLInformationSchema)
+		self::$DbMySQLInformationSchema = new DB_Mysql_InformationSchema();
+		return self::$DbMySQLInformationSchema;
+	}
+        
 	public static function getDbMySQLProjektor()
 	{
 		if(!self::$DbMySQLProjektor)
@@ -27,14 +54,14 @@ abstract class App_Kontext
 		return self::$DbMySQLPersonalService;
 	}
         
-	public static function getDbMSSQLProjektor()
+	public static function getDbMSSQLCRM()
 	{
-		if(!self::$dbMSSQLProjektor){
+		if(!self::$dbMSSQLCRM){
                     $a = 0;
-		self::$dbMSSQLProjektor = new DB_Mssql_Projektor();
+		self::$dbMSSQLCRM = new DB_Mssql_CRM();
                     
                 }
-		return self::$dbMSSQLProjektor;
+		return self::$dbMSSQLCRM;
 	}
         
         public static function setUserKontext(User_Kontext $userKontext = NULL)
@@ -53,7 +80,7 @@ abstract class App_Kontext
         public static function getKontextFiltrSQL($nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $filtr = NULL, $orderBy = NULL, $order = NULL)
         {
                 $kon = self::getUserKontext();
-                $kontextFiltr = " valid = 1 ".
+                $kontextFiltr = "1=1".
                     (($kon->projekt->id AND $nazevIdProjekt) ? " AND `{$nazevIdProjekt}` = {$kon->projekt->id}" : "").
                     (($kon->kancelar->id AND $nazevIdKancelar) ? " AND `{$nazevIdKancelar}` = {$kon->kancelar->id}" : "").
                     (($kon->beh->id AND $nazevIdBeh) ? " AND `{$nazevIdBeh}` = {$kon->beh->id}" : "");

@@ -51,32 +51,20 @@ class DB_Mysql_Statement implements DB_Statement {
             $query = str_replace(":$ph", "\"".mysql_escape_string($pv)."\"", $query); // parametr je hodnota - uzavre se do uvozovek (cislo uzavrene v uvozovkach je korektni sql
             $query = str_replace("~$ph", "`".mysql_escape_string($pv)."`", $query);  // parametr je identifikator - napriklad nazev tabulky nebo sloupce - uzavre se do apostrofů
 //        }
-//.$this->dbName."."
+
     }
-//    if(!$this->dbh) {
-//        $this->connect($this->dbObject);
-//        }    
-    mysql_select_db($this->dbName, $this->dbh);      
+
+    if(!mysql_select_db($this->dbName, $this->dbh)) {
+      throw new DB_Mysql_Exception;
+    }    
     
-//    if(!$this->dbh) {
-//      $this->connect();
       //Nastaveni znakove sady pro přenos dat
       mysql_query("SET CHARACTER SET utf8"); 
-//    }
-    //Nastaveni uzivatele pro zaznam do tabulky aktualizaci
-//    if(!$user) {
-//        mysql_query("SET @uz_jmeno = 1",$this->dbh);
-//    }
-//    else {
-//        $this->user = $user;
-//        mysql_query("SET @uz_jmeno = ".$this->user->id.";",$this->dbh);
-//    }
-    
-    
-    // echo("<p style=\"color:red\">MysqlStatement execute: {$query}</p>");
+
     $this->result = mysql_query($query, $this->dbh);
     if(!$this->result) {
       echo("<p style=\"color:red\">MysqlStatement query: {$query}</p>");
+      print_r($this->dbh);
       throw new DB_Mysql_Exception;
     }
     return $this;

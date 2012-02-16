@@ -26,7 +26,7 @@ class Stranka_Element_Hlavicka
          * @param type $prikazGenerujiciPoleReferencovanychObjektu Pokud $nazevSloupceDb obsahuje cizí klíč, pak zde je třeba zadat PHP kód, který při vykonání vrací pole objektů odpovídajících tabulce v db jejíž klíč je jako cizí klíč obsažen ve sloupci zadaném v parametu $nazevSloupceDb
          * @param type $nazevVlastnostiReferencovanehoObjektu Název vlastnosti objektu z pole objektů, jejíž hodnota se zobrazuje v HTML příkazu select (option)
          */
-        public function pridejSloupec($nazevVlastnosti, $popisek, $nazevSloupceDb = NULL, $prikazGenerujiciPoleReferencovanychObjektu = NULL, $nazevVlastnostiReferencovanehoObjektu = NULL)
+        public function pridejSloupec($nazevVlastnosti, $popisek, $nazevSloupceDb = NULL, $prikazGenerujiciPoleReferencovanychObjektu = NULL, $prikazGenerujiciReferencovanyObjekt = NULL, $nazevVlastnostiReferencovanehoObjektu = NULL)
 	{
             if ($nazevSloupceDb) 
             {
@@ -36,6 +36,7 @@ class Stranka_Element_Hlavicka
                     $popisek,
                     $nazevSloupceDb,
                     $prikazGenerujiciPoleReferencovanychObjektu,
+                    $prikazGenerujiciReferencovanyObjekt,
                     $nazevVlastnostiReferencovanehoObjektu,
                     $this->cesta->pridejParametr("razeniPodle", $nazevSloupceDb)->pridejParametr("razeni", "DESC")->generujUri(),
                     $this->cesta->pridejParametr("razeniPodle", $nazevSloupceDb)->pridejParametr("razeni", "ASC")->generujUri()

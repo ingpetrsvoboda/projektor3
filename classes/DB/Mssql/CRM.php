@@ -1,5 +1,5 @@
 <?php
-class DB_Mssql_Projektor extends DB_Mssql {
+class DB_Mssql_CRM extends DB_Mssql {
     protected $user   = "root" ;          //projektor";
     protected $pass   = "spravce";             //Vekt0r";
     protected $dbhost =  "localhost" ;     //"radon" ;       // "xenon" ;   ;"localhost"
