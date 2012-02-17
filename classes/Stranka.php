@@ -6,8 +6,6 @@
  */
 abstract class Stranka
 {
-        const SEPARATOR = "_X_";    //separuje název objektuVlastnosti a vlastnosti v objektu HlavickaTabulky (např. pro vlastnost smlouva->jmeno je v hlaviččce smlouva.self::SEPARATOR.jmeno
-
         /**
 	 * Nastaveni slozky kde prebyvaji vsechny sablony.
 	 */
@@ -20,6 +18,17 @@ abstract class Stranka
   	const SLOT_PRO_FORMULAR = "<!-- %FORM% -->";
         const SLOT_PRO_NAZEV_STRANKY = "%STRANKA%";
         const SLOT_PRO_FILTROVANI = "<!-- %FILTR%  -->";
+ 
+	/**
+	 * Konstanty pro služební metody
+	 */        
+        const SEPARATOR = "_X_";    //separuje název objektuVlastnosti a vlastnosti v objektu HlavickaTabulky (např. pro vlastnost smlouva->jmeno je v hlaviččce smlouva.self::SEPARATOR.jmeno
+        const MAX_POCET_ZNAKU_TYPU_TEXT = 48; //max. počet znaků, pro který se při automatickém nastavení typu elementů nastaví "text", pro větší "textarea"
+        const MAX_SIRKA_TYPU_TEXT = 68;
+        const POCET_SLOUPCU_TYPU_TEXTAREA = 51;
+        const MAX_POCET_RADKU_TYPU_TEXTAREA = 5;  
+        const NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE_PRO_FLAT_TABLE = "Flat_FlatTable";
+        
         
         /**
          * Počítadlo instancí objektů zděděných z třídy Stranka
@@ -207,7 +216,13 @@ abstract class Stranka
         {
             $this->promenne[$this->nazev][$klic] = $hodnota;
         }
-
+/**
+ *
+ * následují "služební metody pro potomkovské třídy, metody pokytují různé funkčnosti, které se opakobaně užívají v potomkovských třídách
+ * 
+ * 
+ *  
+ */
         /**
          * Metoda vrací html kód formuláře umožňujícího nastavit parametry filtrování datových objektů v seznamu.
          * Metoda použije hlavičku tabulky zadanou v parametru $hlavickaTabulky a podle vlastnosti sloupce vygeneruje formulář.
@@ -307,4 +322,103 @@ abstract class Stranka
             }        
         }
 
+        /**
+         * Metoda vytvoří array elementy, obsahující hodnoty potřebné pro přidání elementů metodami QuickForm do objektu formuláře. Hodnoty načte z datového objektu
+         * typu FlatTable
+         * @param object $dataFlatTableObjekt datový objekt vytvořený třídou FlatTable
+         * @param string $nazevHlavnihoObjektu pokud není zadán, metoda předpokládá, že objekt $dataFlatTableObjekt není vlastností hlavního objektu, jde o samostatný
+         *               objekt typu FlatTable a jako název hlavního objektu použije hodnotu konstanty (řetězec "Flat_FlatTable")
+         * @return type 
+         */
+        protected function pripravElementyFormulareZFlatTableObjektu($dataFlatTableObjekt, $nazevHlavnihoObjektu = NULL)
+        {
+            /* Příprava defaultnich stavů, typů a titulků prvků formuláře pro objektVlastnost */
+            //v poli $elementy se připraví defaultní hodnoty formuláře (převážně přečtené z databáze), typy elemntů ve formuláři
+            //a titulky (nadpisy) elementů formuláře,
+            //Pole elementy je automaticky naplněno takto:
+            //  - index pole elementy je řetězec složený z názvu objektuVlastnosti, konstatnty SEPARATOR, a názvu vlastnosti objektuVlastnosti
+            //  - elementy odpovídající sloupcům databázi obsahujícím primární nebo cizí klíče (id) se nesmí změnit a tedy 
+            //    musí být hidden nebo static, je nastaven typ static
+            //  - ostatní elementy (odpovídající sloupcům v db neobsahujícím klíče) jsou nastaveny takto:
+            //      typ date: na typ date
+            //      ostaní typy: podle délky 
+            //                          s délkou menší ne rovnou const MAX_SIRKA_TYPU_TEXT na typ text
+            //                          s délkou větší než const MAX_SIRKA_TYPU_TEXT na typ textarea
+            //  - elementy mají jako titulek použit název sloupce v databázi
+            //Jakýkoli jiný typ elementu než "date" nebo "text" a titulky elementů je nutno zapsat do pole elementy v úseku programu uvedeném za cyklem foreach
+            //DOPORUČENÍ: při psaná programového kódu stránky se tak nejprve napíše kód s použitím automatického vyplnění pole elementy
+            //v níže zapsaném cyklu foreach, zobrazí se stránka
+            //a podle zobrazení stránky se postupně doplní do pole elementy typy a titulky elementů
+
+            if (!$nazevHlavnihoObjektu) $nazevHlavnihoObjektu = self::NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE_PRO_FLAT_TABLE;
+
+            $klice = $dataFlatTableObjekt->dejKlice();
+            $nazvy = $dataFlatTableObjekt->dejNazvy();
+            $typy = $dataFlatTableObjekt->dejTypy();
+            $delky = $dataFlatTableObjekt->dejDelky();
+
+            foreach ($nazvy as $key => $hodnotaVlastnosti) {
+                $index = $nazevHlavnihoObjektu . self::SEPARATOR . $dataFlatTableObjekt->jmenoTabulky . self::SEPARATOR . $hodnotaVlastnosti;      //$jmenoVlastnosti = název sloupce v db
+                if ($klice[$key]) {             //elementy, které odpovídají sloupcům db tabulky obsahujícím klíče musí být hidden nebo static
+                    $elementy["typ"][$index] = "static";                            
+                } else {
+                    if ($typy[$key] == "date") {
+                        $elementy["typ"][$index] = "date";
+                        $elementy["atributy"][$index] = array("format" => "d.m.Y", "minYear" => "1900", "maxYear" => "2050");
+                        $elementy["default"][$index] = Data_Konverze_Datum::zSQL($dataFlatTableObjekt->$hodnotaVlastnosti)->dejDatumProQuickForm() ;
+                    } else {
+                        if (intval($delky[$key]) <= self::MAX_POCET_ZNAKU_TYPU_TEXT) {
+                            $elementy["typ"][$index] = "text";
+                            $elementy["atributy"][$index] = array("size" => self::MAX_SIRKA_TYPU_TEXT);
+
+                        } else {
+                            $elementy["typ"][$index] = "textarea";
+// TODO: nefunguje rows, ve výsledném kódu jsou hodnoty, které se berou kdoví odkud, přitom cols je nastaveno správně
+//                                                                        $elementy["atributy"][$index] = array("cols" => self::POCET_SLOUPCU_TYPU_TEXTAREA, 
+//                                        "rows" => min(self::MAX_POCET_RADKU_TYPU_TEXTAREA,  intval(intval($delky[$key])/self::POCET_SLOUPCU_TYPU_TEXTAREA)+0.5));
+                            $elementy["atributy"][$index] = array("cols" => self::POCET_SLOUPCU_TYPU_TEXTAREA, 
+                                "rows" => min(self::MAX_POCET_RADKU_TYPU_TEXTAREA,  intval(intval(strlen(htmlspecialchars($dataFlatTableObjekt->$hodnotaVlastnosti)))/self::POCET_SLOUPCU_TYPU_TEXTAREA)+0.5));
+//                                        "rows" => min(self::MAX_POCET_RADKU_TYPU_TEXTAREA,  "1"));
+                        }
+                    }
+                }
+                if (!$elementy["default"][$index]) {
+                    $elementy["default"][$index] = htmlspecialchars($dataFlatTableObjekt->$hodnotaVlastnosti);                                                        
+                    //TODO: html hack pro obsah databázového sloupce, který "asi" obsahuje html
+                    if (!is_array($dataFlatTableObjekt->$hodnotaVlastnosti) AND strpos($dataFlatTableObjekt->$hodnotaVlastnosti, "<") !== FALSE)
+                    {
+                        $elementy["default"][$index] = $elementy["default"][$index]."<br></br><div style='border: solid blue; width: 400px; list_style_type: circle'>".str_replace("\"", "'", $dataFlatTableObjekt->$hodnotaVlastnosti)."</div>";
+                    }
+                }
+
+                $elementy["titulek"][$index] = $hodnotaVlastnosti;
+            }
+
+            return $elementy;
+        }
+ 
+        protected function prepisTiuilkyZPrezentace($elementy, $nazevHlavnihoObjektu = NULL)
+        {
+                if (!$nazevHlavnihoObjektu) $nazevHlavnihoObjektu = self::NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE_PRO_FLAT_TABLE;
+                                
+                $filtr = Data_Seznam_SPrezentace::HLAVNI_OBJEKT." = \"".$nazevHlavnihoObjektu."\"".
+                            " AND ".Data_Seznam_SPrezentace::OBJEKT_VLASTNOST." = \"".$dataObjekt->jmenoTabulky."\"";
+                $prezentace = Data_Seznam_SPrezentace::vypisVse($filtr, $this->parametry["razeniPodle"], $this->parametry["razeni"]);
+                if ($prezentace) { 
+                    foreach($prezentace as $polozka)
+                    {
+                        $index = $polozka->hlavniObjekt . self::SEPARATOR . $polozka->objektVlastnost . self::SEPARATOR . $polozka->nazevSloupce;
+                        if ($polozka->zobrazovat) {
+                            $elementy["titulek"][$index] = $polozka->titulek;
+                        } else {
+                            unset ($elementy["typ"][$index]);
+                            unset ($elementy["atributy"][$index]);
+                            unset ($elementy["default"][$index]);
+                            unset ($elementy["titulek"][$index]);
+                        }
+
+                    }
+                }  
+                return $elementy;
+        }
 }

@@ -3,12 +3,6 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
 {
 	const SABLONA_DETAIL = "detail.xhtml";
 
-        const SEPARATOR = "_X_";
-        const MAX_POCET_ZNAKU_TYPU_TEXT = 48; //max. počet znaků, pro který se při automatickém nastavení typu elementů nastaví "text", pro větší "textarea"
-        const MAX_SIRKA_TYPU_TEXT = 68;
-        const POCET_SLOUPCU_TYPU_TEXTAREA = 51;
-        const MAX_POCET_RADKU_TYPU_TEXTAREA = 5;
-
 	protected function detail($nazevHlavnihoObjektu = null, $parametry = null)
 	{
                 //TODO: kontrola $nazevHlavnihoObjektu a korektní return
@@ -33,77 +27,10 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                     $objektVlastnost = $hlavniObjekt->$parametry["objektVlastnost"];
                 }
 
-		/* Příprava defaultnich stavů, typů a titulků prvků formuláře pro objektVlastnost */
-                //v poli $elementy se připraví defaultní hodnoty formuláře (převážně přečtené z databáze), typy elemntů ve formuláři
-                //a titulky (nadpisy) elementů formuláře,
-                //Pole elementy je automaticky naplněno takto:
-                //  - index pole elementy je řetězec složený z názvu objektuVlastnosti, konstatnty SEPARATOR, a názvu vlastnosti objektuVlastnosti
-                //  - elementy odpovídající sloupcům databázi obsahujícím primární nebo cizí klíče (id) se nesmí změnit a tedy 
-                //    musí být hidden nebo static, je nastaven typ static
-                //  - ostatní elementy (odpovídající sloupcům v db neobsahujícím klíče) jsou nastaveny takto:
-                //      typ date: na typ date
-                //      ostaní typy: podle délky 
-                //                          s délkou menší ne rovnou const MAX_SIRKA_TYPU_TEXT na typ text
-                //                          s délkou větší než const MAX_SIRKA_TYPU_TEXT na typ textarea
-                //  - elementy mají jako titulek použit název sloupce v databázi
-                //Jakýkoli jiný typ elementu než "date" nebo "text" a titulky elementů je nutno zapsat do pole elementy v úseku programu uvedeném za cyklem foreach
-                //DOPORUČENÍ: při psaná programového kódu stránky se tak nejprve napíše kód s použitím automatického vyplnění pole elementy
-                //v níže zapsaném cyklu foreach, zobrazí se stránka
-                //a podle zobrazení stránky se postupně doplní do pole elementy typy a titulky elementů
                 if($objektVlastnost)
 		{ 
-                    $klice = $objektVlastnost->dejKlice();
-                    $nazvy = $objektVlastnost->dejNazvy();
-                    $typy = $objektVlastnost->dejTypy();
-                    $delky = $objektVlastnost->dejDelky();
-                    
-                    foreach ($nazvy as $key => $jmenoVlastnosti) {
-                        $index = $nazevHlavnihoObjektu . self::SEPARATOR . $parametry["objektVlastnost"] . self::SEPARATOR . $jmenoVlastnosti;      //$jmenoVlastnosti = název sloupce v db
-                        if ($klice[$key]) {             //elementy, které odpovídají sloupcům db tabulky obsahujícím klíče musí být hidden nebo static
-                            $elementy["typ"][$index] = "static";                            
-                        } else {
-                            if ($typy[$key] == "date") {
-                                $elementy["typ"][$index] = "date";
-                                $elementy["atributy"][$index] = array("format" => "d.m.Y", "minYear" => "1900", "maxYear" => "2050");
-                                $elementy["default"][$index] = Data_Konverze_Datum::zSQL($objektVlastnost->$jmenoVlastnosti)->dejDatumProQuickForm() ;
-                            } else {
-                                if (intval($delky[$key]) <= self::MAX_POCET_ZNAKU_TYPU_TEXT) {
-                                    $elementy["typ"][$index] = "text";
-                                    $elementy["atributy"][$index] = array("size" => self::MAX_SIRKA_TYPU_TEXT);
-
-                                } else {
-                                    $elementy["typ"][$index] = "textarea";
-                                    $elementy["atributy"][$index] = array("cols" => self::POCET_SLOUPCU_TYPU_TEXTAREA, 
-                                        "rows" => min(self::MAX_POCET_RADKU_TYPU_TEXTAREA,  intval(intval($delky[$key])/self::POCET_SLOUPCU_TYPU_TEXTAREA)+0.5));
-                                }
-                            }
-                        }
-                        if (!$elementy["default"][$index]) {
-                            $elementy["default"][$index] = $objektVlastnost->$jmenoVlastnosti;
-                        }
-                        
-                        $elementy["titulek"][$index] = $jmenoVlastnosti;
-                    }
-                    // Konec cyklu pro nastavení pole elementů - za tento řádek je možno psát jiné nastavení typů a titulků elementů
-                    //
-                    $filtr = Data_Seznam_SPrezentace::HLAVNI_OBJEKT." = \"".$nazevHlavnihoObjektu."\"".
-                             " AND ".Data_Seznam_SPrezentace::OBJEKT_VLASTNOST." = \"".$parametry["objektVlastnost"]."\"";
-                    $prezentace = Data_Seznam_SPrezentace::vypisVse($filtr, $this->parametry["razeniPodle"], $this->parametry["razeni"]);
-                    if ($prezentace) {      //SVOBODA - neefektivní - před cyklem zapsat do pole a zde vybárat z pole dle index
-                        foreach($prezentace as $polozka)
-                        {
-                            $index = $polozka->hlavniObjekt . self::SEPARATOR . $polozka->objektVlastnost . self::SEPARATOR . $polozka->nazevSloupce;
-                            if ($polozka->zobrazovat) {
-                                $elementy["titulek"][$index] = $polozka->titulek;
-                            } else {
-                                unset ($elementy["typ"][$index]);
-                                unset ($elementy["atributy"][$index]);
-                                unset ($elementy["default"][$index]);
-                                unset ($elementy["titulek"][$index]);
-                            }
-
-                        }
-                    }                    
+                    $elementy = $this->pripravElementyFormulareZFlatTableObjektu($objektVlastnost, $nazevHlavnihoObjektu);
+                    $elementy = $this->prepisTiuilkyZPrezentace($elementy, $nazevHlavnihoObjektu);                   
 		}
 
 		/* Defaultni stavy formulare */
