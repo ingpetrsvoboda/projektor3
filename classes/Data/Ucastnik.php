@@ -58,21 +58,11 @@ class Data_Ucastnik extends Data_HlavniObjekt
             parent::__construct(__CLASS__, self::TABULKA, self::PREFIX, self::ID, self::KONTEXT_IDENTIFIKATORU, 
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id);
-            //TODO: vyřešit konflikt projekt z behu se liší od projekt
 
-            $this->Projekt = Data_Ciselnik::najdiPodleId("projekt", $idCProjektFK);            
-            $this->Kancelar = Data_Ciselnik::najdiPodleId("kancelar", $idCKancelarFK);
-            $this->Beh = Data_Seznam_SBehProjektu::najdiPodleId($idSBehProjektuFK);
-            
-//            $this->behCislo = $this->Beh->behCislo;
-            $this->turnusText = $this->Beh->text;
-            $this->kancelarText = $this->Kancelar->text;
-            $this->projektKod = $this->Projekt->kod;       
-//            $this->Beh = Data_Seznam_SBehProjektu::najdiPodleId($idSBehProjektuFK);
             //poze pro účely vytvoření celého jména včetně titulů se vytvoří a pak zruší vlastnost smlouva
-            $this->celeJmeno = $this->smlouva->prijmeni." ".$this->smlouva->jmeno;
-            if ($this->smlouva->titul != '') $this->celeJmeno = $this->celeJmeno.", ".$this->smlouva->titul;
-            if ($this->smlouva->titul_za != '') $this->celeJmeno = $this->celeJmeno.", ".$this->smlouva->titul_za;
+            $this->celeJmeno = $this->smlouva->prijmeni." ".$this->smlouva->jmeno
+                        .($this->smlouva->titul ? ", ".$this->smlouva->titul : "")
+                        .($this->smlouva->titul_za ? ", ".$this->smlouva->titul_za : "");
             unset($this->_vlatnostiObjekty['smlouva']);  
     }
     

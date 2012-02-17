@@ -40,21 +40,7 @@ class Data_Zajemce extends Data_HlavniObjekt
 
         );
     
-    public $turnusText;
-    public $Projekt;
-    public $Beh;
-    public $Kancelar;
-    public $behCislo;
-    public $projektKod;
-    public $kancelarText;
-    
     public $celeJmeno;
-    public $vzdelani1;
-    public $KZAM_cislo1;
-    public $KZAM_cislo2;
-    public $KZAM_cislo3;
-    public $KZAM_cislo4;
-    public $KZAM_cislo5;
     public $zamestnani_pozice1;
 
 
@@ -64,28 +50,15 @@ class Data_Zajemce extends Data_HlavniObjekt
             parent::__construct(__CLASS__, self::TABULKA, self::PREFIX, self::ID, self::KONTEXT_IDENTIFIKATORU, 
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id);
-            //TODO: vyřešit konflikt projekt z behu se liší od projekt
-            //TODO: zrušit sloupec id_c_projekt_FK v tabulkce ucastnik a přejmenovat id_c_projekt v tabulce s_beh_projektu na id_c_projekt_FK
-//        if ()
-            // projekt se vytvori na zaklade id_c_projekt z tabulky s_beh_projektu (sloupec id_c_projekt_FK v tabulce ucastnik se nepouzije)
-//            $this->Projekt = Ciselnik_CiselnikB::najdiPodleId("projekt", $this->Beh->idCProjekt);
-            $this->Projekt = Data_Ciselnik::najdiPodleId("projekt", $idCProjektFK);            
-            $this->Kancelar = Data_Ciselnik::najdiPodleId("kancelar", $idCKancelarFK);
-            $this->Beh = Data_Seznam_SBehProjektu::najdiPodleId($idSBehProjektuFK);
-            
-//            $this->behCislo = $this->Beh->behCislo;
-            $this->turnusText = $this->Beh->text;
-            $this->kancelarText = $this->Kancelar->text;
-            $this->projektKod = $this->Projekt->kod;       
-//            $this->Beh = Data_Seznam_SBehProjektu::najdiPodleId($idSBehProjektuFK);
+
             //pouze pro účely vytvoření dalších vlastností pro zobrazení v seznamu se vytvoří a pak zruší vlastnost smlouva
-            $this->celeJmeno = $this->smlouva->prijmeni." ".$this->smlouva->jmeno;
-            if ($this->smlouva->titul != '') $this->celeJmeno = $this->celeJmeno.", ".$this->smlouva->titul;
-            if ($this->smlouva->titul_za != '') $this->celeJmeno = $this->celeJmeno.", ".$this->smlouva->titul_za;
-            $this->zamestnani_pozice1 = substr($this->smlouva->zamestnani_pozice1, 0, 40).((strlen($this->smlouva->zamestnani_pozice1)>41 ? " ..." : ""));
+            $this->celeJmeno = $this->smlouva->prijmeni." ".$this->smlouva->jmeno
+                        .($this->smlouva->titul ? ", ".$this->smlouva->titul : "")
+                        .($this->smlouva->titul_za ? ", ".$this->smlouva->titul_za : "");
+            $this->zamestnani_pozice1 = ((strlen($this->smlouva->zamestnani_pozice1)>41 ? substr($this->smlouva->zamestnani_pozice1, 0, 35)." ..." : $this->smlouva->zamestnani_pozice1));
             unset($this->_vlatnostiObjekty['smlouva']);  
     }
-    //($id, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
+
     public static function najdiPodleId($id) {
         return parent::najdiPodleId($id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
     }

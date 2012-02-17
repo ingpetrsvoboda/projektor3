@@ -203,11 +203,15 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
         {
 		/* Hlavicka tabulky */
 		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
+                //sloupce pro zobrazení vlastností odpovidajících sloupcům v db tabulce zajemce
                 $hlavickaTabulky->pridejSloupec("id", "ID", Data_Zajemce::ID);
                 $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Zajemce::IDENTIFIKATOR);
-                $hlavickaTabulky->pridejSloupec("turnusText", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "text");
-                $hlavickaTabulky->pridejSloupec("kancelarText", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')","text");                
+                //sloupce pro zobrazení vlastností odpovidajících těm sloupcům v db tabulce zajemce, které obsahují cizí klíče
+                $hlavickaTabulky->pridejSloupec("idSBehProjektuFK", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "Data_Seznam_SBehProjektu::najdiPodleId(%ID%)", "text");
+                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId('kancelar', %ID%)", "text");                
+                //sloupec pro zobrazení vlastnosti, která nemá odpovídající sloupec v db tabulce zajemce (byla vytvořena v konstruktoru Data_Zajemce)
                 $hlavickaTabulky->pridejSloupec("celeJmeno", "Celé jméno");
+                //sloupce pro zobrazení vlastností některého ObjektuVlastnosti (např. za_xxxx_flat_table) hlavního objektu (Zajemce)
                 $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."vzdelani1", "Vzdělání1");
                 $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo1", "KZAM 1");
                 $hlavickaTabulky->pridejSloupec("smlouva".self::SEPARATOR."KZAM_cislo2", "KZAM 2");

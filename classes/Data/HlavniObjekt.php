@@ -27,8 +27,11 @@ abstract class Data_HlavniObjekt extends Data_Iterator
     public $identifikator;
     public $prvniCisliceIdentifikatoru;
     public $cisloHlavnihoObjektu;
+    public $Beh;
     public $idSBehProjektuFK;
+    public $Projekt;
     public $idCProjektFK;
+    public $Kancelar;
     public $idCKancelarFK;
     public $updated;
     //pole pro uložení "podřízených" objektů = objektu s vlastnostmi, vlastnosti jsou dostupné pouze přes getter __get() a jsou lazy initiation
@@ -63,13 +66,29 @@ abstract class Data_HlavniObjekt extends Data_Iterator
             return $this->$vlastnost;
         }
         // Lazy initialization
+        
         if(!array_key_exists($vlastnost, $this->_vlatnostiObjekty))       //"lazy load" vlastnost (objekt) ještě nebyla instancována
         {
             if (!array_key_exists($vlastnost, $this->_mapovaniObjektTabulka))
             {
                 // požadovaná "lazy load" vlastnost (objekt) není v poli mapování objektů na tabulky
                 // v poli $_mapovaniObjektTabulka neexistuje db tabulka přiřazená k zadané vlastnosti
-                // - metoda vrací FASLE
+                // - metoda vrací FALSE
+                if ($vlastnost == "projekt") 
+                {
+                    $this->projekt = Data_Ciselnik::najdiPodleId("projekt", $this->idCProjektFK);
+                    return $this->projekt;
+                }
+                if ($vlastnost == "kancelar") 
+                {
+                    $this->kancelar = Data_Ciselnik::najdiPodleId("kancelar", $this->idCKancelarFK);
+                    return $this->kancelar;
+                }
+                if ($vlastnost == "beh") 
+                {
+                    $this->beh = Data_Seznam_SBehProjektu::najdiPodleId($this->idSBehProjektuFK); 
+                    return $this->beh;
+                }
                 return FALSE;
             }
             else

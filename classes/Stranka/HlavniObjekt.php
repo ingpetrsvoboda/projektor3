@@ -40,9 +40,9 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                     //zde jsou přidány hodnoty vlastností hlavního objektu, hodnoty vlastností objektVlastnost byly přidány automaticky
                     $elementy["default"]["id"] = $hlavniObjekt->id;
                     $elementy["default"]["identifikator"] = $hlavniObjekt->identifikator;
-                    $elementy["default"]["projekt"] = $hlavniObjekt->projektKod;
-                    $elementy["default"]["turnusText"] = $hlavniObjekt->turnusText;
-                    $elementy["default"]["kancelarText"] = $hlavniObjekt->kancelarText;
+                    $elementy["default"]["projekt"] = $hlavniObjekt->projekt->kod;
+                    $elementy["default"]["behText"] = $hlavniObjekt->beh->text;
+                    $elementy["default"]["kancelarText"] = $hlavniObjekt->kancelar->text;
                     $elementy["default"]["jmeno"] = $hlavniObjekt->smlouva->jmeno;
                     $elementy["default"]["prijmeni"] = $hlavniObjekt->smlouva->prijmeni;
 
@@ -52,11 +52,10 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                 // element ucastnik_id musí být hidden nebo static
                     //zde jsou přidány ručně elementy - mohou být prakticky libovolné
                     //přidány elementy pro zobrazení vlastností hlavního objektu
-                    $form->addElement("static", "id");
-                    $form->addElement("static", "cisloObjektu");
-                    $form->addElement("static", "identifikatorObjektu", "Identifikátor");
+                    $form->addElement("static", "id", "ID");
+                    $form->addElement("static", "identifikator", "Identifikátor");
                     $form->addElement("static", "projekt", "Projekt");
-                    $form->addElement("static", "turnusText", "Turnus");
+                    $form->addElement("static", "behText", "Turnus");
                     $form->addElement("static", "kancelarText", "Kancelář");
                     $form->addElement("static", "jmeno", "Jméno");
                     $form->addElement("static", "prijmeni", "Příjmení");

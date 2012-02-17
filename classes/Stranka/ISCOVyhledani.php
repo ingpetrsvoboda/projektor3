@@ -25,7 +25,6 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
 
                 $vyhledavaciFormular = $this->hledani($dalsi->parametry['hledanyText']);
                 return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry, $formAjax, $vyhledavaciFormular->toHtml());
-//            return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry);
 	}
 
 	protected function main°vzdy()
@@ -38,7 +37,7 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
                 /* Ovladaci tlacitka stranky */
 		$tlacitka = array
 		(
-			new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
+                    new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
 		);
                 $this->novaPromenna("tlacitka", $tlacitka);
 
