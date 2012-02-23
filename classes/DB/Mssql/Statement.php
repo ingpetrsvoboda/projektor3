@@ -1,5 +1,5 @@
 <?php
-class DB_Mysql_Statement implements DB_Statement {
+class DB_Mssql_Statement implements DB_Statement {
   public $result;
   public $binds;
   public $dbh;
@@ -8,7 +8,7 @@ class DB_Mysql_Statement implements DB_Statement {
   
   public function __construct($dbh, $dbName, $preparedQuery) {
 //    if(!is_resource($dbh)) {
-//      throw new DB_Mysql_Exception("Not a valid database connection");
+//      throw new DB_Mssql_Exception("Not a valid database connection");
 //    }
     $this->dbh = $dbh;
     $this->dbName = $dbName;
@@ -23,14 +23,14 @@ class DB_Mysql_Statement implements DB_Statement {
 //  }
 
   /**
-   * Doplní do SQL příkazu připraveného metodou mysql->prepare() parametry a vykoná jej
+   * Doplní do SQL příkazu připraveného metodou Mssql->prepare() parametry a vykoná jej
    *
-   * Doplní do SQL příkazu připraveného metodou mysql->prepare() parametry a vykoná jej. Metoda přijímá libovolný počet parametrů
+   * Doplní do SQL příkazu připraveného metodou Mssql->prepare() parametry a vykoná jej. Metoda přijímá libovolný počet parametrů
    * načtených php funkcí func_get_args. Parametry předané metodě jsou přijaty v pořadí v jakém jsou uvedeny při volání a tedy první
    * parametr v pořadí je doplněn na pozici parametru uvedeného v předpřipraveném sql dorazu (prepare) s číslem jedna, druhý s číslem dva atd.
    *
    * @var - metoda přijímá libovolný počet parametrů
-   * @return DB_Mysql_Statement
+   * @return DB_Mssql_Statement
    */
   public function execute() {
     $binds = func_get_args();
@@ -45,38 +45,38 @@ class DB_Mysql_Statement implements DB_Statement {
         $ph=strval($i);
         $pv=$this->binds[$i];
 //        if($pv =="NULL"){
-//            $query = str_replace(":$ph",mysql_escape_string($pv), $query);
+//            $query = str_replace(":$ph",Mssql_escape_string($pv), $query);
 //        }
 //        else {
-            $query = str_replace(":$ph", "\"".mysql_real_escape_string($pv)."\"", $query); // parametr je hodnota - uzavre se do uvozovek (cislo uzavrene v uvozovkach je korektni sql
-            $query = str_replace("~$ph", "`".mysql_real_escape_string($pv)."`", $query);  // parametr je identifikator - napriklad nazev tabulky nebo sloupce - uzavre se do apostrofů
+            $query = str_replace(":$ph", "'".$this->escape($pv)."'", $query); // parametr je hodnota - uzavre se do uvozovek (cislo uzavrene v uvozovkach je korektni sql
+            $query = str_replace("~$ph", "[".$this->escape($pv)."]", $query);  // parametr je identifikator - napriklad nazev tabulky nebo sloupce - uzavre se do apostrofů
 //        }
 
     }
 
-    if(!mysql_select_db($this->dbName, $this->dbh)) {
-      throw new DB_Mysql_Exception;
+    if(!Mssql_select_db($this->dbName, $this->dbh)) {
+      throw new DB_Mssql_Exception;
     }    
     
       //Nastaveni znakove sady pro přenos dat
-      mysql_query("SET CHARACTER SET utf8"); 
+      Mssql_query("SET CHARACTER SET utf8"); 
 
-    $this->result = mysql_query($query, $this->dbh);
+    $this->result = Mssql_query($query, $this->dbh);
     if(!$this->result) {
-      echo("<p style=\"color:red\">MysqlStatement query: {$query}</p>");
+      echo("<p style=\"color:red\">MssqlStatement query: {$query}</p>");
       print_r($this->dbh);
-      throw new DB_Mysql_Exception;
+      throw new DB_Mssql_Exception;
     }
     return $this;
   }
   public function fetch_row() {
     if(!$this->result) {
-      throw new DB_Mysql_Exception("Query not executed");
+      throw new DB_Mssql_Exception("Query not executed");
     }
-    return mysql_fetch_row($this->result);
+    return Mssql_fetch_row($this->result);
   }
   public function fetch_assoc() {
-    return mysql_fetch_assoc($this->result);
+    return Mssql_fetch_assoc($this->result);
   }
   public function fetchall_assoc() {
     $retval = array();
@@ -87,8 +87,16 @@ class DB_Mysql_Statement implements DB_Statement {
   }
   
   public function last_insert_id() {
-  	return mysql_insert_id($this->dbh);
+  	return Mssql_insert_id($this->dbh);
   } 
+  
+  private function escape($str)
+    {
+      //    http://www.php.net/manual/en/function.mysql-real-escape-string.php
+            $search=array("\\","\0","\n","\r","\x1a","'",'"');
+            $replace=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
+            return str_replace($search,$replace,$str);
+    }  
 }
 
 ?>

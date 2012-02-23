@@ -49,7 +49,7 @@ abstract class Stranka
         public $nazev_jednotne;
         public $nazev_mnozne;
         public $vsechny_radky;
-        public $dbh;
+        public $databaze;
         
 
 	/**
@@ -86,7 +86,7 @@ abstract class Stranka
 	 * Konstruktor stranky.
 	 * @param $cesta Ukazatel na na globalni cestu.
 	 */
-	protected function __construct($cesta, $nazev = null, $nazev_flattable="", $nazev_jednotne="", $nazev_mnozne="", $vsechny_radky=FALSE, $dbh=NULL)
+	protected function __construct($cesta, $nazev = null, $nazev_flattable="", $nazev_jednotne="", $nazev_mnozne="", $vsechny_radky=FALSE, $databaze=NULL)
 	{
 		$this->cesta = $cesta; // ulozime si cestu
 		$this->cestaSem = $this->cesta->sem(); // ulozime si cestu k teto strance/tride
@@ -96,7 +96,7 @@ abstract class Stranka
                 $this->nazev_jednotne = $nazev_jednotne;
                 $this->nazev_mnozne = $nazev_mnozne;
                 $this->vsechny_radky = $vsechny_radky;
-                $this->dbh = $dbh;
+                $this->databaze = $databaze;
                 
 	}
 
@@ -397,7 +397,7 @@ abstract class Stranka
             return $elementy;
         }
  
-        protected function prepisTiuilkyZPrezentace($elementy, $nazevHlavnihoObjektu = NULL)
+        protected function prepisTituilkyZPrezentace($elementy, $nazevHlavnihoObjektu = NULL)
         {
                 if (!$nazevHlavnihoObjektu) $nazevHlavnihoObjektu = self::NAZEV_HLAVNIHO_OBJEKTU_PREZENTACE_PRO_FLAT_TABLE;
                                 

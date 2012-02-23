@@ -8,14 +8,10 @@ class Data_Flat_FlatTable extends Data_Iterator {
     public $jmenoSloupceIdHlavnihoObjektu;
     //protected
     // vlastnosti databázové tabulky vracené příkazem SHOW COLUMNS
-    protected $field = array();         //názvy sloupců tabulky
-    protected $type = array();          //datové typy sloupců tabulky
-    protected $type_length = array();   //délky datových typů sloupců tabulky
-    protected $type_unsigned = array(); //příznak UNSIGNED
-    protected $null = array();          //příznak - negace NOT NULL
-    protected $key = array();           //příznak KEY - primární klíč PRI, cizí klíč MUL
-    protected $default = array();       //default hodnota sloupce
-    protected $extra = array();         //další příznaky - typicky auto_increment
+    protected $nazvy = array();         //názvy sloupců tabulky
+    protected $typy = array();          //datové typy sloupců tabulky
+    protected $pk = array();           //TRUE pokud slopupec je primární klíč
+    protected $delky = array();   //délky datových typů sloupců tabulky typu char, varchar atd.
     protected $value = array();         //hodnoty ve sloupcích
     // identifikátor a hodnota sloupce, který je auto_increment . pro snazsi pristup
     protected $primaryKeyFieldName;
@@ -51,39 +47,45 @@ class Data_Flat_FlatTable extends Data_Iterator {
         
         $this->chyby = new App_Chyby();
         
-    // Kontrola existence tabulky v databázi
-        $query = "SHOW TABLES LIKE :1";
-        if (!$dbh->prepare($query)->execute($this->jmenoTabulky)){
-            throw new Exception("V databázi neexistuje tabulka ".$this->jmenoTabulky);
+        //TODO: existence tabulky se kontroluje a struktura tabulky se načítá pokaždé - při generování pro seznam opakovaně totéž -> objekt, kontejner na struktury flat table (podle jména tabulky)
+        // Musí existovat tabulka číselníku v DB
+        switch($dbh->dbType){
+        case 'MySQL':
+            $dbhi = App_Kontext::getDbMySQLInformationSchema();
+            $query = Helper_SqlQuery::getShowTablesQueryMySQL();            
+            break;
+        case 'MSSQL':
+            $dbhi = App_Kontext::getDbh($dbh->dbName);
+            $query = Helper_SqlQuery::getShowTablesQueryMSSQL();
+            break;
+        default: throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");
+        }
+        if (!$dbhi->prepare($query)->execute($dbh->dbName, $this->jmenoTabulky)){
+            throw new Exception("V databázi ".$dbh->dbName." neexistuje tabulka ".$this->jmenoTabulky);
         }
     //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky        
-        $query = "SHOW COLUMNS FROM ~1";
-        $res= $dbh->prepare($query)->execute($this->jmenoTabulky);
+        switch($dbh->dbType){
+        case 'MySQL':
+            $dbhi = App_Kontext::getDbMySQLInformationSchema();
+            $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
+            break;
+        case 'MSSQL':
+            $dbhi = App_Kontext::getDbh($dbh->dbName);
+            $query = Helper_SqlQuery::getShowColumnsQueryMSSQL();
+            break;
+        default: throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");
+        }
+        $res=$dbhi->prepare($query)->execute($dbh->dbName, $this->jmenoTabulky);
         while ($data = $res->fetch_assoc()){
-            array_push($this->field,$data['Field']);
-            $type = preg_split("/[()]/",$data['Type']);  // priklady: datetime, int(10) unsigned zerofill, double(8,2) unsigned zerofill
-            array_push($this->type,$type[0]);
-            if(array_key_exists(1, $type)) {
-                array_push($this->type_length,$type[1]);
-                if(array_key_exists(2, $type))
-                {
-                    array_push($this->type_unsigned,true);
-                } else {
-                    array_push($this->type_unsigned,false);
-                }
-            } else {
-                array_push($this->type_length, 0);  //pro tytpy sloupců bez údaje o délce v závorce, např. datetime
-            }
-            array_push($this->null,$data['Null']);
-            array_push($this->key,$data['Key']);
-            array_push($this->default,$data['Default']);
-            array_push($this->extra,$data['Extra']);
-            if ($data['Key'] == "PRI")
+            array_push($this->nazvy,$data['Nazev']);
+            array_push($this->typy,$data['Typ']);            
+            array_push($this->delky,$data['Delka']);            
+            array_push($this->pk,$data['PK']);            
+            if ($data['PK'])
             {
-                $this->primaryKeyFieldName = $data['Field'];
+                $this->primaryKeyFieldName = $data['Nazev'];
             }
         }
-
 
         if (!$this->precteno_z_db)
         {
@@ -102,15 +104,9 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param $dbh handler databáze
      * @return object Data_Flat_FlatTable 
      */
-    public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $dbh=NULL)
+    public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $databaze=NULL)
     {
-        //TODO: defaultní databáze by měla být zadána jen na jednom místě!!
-        if (!$dbh) $dbh = App_Kontext::getDbMySQLProjektor();       
-        // Kontrola existence tabulky v databázi
-        $query = "SHOW TABLES LIKE :1";
-        if (!$dbh->prepare($query)->execute($jmenoTabulky)){
-            throw new Exception("V databázi neexistuje tabulka ".$jmenoTabulky);
-        }
+        $dbh = App_Kontext::getDbh($databaze);
         return new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $id); 
     }
     
@@ -126,36 +122,35 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param $dbh handler databáze
      * @return array() Pole objektů Data_Flat_FlatTable odpovidajicich radkum v DB
      */    
-    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $dbh=NULL)
+    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $databaze=NULL)
     {
-        if (!$dbh) $dbh = App_Kontext::getDbMySQLProjektor();          
+        $dbh = App_Kontext::getDbh($databaze);
         if ($objektJeVlastnostiHlavnihoObjektu)
         {
             $jmenoId = $jmenoSloupceIdHlavnihoObjektu;
         } else {            
-            //Nacteni názvu sloupce s primárním klíčem tabulky
-//            $columnsQuery = "SHOW COLUMNS FROM ~1";
-//            $res= $dbh->prepare($columnsQuery)->execute($jmenoTabulky);
-//            while ($data = $res->fetch_assoc()){
-//                if ($data['Key'] == "PRI")
-//                {
-//                    $jmenoId = $data['Field'];
-//                }
-//            }        
-            $dbhm = App_Kontext::getDbMySQLInformationSchema();            
-            $columnsQuery = "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE (TABLE_SCHEMA=:1) AND (TABLE_NAME=:2) AND (COLUMN_KEY='PRI')";
-            $data = $dbhm->prepare($columnsQuery)->execute($dbh->dbName, $jmenoTabulky)->fetch_assoc();
-//            $d = $dbhm->prepare($columnsQuery);
-//            $d = $d->execute($dbh->dbName, $jmenoTabulky);
-//            $data = $d->fetch_assoc();
-            $jmenoId = $data['COLUMN_NAME'];
+        //Nacteni názvu sloupce s primárním klíčem tabulky
+                switch($dbh->dbType){
+                case 'MySQL':
+                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $query = Helper_SqlQuery::getPrimaryKeyQueryMySQL();            
+                    break;
+                case 'MSSQL':
+                    $dbhi = App_Kontext::getDbh($dbh->dbName);
+                    $query = Helper_SqlQuery::getPrimaryKeyQueryMSSQL();
+                    break;
+                default: throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");
+                }
+            $data = $dbhi->prepare($query)->execute($dbh->dbName, $jmenoTabulky)->fetch_assoc();
+            if (!$data){
+                throw new Exception("V databázi ".$dbh->dbName." neexistuje tabulka ".$jmenoTabulky." nebo tato tabulka nemá primární klíč." );
+            }
+            $jmenoId = $data['Nazev'];            
         } 
         
-//TODO: defaultní databáze by měla být zadána jen na jednom místě!!
         $query = "SELECT ~1 FROM ~2".
-                ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$filtr} " : "WHERE valid = 1 AND {$filtr}")).
+                ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? " WHERE {$filtr} " : " WHERE valid = 1 AND {$filtr}")).
                 ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;            
-        
 
         $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
         foreach($radky as $radek)
@@ -177,19 +172,19 @@ class Data_Flat_FlatTable extends Data_Iterator {
             return $this->$name;
          }
         //kontrola existence sloupce se zadaným názvem v tabulce
-        $columnId = array_search($name,$this->field);
+        $columnId = array_search($name,$this->nazvy);
         if($columnId===false)
         {
 // TODO: chyby - dočasně zrušeno
 //            $this->chyby->write($name,'',108);
             return false;
         }
-        return $this->value[$columnId];  //SVOBODA ?? vrací pro neexistující položku false (jak by mělo)?
+        return $this->value[$columnId];
     }
 
      /**
      * Setter - 
-     * hodnota vlastnosti, ktera ma odpovidajici sloupec v tabulce je zapsana do pole $this->value[],
+     * hodnota vlastnosti, ktera ma odpovidajici sloupec v db tabulce je zapsana do pole $this->value[],
      * hodnota ostatnich existujicich vlastnosti objektu je zapsana standardne do vlastnosti,
      * neexistující vlastnost objektu, ktera nema odpovidajici sloupec v db tabulce je nove vytvorena (standard php) a hodnota do ni ulozena.
      * @param type $name
@@ -206,7 +201,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         {   
 
             //kontrola existence sloupoe se zadaným názvem v db tabulce
-            $columnid = array_search($name,$this->field);
+            $columnid = array_search($name,$this->nazvy);
             if($columnid===false)
             {
                 if (property_exists($this, $name))
@@ -217,8 +212,6 @@ class Data_Flat_FlatTable extends Data_Iterator {
                 else 
                 {
             //neexistující vlastnost objektu, ktera nema odpovidajici sloupec v db tabulce je nove vytvorena (standard php) a hodnota do ni ulozena.
-            //ZRUŠENO - navic je ovsem zapsana chba do objektu $this->chyby
-//                    $this->chyby->write($name,$value,120);
                     $this->$name = $value;
                     return;
                 }
@@ -236,32 +229,32 @@ class Data_Flat_FlatTable extends Data_Iterator {
                  * tinytext, text, mediumtext, longtext, enum(''), set(''), binary(255), varbinary(255)
                 **/
 
-            switch($this->type[$columnid])
-            {
-                case 'int':
-                    if ($value !== "" AND !is_numeric($value)){
-                        $this->chyby->write($name,$value,110);
-                        $this->value[$columnid] = $this->default[$columnid];    //není číslo - náhradní hodnota je default hodnota sloupce
-                    }
-                    try{
-                        settype($value,"integer");
-                    }
-                    catch (Exception $e){
-                        $this->chyby->write($name,$value,111);
-                        $this->value[$columnid] = $this->default[$columnid];
-                    }
-                    if(!$this->type_unsigned[$columnid] && $value < 0){
-                        $this->chyby->write($name,$value,112);
-                        $this->value[$columnid] = intval($value);    //je číslo, ale není integer - náhradní hodnota je integer hodnota
-                    }
-                    break;
-                case 'varchar':
-                    $value_length = strlen($value);
-                    if($value_length > $this->type_length[$columnid]){
-                       $this->chyby->write($name,$value,120);
-                       $this->value[$columnid] = substr($value,0,$this->type_length[$columnid]);    //řetězec je dlouhý - náhradní hodnota je oříznutý řetězec
-                    }
-            }
+//            switch($this->type[$columnid])
+//            {
+//                case 'int':
+//                    if ($value !== "" AND !is_numeric($value)){
+//                        $this->chyby->write($name,$value,110);
+//                        $this->value[$columnid] = $this->default[$columnid];    //není číslo - náhradní hodnota je default hodnota sloupce
+//                    }
+//                    try{
+//                        settype($value,"integer");
+//                    }
+//                    catch (Exception $e){
+//                        $this->chyby->write($name,$value,111);
+//                        $this->value[$columnid] = $this->default[$columnid];
+//                    }
+//                    if(!$this->type_unsigned[$columnid] && $value < 0){
+//                        $this->chyby->write($name,$value,112);
+//                        $this->value[$columnid] = intval($value);    //je číslo, ale není integer - náhradní hodnota je integer hodnota
+//                    }
+//                    break;
+//                case 'varchar':
+//                    $value_length = strlen($value);
+//                    if($value_length > $this->type_length[$columnid]){
+//                       $this->chyby->write($name,$value,120);
+//                       $this->value[$columnid] = substr($value,0,$this->type_length[$columnid]);    //řetězec je dlouhý - náhradní hodnota je oříznutý řetězec
+//                    }
+//            }
         $this->value[$columnid] = $value;
         }
         return;            
@@ -284,7 +277,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
 //            $dbh = App_Kontext::getDbMySQLProjektor();
             $query_column_names = "";       //část SQL příkazu INSERT se jmény sloupců
             $query_values = "";             //část SQL příkazu INSERT s daty
-            foreach($this->field as $key=>$column_name) {
+            foreach($this->nazvy as $key=>$column_name) {
                 if ($column_name != $this->primaryKeyFieldName) {    //neukládá se do sloupce, který je primary key
                     $value = $this->value[$key];                //neukládá se do sloupce, kde není hodnota vlastnosti objektu //TODO: ??? hodnota === NULL ?? abys mohl ukládat nulu nebo prázdný string
                     if($value) {
@@ -300,7 +293,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         // UPDATE
 //            $dbh = App_Kontext::getDbMySQLProjektor();
             $query="UPDATE ".$this->jmenoTabulky." SET ";
-            foreach($this->field as $column_name) {
+            foreach($this->nazvy as $column_name) {
                 if ($column_name != $this->primaryKeyFieldName) {
                     $value= $this->$column_name ;
                     if($value) {
@@ -318,7 +311,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
     private function precti_zaznam() {
         // Metoda nacte hodnoty z radku db tabulky do pole $this->value[]
     //SVOBODA metoda přečte záznam z db, ale nezamyká záznam v db - kdokoli může mezi přečtením a zápisem zapsat bo db a při zápisu se pak takováto data přepíší
-    //metoda by mohla zamykat, ale asi to chce transakci na celý hlavní objekt
+    //metoda by mohla zamykat, ale asi to by znamenalo zamknou (?transakci) celý hlavní objekt
 	
         if (!$this->precteno_z_db) {
 //            $dbh = App_Kontext::getDbMySQLProjektor();
@@ -339,7 +332,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
                 $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->primaryKeyFieldName, $this->id)->fetch_assoc();
             }
             if ($data) {
-                foreach($this->field as $columnID => $columnName)
+                foreach($this->nazvy as $columnID => $columnName)
                 {
                     $this->value[$columnID] = $data[$columnName];
                 }
@@ -357,9 +350,9 @@ class Data_Flat_FlatTable extends Data_Iterator {
         if(!$this->idHlavnihoObjektu){
         //objekt flat table dosud nemá záznam v databázi - nový objekt
             //nastavi vsechny vlastnosti objektu na prazdnou hodnotu daneho typu sloupce v tabulce
-            foreach ($this->field as $columnID => $columnName)
+            foreach ($this->nazvy as $columnID => $columnName)
             {
-                $this->$columnname = default_hodnota($this->type[$columnID]);
+                $this->$columnname = default_hodnota($this->typy[$columnID]);
             }
         }
         else
@@ -373,7 +366,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         }
 
         $assoc_value = array();
-        foreach($this->field as $columnID => $columnName) {
+        foreach($this->nazvy as $columnID => $columnName) {
             $assoc_value[$columnName] = $this->value[$columnID];
         }
         return $assoc_value;
@@ -384,7 +377,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole názvů sloupců db tabulky
      */
     public function dejNazvy() {
-    return $this->field;
+    return $this->nazvy;
     }
     
     /**
@@ -392,7 +385,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole hodnot příznaku KEY sloupců db tabulky
      */
     public function dejKlice() {
-    return $this->key;
+    return $this->pk;
     }
 
     /**
@@ -404,7 +397,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole hodnot typů sloupců db tabulky
      */    
     public function dejTypy() {
-    return $this->type;
+    return $this->typy;
     }
 
     /**
@@ -417,7 +410,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole celočíselných délek sloupců db tabulky
      */    
     public function dejDelky() {
-    return $this->type_length;
+    return $this->delky;
     }
     
     

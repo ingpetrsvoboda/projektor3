@@ -5,13 +5,15 @@ class DB_Mysql implements DB_Connection {
   protected $dbHost;
   protected $dbName;
   protected $dbh;
+  protected $dbType   = "MySQL" ;
+  
 
 
   public function __construct($user, $pass, $dbHost, $dbName) 
   {
     $this->user = $user;
     $this->pass = $pass;
-    $this->dbhost = $dbHost;
+    $this->dbHost = $dbHost;
     $this->dbName = $dbName;
   }
   

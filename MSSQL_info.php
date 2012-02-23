@@ -5,13 +5,12 @@
 
 $conn = mssql_connect("NB-SVOBODA\SQLEXPRESS2008", "root", "spravce") or die ("Nepodařilo se připojit k databázi!");
 
-$query = mssql_query('SELECT @@VERSION');
-
-//$query = mssql_query('SELECT dbo.s_crm_firma.* FROM  dbo.s_crm_firma');
-$row = mssql_fetch_array($query);
-print_r($row);
-// Clean up
-mssql_free_result($query);
+//$query = mssql_query('SELECT @@VERSION');
+//
+//$row = mssql_fetch_array($query);
+//print_r($row);
+//// Clean up
+//mssql_free_result($query);
 
 $db = mssql_select_db("test_projektor", $conn);
 $query = mssql_query('SELECT s_crm_firma.* FROM  s_crm_firma');

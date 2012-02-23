@@ -54,7 +54,8 @@ class Stranka_Index extends Stranka implements Stranka_Interface
                     new Stranka_Element_Tlacitko("Prezentace", $this->cestaSem->generujUriDalsi("Stranka_PrezentaceM.main")),
                     new Stranka_Element_Tlacitko("Firmy", $this->cestaSem->generujUriDalsi("Stranka_Firmy.main")),
                     new Stranka_Element_Tlacitko("Staffer pozice", $this->cestaSem->generujUriDalsi("Stranka_StafferPoziceM.main")),
-                    new Stranka_Element_Tlacitko("Přihlášky zájemců", $this->cestaSem->generujUriDalsi("Stranka_PrihlaskyZajemcu.main"))                    
+                    new Stranka_Element_Tlacitko("Přihlášky zájemců", $this->cestaSem->generujUriDalsi("Stranka_PrihlaskyZajemcu.main")),                    
+                    new Stranka_Element_Tlacitko("CRMFirmy", $this->cestaSem->generujUriDalsi("Stranka_CRMFirmy.main"))
                 );
             };            
             $this->novaPromenna("tlacitka", $tlacitka);

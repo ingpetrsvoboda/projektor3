@@ -30,7 +30,7 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                 if($objektVlastnost)
 		{ 
                     $elementy = $this->pripravElementyFormulareZFlatTableObjektu($objektVlastnost, $nazevHlavnihoObjektu);
-                    $elementy = $this->prepisTiuilkyZPrezentace($elementy, $nazevHlavnihoObjektu);                   
+                    $elementy = $this->prepisTituilkyZPrezentace($elementy, $nazevHlavnihoObjektu);                   
 		}
 
 		/* Defaultni stavy formulare */

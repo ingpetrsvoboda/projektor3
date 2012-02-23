@@ -18,7 +18,7 @@ abstract class Stranka_FlatTableM extends Stranka implements Stranka_Interface
 
 	protected function main°potomekNeni()
 	{
-		$poleFlatTable = Data_Flat_FlatTable::vypisVse($this->nazev_flattable, $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], FALSE, "", NULL, $this->vsechny_radky, $this->dbh);
+		$poleFlatTable = Data_Flat_FlatTable::vypisVse($this->nazev_flattable, $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], FALSE, "", NULL, $this->vsechny_radky, $this->databaze);
                 $this->generujSeznamSTlacitky($poleFlatTable);
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", $this->nazev_mnozne);
@@ -47,7 +47,7 @@ abstract class Stranka_FlatTableM extends Stranka implements Stranka_Interface
         if($this->dalsi->parametry["id"])
 		{
 //                    $firma = Data_Seznam_SFirma::najdiPodleId($this->dalsi->parametry["id"]);
-                    $polozka = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, $this->dalsi->parametry["id"], FALSE, "", NULL, $this->vsechny_radky, $this->dbh);
+                    $polozka = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, $this->dalsi->parametry["id"], FALSE, "", NULL, $this->vsechny_radky, $this->databaze);
                     if ($polozka)
                     {
                         $hlavickaTabulky = $this->generujHlavickuTabulky();

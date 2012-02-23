@@ -10,6 +10,7 @@ class ExportExcel
     
     public $objPHPExcel;
     public $tabulka;
+    public $databaze;
     
     const EXPORT_PATH = "C:/_Export Projektor/";
 
@@ -19,18 +20,28 @@ class ExportExcel
     const LEVY_HORNI_ROH_TABULKY_SLOUPEC = 0; //číslováno os nuly
 
 
-    public function __construct($tabulka) {
+    public function __construct($tabulka, $databaze=NULL) {
         $this->tabulka = $tabulka;
+        $this->databaze = $databaze;
 
         $locale = 'cs_CZ';
         $validLocale = PHPExcel_Settings::setLocale($locale);
         if (!$validLocale) {
                 echo 'Nepodařilo se nastavit lokalizaci '.$locale." - zůstává nastavena výchozí en_us<br />\n";
         }
-
-        $dbh = App_Kontext::getDbMySQLProjektor();
-        $query = "SHOW COLUMNS FROM ~1";
-        $res= $dbh->prepare($query)->execute($this->tabulka);
+        $dbh = App_Kontext::getDbh($databaze);
+        switch($dbh->dbType){
+        case 'MySQL':
+            $dbhi = App_Kontext::getDbMySQLInformationSchema;
+            $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
+            break;
+        case 'MSSQL':
+            $dbhi = App_Kontext::getDbh($dbh->dbName);
+            $query = Helper_SqlQuery::getShowColumnsQueryMSSQL();
+            break;
+        default: throw new Exception('*** Chyba v '.__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");
+        }
+        $res= $dbhi->prepare($query)->execute($dbh->dbName, $this->tabulka);
 
         $this->objPHPExcel = new PHPExcel();
         $objWorksheet = $this->objPHPExcel->getActiveSheet();
@@ -41,8 +52,8 @@ class ExportExcel
         $cisloRadku = self::LEVY_HORNI_ROH_TABULKY_RADEK;
         //titulky sloupců
         while ($data = $res->fetch_assoc()){
-            $var_typelengh[$cisloSloupce] = split('[()]',$data['Type']);
-            $objWorksheet->getCellByColumnAndRow($cisloSloupce, $cisloRadku)->setValue($data['Field']);
+            $var_typelengh[$cisloSloupce] = $data['Delka'];
+            $objWorksheet->getCellByColumnAndRow($cisloSloupce, $cisloRadku)->setValue($data['Nazev']);
             $cisloSloupce++;    
         }
         //data

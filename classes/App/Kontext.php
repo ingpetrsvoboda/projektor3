@@ -7,7 +7,12 @@
 
 abstract class App_Kontext
 {
-	private static $DbMySQLInformationSchema;
+	const INFORMATION_SCHEMA = 'InformationSchema';
+        const PROJEKTOR = 'Projektor';
+        const PERSONAL_SERVICE = 'PersonalService';
+        const CRM = 'test_projektor';
+    
+        private static $DbMySQLInformationSchema;
         private static $DbMySQLProjektor;
 	private static $DbMySQLPersonalService;
 	private static $dbMSSQLCRM;
@@ -16,17 +21,18 @@ abstract class App_Kontext
 
 	public static function getDbh($databaze)
         {
+            if (!$databaze) $databaze = 'Projektor';
             switch($databaze){
-            case 'InformationSchema':
+            case self::INFORMATION_SCHEMA :
                 return self::getDbMySQLInformationSchema();
                 break;
-            case 'Projektor':
+            case self::PROJEKTOR :
                 return self::getDbMySQLProjektor();
                 break;
-            case 'PersonalService':
+            case self::PERSONAL_SERVICE :
                 return self::getDbMySQLPersonalService();
                 break;
-            case 'CRM':
+            case self::CRM :
                 return self::getDbMSSQLCRM();
                 break;
             }

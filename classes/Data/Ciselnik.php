@@ -70,7 +70,7 @@ class Data_Ciselnik extends Data_Iterator
             {
                 try
 		{
-			self::jeCiselnikOK($nazevCiselniku);
+			self::jeCiselnikOK($nazevCiselniku, $databaze);
 		}
 		catch (Data_Exception $e)
 		{
@@ -79,24 +79,16 @@ class Data_Ciselnik extends Data_Iterator
 			echo $e."<BR>";
 		}
             }
-		if ($databaze)
-                {
-                    $dbh = App_Kontext::getDbh($databaze);
-                } 
-                else 
-                {
-                    $dbh = App_Kontext::getDbMySQLProjektor();
-                }
-		$query = "SELECT * FROM ~1 WHERE ~2 LIKE :3" . ($vsechnyRadky ? "" : " AND valid = 1");
-		$radek = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku,
-                                                        self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku,
-                                                        $id)->fetch_assoc();
+            $dbh = App_Kontext::getDbh($databaze);
+            $query = "SELECT * FROM ~1 WHERE ~2 LIKE :3" . ($vsechnyRadky ? "" : " AND valid = 1");
+            $radek = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku,
+                                                    self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku,
+                                                    $id)->fetch_assoc();
+            if(!$radek)
+            return false;
 
-		if(!$radek)
-		return false;
-
-		return new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
-		$radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
+            return new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
+            $radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
 	}
 
 	/**
@@ -117,99 +109,90 @@ class Data_Ciselnik extends Data_Iterator
             {
                 try
 		{
-			self::jeCiselnikOK($nazevCiselniku);
+			self::jeCiselnikOK($nazevCiselniku, $databaze);
 		}
 		catch (Data_Exception $e)
 		{
 			echo $e.'<BR>';
 		}
             }
-		if ($databaze)
-                {
-                    $dbh = App_Kontext::getDbh($databaze);
-                } 
-                else 
-                {
-                    $dbh = App_Kontext::getDbMySQLProjektor();
-                }
-                $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr);
+            $dbh = App_Kontext::getDbh($databaze);
+            $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr);
 //                $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "")." ORDER BY razeni ASC";
-                $query = "SELECT * FROM ~1".
-                    ($kontextFiltr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$kontextFiltr} " : "WHERE valid = 1 AND {$kontextFiltr}"));                  
-		$radky = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetchall_assoc();
+            $query = "SELECT * FROM ~1".
+                ($kontextFiltr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$kontextFiltr} " : "WHERE valid = 1 AND {$kontextFiltr}"));                  
+            $radky = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetchall_assoc();
 
-		foreach($radky as $radek)
-		$vypis[] = new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
-		$radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
-                    
-                //$vypis[] =     self::najdiPodleId($nazevCiselniku, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
-		 
-		return $vypis;
+            foreach($radky as $radek)
+            $vypis[] = new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
+            $radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
+
+            return $vypis;
 	}
 
 	/**
 	 * Zkontroluje, zda v DB existuje tabulka s nazvem zadanym jako parametr $nazevCiselniku, v tabulce
-	 * existují jen povolené sloupce číselníku a existuje sloupec s nazvem PREFIX_NAZEV_ID.$nazevCiselniku, který je primárním klíčem tabulky
+	 * existují jen povolené sloupce číselníku a existuje sloupec s nazvem PREFIX_NAZEV_ID.$nazevCiselniku, který je primárním klíčem tabulky,
+         * metoda nekontroluje jestli jsou v tabulce všechny povolené sloupce
 	 * Poznámka: Tato verze v případě chyby ukončí běh programu.
 	 * @param unknown_type $nazevCiselniku
 	 * @return boolean
 	 */
-	private static function jeCiselnikOK($nazevCiselniku)
+	private static function jeCiselnikOK($nazevCiselniku, $databaze=NULL)
 	{
-		//        $this->chyby = new chyby();
-
-		$OK = true;
-
 		// Musí být zadán název DB tabulky číselníku
 		if (!isset($nazevCiselniku))
 		{
-			$OK = false;
 			throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Parametr název  číselniku musí být zadán");
 		}
 		// Musí existovat tabulka číselníku v DB
-		$dbh = App_Kontext::getDbMySQLProjektor();
-		$query = "SHOW TABLES LIKE :1";
-		$data = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetch_row();
-		if ($data[0] != self::PREFIX_NAZEV_C.$nazevCiselniku)
+                $dbh = App_Kontext::getDbh($databaze);
+                switch($dbh->dbType){
+                case 'MySQL':
+                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $query = Helper_SqlQuery::getShowTablesQueryMySQL();            
+                    break;
+                case 'MSSQL':
+                    $dbhi = App_Kontext::getDbh($dbh->dbName);
+                    $query = Helper_SqlQuery::getShowTablesQueryMSSQL();
+                    break;
+                default: throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");
+                }
+		$data = $dbhi->prepare($query)->execute($dbh->dbName, self::PREFIX_NAZEV_C.$nazevCiselniku)->fetch_assoc();
+		if ($data['Nazev'] != self::PREFIX_NAZEV_C.$nazevCiselniku)
 		{
-			$OK = false;
 			throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Tabulka s nazvem ".self::PREFIX_NAZEV_C.$nazevCiselniku." v databazi neexistuje.");
 		}
 		// DB tabulka číselníku musí obsahovat pouze povolené sloupce a název sloupce s id musí začínat PREFIX_NAZEV_ID
-		$dbh = App_Kontext::getDbMySQLProjektor();
-		$query = "SHOW COLUMNS FROM ".self::PREFIX_NAZEV_C.$nazevCiselniku;
-		$result= $dbh->prepare($query)->execute('');
-		/*  Příkaz SHOW vrací informace o sloupcích a v případě sloupce s indexem (primary key) je v $Data toto:
-		 *  $data = Array [6]
-		 *	Field = id_c_jazyk
-		 *	Type = int(11) unsigned
-		 * 	Null = NO
-		 *	Key = PRI
-		 *	Default = <Uninitialized>
-		 *	Extra = auto_increment
-		 *
-		 *	Testuji jestli v některém sloupci číselníku prvek Field je PREFIX_NAZEV_ID.$nazevCiselniku
-		 *  a prvek Key je PRI (primární klíč tabulky)
-		 */
+                //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky
+                switch($dbh->dbType){
+                case 'MySQL':
+                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
+                    break;
+                case 'MSSQL':
+                    $dbhi = App_Kontext::getDbh($dbh->dbName);
+                    $query = Helper_SqlQuery::getShowColumnsQueryMSSQL();
+                    break;
+                default: throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");
+                }
+		$result= $dbhi->prepare($query)->execute($dbh->dbName, self::PREFIX_NAZEV_C.$nazevCiselniku);
+
 		while ($data = $result->fetch_assoc())
 		{
-			if ($data['Field'] != self::RAZENI and
-			$data['Field'] != self::KOD and
-			$data['Field'] != self::TEXT and
-			$data['Field'] != self::PLNY_TEXT and
-			$data['Field'] != self::VALID)
+			if ($data['Nazev'] != self::RAZENI AND
+			$data['Nazev'] != self::KOD AND
+			$data['Nazev'] != self::TEXT AND
+			$data['Nazev'] != self::PLNY_TEXT AND
+			$data['Nazev'] != self::VALID)
 			{
-				if ($data['Field'] == self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku and $data['Key'] == "PRI")
+				if ($data['Nazev'] !== self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku OR !$data['PK'])
 				{
-					$OK = false;
-				}
-				else
-				{
-					throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Tabulka ".self::PREFIX_NAZEV_C.$nazevCiselniku." obsahuje sloupec ".$data['Field'].", ktery je v číselniku nepřípustný.");
+					throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Tabulka ".self::PREFIX_NAZEV_C.$nazevCiselniku." obsahuje sloupec ".$data['Nazev'].", ktery je v číselniku nepřípustný.");
 				}
 			}
 		}
-		return $OK;
+		return TRUE;
 	}
 	 
 }
