@@ -22,7 +22,9 @@ class Data_Flat_FlatTable extends Data_Iterator {
     public $chyby;
     private $vsechnyRadky;
 
-
+    //název sloupce v db, který označuje zda řádek je platný
+    const VALID = "valid";
+    
     /**
      * Konstruktor objektu Data_Flat_FlatTable - 
      * načte struktury db tabulky z databáze a vytvoří objekt odpovídající zadané db tabulce. 
@@ -122,7 +124,8 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param $dbh handler databáze
      * @return array() Pole objektů Data_Flat_FlatTable odpovidajicich radkum v DB
      */    
-    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $databaze=NULL)
+    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL,  $vsechnyRadky = FALSE, $databaze=NULL)
+    	//TODO: sjednotot pořadí argumentů metod vypisVse v Ciselnik, FlatTable, HlavniObjekt
     {
         $dbh = App_Kontext::getDbh($databaze);
         if ($objektJeVlastnostiHlavnihoObjektu)
@@ -147,11 +150,9 @@ class Data_Flat_FlatTable extends Data_Iterator {
             }
             $jmenoId = $data['Nazev'];            
         } 
-        
-        $query = "SELECT ~1 FROM ~2".
-                ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? " WHERE {$filtr} " : " WHERE valid = 1 AND {$filtr}")).
-                ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;            
 
+        $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, $orderBy, $order, $vsechnyRadky);
+        $query = "SELECT ~1 FROM ~2".$kontextFiltr;
         $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
         foreach($radky as $radek)
             $vypis[] = new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $radek[$jmenoId]);		 
@@ -168,15 +169,14 @@ class Data_Flat_FlatTable extends Data_Iterator {
     public function __get($name)
     {
         //vlastnost je přímo vlastností objektu (nikoli v polích s databázovou tabulkou
-         if (property_exists($this, $name)){
+        if (property_exists($this, $name)){
             return $this->$name;
-         }
-        //kontrola existence sloupce se zadaným názvem v tabulce
+        }
         $columnId = array_search($name,$this->nazvy);
         if($columnId===false)
         {
-// TODO: chyby - dočasně zrušeno
-//            $this->chyby->write($name,'',108);
+        // TODO: chyby - dočasně zrušeno
+        // $this->chyby->write($name,'',108);
             return false;
         }
         return $this->value[$columnId];
@@ -199,7 +199,6 @@ class Data_Flat_FlatTable extends Data_Iterator {
         }
         else
         {   
-
             //kontrola existence sloupoe se zadaným názvem v db tabulce
             $columnid = array_search($name,$this->nazvy);
             if($columnid===false)
@@ -215,7 +214,6 @@ class Data_Flat_FlatTable extends Data_Iterator {
                     $this->$name = $value;
                     return;
                 }
-    
             }
             //typové kontroly
             //pokud hodnotu $value nelze do sloupce tabulky v db uložit, nastaví se jako hodnota náhradní hodnota a zapíše se chyba do vlastnosti chyby
@@ -274,7 +272,6 @@ class Data_Flat_FlatTable extends Data_Iterator {
         }
         if(!$this->primaryKeyFieldValue) {
         // INSERT
-//            $dbh = App_Kontext::getDbMySQLProjektor();
             $query_column_names = "";       //část SQL příkazu INSERT se jmény sloupců
             $query_values = "";             //část SQL příkazu INSERT s daty
             foreach($this->nazvy as $key=>$column_name) {
@@ -291,7 +288,6 @@ class Data_Flat_FlatTable extends Data_Iterator {
             $query="INSERT INTO ".$this->jmenoTabulky." (".$query_column_names.") VALUES (".$query_values.");";
         } else {
         // UPDATE
-//            $dbh = App_Kontext::getDbMySQLProjektor();
             $query="UPDATE ".$this->jmenoTabulky." SET ";
             foreach($this->nazvy as $column_name) {
                 if ($column_name != $this->primaryKeyFieldName) {
@@ -308,72 +304,33 @@ class Data_Flat_FlatTable extends Data_Iterator {
         return true;
     }
 
+    /*
+     * Metoda nacte hodnoty z radku db tabulky do pole $this->value[] 
+     */
     private function precti_zaznam() {
-        // Metoda nacte hodnoty z radku db tabulky do pole $this->value[]
     //SVOBODA metoda přečte záznam z db, ale nezamyká záznam v db - kdokoli může mezi přečtením a zápisem zapsat bo db a při zápisu se pak takováto data přepíší
     //metoda by mohla zamykat, ale asi to by znamenalo zamknou (?transakci) celý hlavní objekt
-	
-        if (!$this->precteno_z_db) {
-//            $dbh = App_Kontext::getDbMySQLProjektor();
-
-            if ($this->objektJeVlastnostiHlavnihoObjektu) {
-                if ($this->vsechnyRadky) {
-                    $data["valid"] = TRUE;
-                } else {
-                    $hlavniObjektOuery="SELECT valid FROM ~1 WHERE ~2 = :3";
-                    $dataValid = $this->dbh->prepare($hlavniObjektOuery)->execute($this->jmenoTabulkyHlavnihoObjektu, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();
-                }
-                if ($dataValid["valid"]) {
-                $query="SELECT * FROM ~1 WHERE ~2 = :3";
-                    $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();                    
-                }
-            } else {
-                $query="SELECT * FROM ~1 WHERE ~2 = :3" . ($this->vsechnyRadky ? "" : " AND valid = 1");
-                $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->primaryKeyFieldName, $this->id)->fetch_assoc();
-            }
-            if ($data) {
-                foreach($this->nazvy as $columnID => $columnName)
-                {
-                    $this->value[$columnID] = $data[$columnName];
-                }
-                $this->primaryKeyFieldValue = $data[$this->primaryKeyFieldName]; 
-                $this->precteno_z_db = true;
-            }                
+        $query="SELECT * FROM ~1 WHERE ~2 = :3";
+        if ($this->objektJeVlastnostiHlavnihoObjektu) {
+            $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();                    
+        } else {
+            $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->primaryKeyFieldName, $this->id)->fetch_assoc();
         }
-    }
-    
-    /**
-    * Tato metoda se požívá jen v projektoru2 a to v ind_xxxxxx.inc
-    * @return <type>
-    */
-    public function get_values_assoc() {
-        if(!$this->idHlavnihoObjektu){
-        //objekt flat table dosud nemá záznam v databázi - nový objekt
-            //nastavi vsechny vlastnosti objektu na prazdnou hodnotu daneho typu sloupce v tabulce
-            foreach ($this->nazvy as $columnID => $columnName)
+        if ($data) {
+            foreach($this->nazvy as $columnID => $columnName)
             {
-                $this->$columnname = default_hodnota($this->typy[$columnID]);
+                $this->value[$columnID] = $data[$columnName];
             }
-        }
-        else
-        {
-        // má id => objekt flat table má záznam v databázi - metoda vrací hodnotu z db
-           //lazy load - načte z databáze všechny vlastnosti objektu při prvním přístupu k jakékoli vlastnosti
-           if (!$this->precteno_z_db)
-           {
-               $this->precti_zaznam();
-           }
-        }
-
-        $assoc_value = array();
-        foreach($this->nazvy as $columnID => $columnName) {
-            $assoc_value[$columnName] = $this->value[$columnID];
-        }
-        return $assoc_value;
+            $this->primaryKeyFieldValue = $data[$this->primaryKeyFieldName]; 
+            $this->precteno_z_db = true;
+            return TRUE;
+        } else {
+            return FALSE;
+        }                
     }
     
     /**
-     * Metoda vrací pole názvů vlastností oodpovídajících sloupcům db tabulky, tedy pole názvů sloupců db tabulky
+     * Metoda vrací pole názvů sloupců db tabulky
      * @return array() Pole názvů sloupců db tabulky
      */
     public function dejNazvy() {
@@ -381,7 +338,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
     }
     
     /**
-     * Metoda vrací pole hodnot příznaku KEY (primární klíč PRI, cizí klíč MUL) sloupců db tabulky
+     * Metoda vrací pole hodnot obsahující TRUE pokud sloupec db tabulky je primární klíč, jinak FALSE
      * @return array() Pole hodnot příznaku KEY sloupců db tabulky
      */
     public function dejKlice() {
@@ -389,11 +346,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
     }
 
     /**
-     * Metoda vrací pole hodnot příznaku TYPE obsahující datové typy sloupců db tabulky. Vrací pouze řetězec odpovídající názvu typu.
-     * Typy sloupců MySQL:
-     * tinyint(4), smallint(6), mediumint(9), int(11), int(11), bigint(20), bit(1), double, float, decimal(10,0),
-     * char(255), varchar(55), date, time, year(4), timestamp, datetime, tinyblob, blob, mediumblob, longblob,
-     * tinytext, text, mediumtext, longtext, enum(''), set(''), binary(255), varbinary(255)
+     * Metoda vrací pole hodnot obsahující datové typy sloupců db tabulky. Vrací pouze řetězec odpovídající názvu typu.
      * @return array() Pole hodnot typů sloupců db tabulky
      */    
     public function dejTypy() {
@@ -401,12 +354,8 @@ class Data_Flat_FlatTable extends Data_Iterator {
     }
 
     /**
-     * Metoda vrací pole hodnot příznaku TYPE_LENGTH obsahující délky datových typů sloupců db tabulky. 
+     * Metoda vrací pole hodnot obsahující délky datových typů sloupců db tabulky. 
      * Vrací pouze celé číslo odpovídající celkové délce.
-     * Typy sloupců MySQL:
-     * tinyint(4), smallint(6), mediumint(9), int(11), int(11), bigint(20), bit(1), double, float, decimal(10,0),
-     * char(255), varchar(55), date, time, year(4), timestamp, datetime, tinyblob, blob, mediumblob, longblob,
-     * tinytext, text, mediumtext, longtext, enum(''), set(''), binary(255), varbinary(255)
      * @return array() Pole celočíselných délek sloupců db tabulky
      */    
     public function dejDelky() {
@@ -457,6 +406,36 @@ class Data_Flat_FlatTable extends Data_Iterator {
 //                return 0;
 //            }
 //    }
+    
+    /**
+    * Tato metoda se požívá jen v projektoru2 a to v ind_xxxxxx.inc
+    * @return <type>
+    */
+//    public function get_values_assoc() {
+//        if(!$this->idHlavnihoObjektu){
+//        //objekt flat table dosud nemá záznam v databázi - nový objekt
+//            //nastavi vsechny vlastnosti objektu na prazdnou hodnotu daneho typu sloupce v tabulce
+//            foreach ($this->nazvy as $columnID => $columnName)
+//            {
+//                $this->$columnname = default_hodnota($this->typy[$columnID]);
+//            }
+//        }
+//        else
+//        {
+//        // má id => objekt flat table má záznam v databázi - metoda vrací hodnotu z db
+//           //lazy load - načte z databáze všechny vlastnosti objektu při prvním přístupu k jakékoli vlastnosti
+//           if (!$this->precteno_z_db)
+//           {
+//               $this->precti_zaznam();
+//           }
+//        }
+//
+//        $assoc_value = array();
+//        foreach($this->nazvy as $columnID => $columnName) {
+//            $assoc_value[$columnName] = $this->value[$columnID];
+//        }
+//        return $assoc_value;
+//    }    
 }
 
 ?>

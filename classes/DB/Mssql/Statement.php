@@ -48,8 +48,14 @@ class DB_Mssql_Statement implements DB_Statement {
 //            $query = str_replace(":$ph",Mssql_escape_string($pv), $query);
 //        }
 //        else {
-            $query = str_replace(":$ph", "'".$this->escape($pv)."'", $query); // parametr je hodnota - uzavre se do uvozovek (cislo uzavrene v uvozovkach je korektni sql
-            $query = str_replace("~$ph", "[".$this->escape($pv)."]", $query);  // parametr je identifikator - napriklad nazev tabulky nebo sloupce - uzavre se do apostrofů
+            if (is_numeric($pv))
+            {
+                $query = str_replace(":$ph", $pv, $query); // parametr je číslo                
+            } else {
+                $query = str_replace(":$ph", "\"".$this->escape($pv)."\"", $query); // parametr je hodnota - uzavre se do uvozovek (cislo uzavrene v uvozovkach je korektni sql                
+            }
+            $query = str_replace("?$ph", "[".$this->escape($pv)."]", $query);  // parametr je databázový objekt - uzavre se do hranatych zavorek
+            $query = str_replace("~$ph", "'".$this->escape($pv)."'", $query);  // parametr je identifikator - napriklad nazev tabulky nebo sloupce - uzavre se do apostrofů
 //        }
 
     }

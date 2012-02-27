@@ -127,14 +127,15 @@ abstract class Data_HlavniObjekt extends Data_Iterator
      * @param string $filtr Filtr odpovidajici SQL dotazu za WHERE
      * @return array() Pole instanci tridy odpovidajici radkum v DB
      */
-    public static function vypisVse($filtr = "", $orderBy = "", $order = "", $jmenoHlavnihoObjektu="", $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
+    public static function vypisVse($filtr = "", $orderBy = "", $order = "", $jmenoHlavnihoObjektu="", $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="", $vsechnyRadky = FALSE, $databaze=NULL)
     {
+	//TODO: sjednotot pořadí argumentů metod vypisVse v Ciselnik, FlatTable, HlavniObjekt
 //TODO: nekontrolují se parametry jmenolavnihoObjektu, tabulka, nazevCislaObjektu            
             if ($jmenoHlavnihoObjektu AND $tabulka) {
-                $dbh = App_Kontext::getDbMySQLProjektor();
-                $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, self::ID_C_KANCELAR_FK, self::ID_S_BEH_PROJEKTU_FK, $filtr, $orderBy, $order);
+                $dbh = App_Kontext::getDbh($databaze);
+                $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, self::ID_C_KANCELAR_FK, self::ID_S_BEH_PROJEKTU_FK, $filtr, $orderBy, $order, $vsechnyRadky);
     //TODO: tento query do všech datových tříd - metoda vypisVse
-                $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "");
+                $query = "SELECT * FROM ~1".$kontextFiltr;
                 $radky = $dbh->prepare($query)->execute($tabulka)->fetchall_assoc();
 
                 $tridaHlavnihoObjektu = "Data_".$jmenoHlavnihoObjektu;

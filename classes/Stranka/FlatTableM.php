@@ -18,7 +18,7 @@ abstract class Stranka_FlatTableM extends Stranka implements Stranka_Interface
 
 	protected function main°potomekNeni()
 	{
-		$poleFlatTable = Data_Flat_FlatTable::vypisVse($this->nazev_flattable, $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], FALSE, "", NULL, $this->vsechny_radky, $this->databaze);
+		$poleFlatTable = Data_Flat_FlatTable::vypisVse($this->nazev_flattable, $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"], FALSE, "", NULL, "", "", "", $this->vsechny_radky, $this->databaze);
                 $this->generujSeznamSTlacitky($poleFlatTable);
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", $this->nazev_mnozne);

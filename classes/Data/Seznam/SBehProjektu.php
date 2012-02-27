@@ -51,8 +51,8 @@ class Data_Seznam_SBehProjektu extends Data_Iterator
 	public static function najdiPodleId($id)
 	{
 		$dbh = App_Kontext::getDbMySQLProjektor();
-                $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK);
-		$query = "SELECT * FROM ~1 WHERE ~2 = :3".($kontextFiltr ? " AND ".$kontextFiltr : "");
+                $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, "", "", "~2 = :3");
+		$query = "SELECT * FROM ~1".$kontextFiltr;
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
 		if(!$radek)
@@ -73,7 +73,7 @@ class Data_Seznam_SBehProjektu extends Data_Iterator
 	{
 		$dbh = App_Kontext::getDbMySQLProjektor();
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, NULL, NULL, $filtr, $orderBy, $order);
-		$query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "");
+		$query = "SELECT * FROM ~1".$kontextFiltr;
 		$radky = $dbh->prepare($query)->execute(self::TABULKA)->fetchall_assoc();
 
 		foreach($radky as $radek)

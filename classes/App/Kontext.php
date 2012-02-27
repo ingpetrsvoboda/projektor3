@@ -83,14 +83,14 @@ abstract class App_Kontext
 		return self::$kontext;
 	}
         
-        public static function getKontextFiltrSQL($nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $filtr = NULL, $orderBy = NULL, $order = NULL)
+        public static function getKontextFiltrSQL($nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $filtr = NULL, $orderBy = NULL, $order = NULL, $vsechnyRadky = FALSE)
         {
                 $kon = self::getUserKontext();
-                $kontextFiltr = "1=1".
+                $kontextFiltr = 
+                    ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? " WHERE {$filtr} " : " WHERE valid = 1 AND {$filtr}")).
                     (($kon->projekt->id AND $nazevIdProjekt) ? " AND `{$nazevIdProjekt}` = {$kon->projekt->id}" : "").
                     (($kon->kancelar->id AND $nazevIdKancelar) ? " AND `{$nazevIdKancelar}` = {$kon->kancelar->id}" : "").
-                    (($kon->beh->id AND $nazevIdBeh) ? " AND `{$nazevIdBeh}` = {$kon->beh->id}" : "");
-                $kontextFiltr .= ($filtr ? " AND {$filtr}" : "").
+                    (($kon->beh->id AND $nazevIdBeh) ? " AND `{$nazevIdBeh}` = {$kon->beh->id}" : "").
                     ($orderBy ? " ORDER BY `{$orderBy}` {$order}" : "");
                 return $kontextFiltr;
         }

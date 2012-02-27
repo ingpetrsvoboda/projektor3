@@ -13,7 +13,7 @@ class Helper_SqlQuery
 
     public static function getShowTablesQueryMSSQL() 
     {
-        return "SELECT tab.[name] AS Nazev FROM  ~1.[sys].[tables] AS tab WHERE tab.[name]= :2";
+        return "SELECT tab.[name] AS Nazev FROM  ?1.[sys].[tables] AS tab WHERE tab.[name]= :2";
     }
     
     public static function getShowColumnsQueryMySQL() 
@@ -23,7 +23,7 @@ class Helper_SqlQuery
     
     public static function getShowColumnsQueryMSSQL() 
     {
-        return "SELECT col.[name] AS Nazev, typ.name AS Typ, col.max_length AS Delka, col.is_identity AS PK FROM ~1.[sys].[tables] AS tab JOIN ~1.[sys].[columns] AS col ON col.object_id=tab.object_id JOIN ~1.[sys].[types] AS typ ON col.[user_type_id]=typ.[user_type_id] WHERE tab.[name]=:2";
+        return "SELECT col.[name] AS Nazev, typ.name AS Typ, col.max_length AS Delka, col.is_identity AS PK FROM ?1.[sys].[tables] AS tab JOIN ?1.[sys].[columns] AS col ON col.object_id=tab.object_id JOIN ?1.[sys].[types] AS typ ON col.[user_type_id]=typ.[user_type_id] WHERE tab.[name]=:2";
     }
     
     public static function getPrimaryKeyQueryMySQL() 
@@ -33,7 +33,7 @@ class Helper_SqlQuery
     
     public static function getPrimaryKeyQueryMSSQL() 
     {
-        return "SELECT col.[name] AS Nazev FROM ~1.[sys].[tables] AS tab JOIN ~1.[sys].[columns] AS col ON col.object_id=tab.object_id  AND col.is_identity=1 WHERE tab.[name]=:2";
+        return "SELECT  COL_NAME(ic.OBJECT_ID,ic.column_id) AS Nazev FROM ?1.[sys].[indexes] AS i INNER JOIN ?1.[sys].[index_columns] AS ic ON  i.OBJECT_ID = ic.OBJECT_ID  AND i.index_id = ic.index_id WHERE   i.is_primary_key = 1 AND OBJECT_NAME(ic.OBJECT_ID)=:2";
     } 
     
     }

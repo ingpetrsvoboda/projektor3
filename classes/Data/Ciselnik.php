@@ -104,7 +104,8 @@ class Data_Ciselnik extends Data_Iterator
          * @return array() Pole instanci tridy odpovidajici radkum v číselníku v DB
 	 */
         public static function vypisVse($nazevCiselniku, $filtr = "", $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $vsechnyRadky = FALSE, $bezKontroly = FALSE, $databaze=NULL)
-	{
+	//TODO: sjednotot pořadí argumentů metod vypisVse v Ciselnik, FlatTable, HlavniObjekt
+        {
             if (!$bezKontroly)
             {
                 try
@@ -117,10 +118,9 @@ class Data_Ciselnik extends Data_Iterator
 		}
             }
             $dbh = App_Kontext::getDbh($databaze);
-            $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr);
+            $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, "", "", $vsechnyRadky);
 //                $query = "SELECT * FROM ~1".($kontextFiltr ? " WHERE ".$kontextFiltr : "")." ORDER BY razeni ASC";
-            $query = "SELECT * FROM ~1".
-                ($kontextFiltr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? "WHERE {$kontextFiltr} " : "WHERE valid = 1 AND {$kontextFiltr}"));                  
+            $query = "SELECT * FROM ~1".$kontextFiltr;
             $radky = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetchall_assoc();
 
             foreach($radky as $radek)
