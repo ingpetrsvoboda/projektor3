@@ -107,12 +107,12 @@ abstract class Data_HlavniObjekt extends Data_Iterator
      * @param int $id Identifikator radku tabulky
      * @return Instance tridy hlavniho objektu zadaneho v paranetru $nazevTridy, obsahujici data z radku v tabulce hlavniho objektu
      */
-    public static function najdiPodleId($id, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
+    public static function najdiPodleId($id, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="", $vsechnyRadky = FALSE, $databaze=NULL)
     {
 //TODO: nekontrolují se parametry jmenolavnihoObjektu, tabulka, nazevIdTabulky, nazevCislaObjektu            
-            $dbh = App_Kontext::getDbMySQLProjektor();
-                $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, self::ID_C_KANCELAR_FK, self::ID_S_BEH_PROJEKTU_FK);
-		$query = "SELECT * FROM ~1 WHERE ~2 = :3".($kontextFiltr ? " AND ".$kontextFiltr : "");
+            $dbh = App_Kontext::getDbh($databaze);
+                $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, self::ID_C_KANCELAR_FK, self::ID_S_BEH_PROJEKTU_FK, "~2 = :3", NULL, NULL, $vsechnyRadky);
+		$query = "SELECT * FROM ~1".$kontextFiltr;
                 $radek = $dbh->prepare($query)->execute($tabulka, $nazevIdTabulky, $id)->fetch_assoc();
 
             if(!$radek) return false;
@@ -236,7 +236,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
      * Najde a vrati vsechny Ucastniky prihlasene k Akce
      * @return array() Pole instanci Ucastnik
      */
-    public static function vypisPrihlaseneNaAkci($idAkce="", $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
+    public static function vypisPrihlaseneNaAkci($idAkce, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
     {
             $dbh = App_Kontext::getDbMySQLProjektor();
             $query = "SELECT ~1 FROM ~2 WHERE ~3=:4";

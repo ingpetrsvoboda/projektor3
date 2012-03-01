@@ -143,6 +143,44 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                 $this->novaPromenna("tlacitka", $tlacitka);
         }
 
+
+        /*
+        *  ~~~~~~~~PRIHLASENI~~~~~~~~~~
+        */
+	public function vhodniNaPozici($parametry = null)
+	{ 
+		return $this->vytvorStranku("vhodniNaPozici", self::SABLONA_MAIN, $parametry);
+	}
+
+	protected function vhodniNaPozici°vzdy()
+	{
+                $this->novaPromenna("id", $this->nazev);                            
+                /* Nadpis stranky */
+                $this->novaPromenna("nadpis", "Zájemci vhodní na pozici");
+
+                /* Ovladaci tlacitka stranky */
+		$tlacitka = array
+		(
+			new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
+		);
+                $this->novaPromenna("tlacitka", $tlacitka);
+	}
+	
+	protected function vhodniNaPozici°potomekNeni()
+	{
+            $zajemci = Data_Zajemce::vypisVse();
+                   ($this->parametry["id_akce"]);
+            $this->generujSeznamSTlacitky($zajemci);
+	}
+	
+	protected function vhodniNaPozici°potomek°Stranka_Zajemce°detail()
+	{
+                $this->generujPolozkuSTlacitky();
+                $this->novaPromenna("tlacitka", $tlacitka);
+        }	
+
+        
+/* ------------------------------------------------------------------------------------ */        
         private function generujPolozkuSTlacitky()
         {
         if($this->dalsi->parametry["id"])

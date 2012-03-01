@@ -175,11 +175,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Uprav doplňující", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id, "objektVlastnost" => "doplnujici", "textDoNadpisuStranky" => "doplňující"))),
                             new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $ucastnik->id)))
                         );
-
-                        $ucastnik->odeberVsechnyVlastnostiIterator();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $ucastnik->pridejVlastnostIterator($sloupec->nazevVlastnosti);
-                        }
+                        $this->pouzijHlavicku($ucastnik, $hlavickaTabulky);
                         $this->novaPromenna("polozka", $ucastnik);
                     }
                 }
@@ -201,10 +197,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 //                            new Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id)), "tlacitko")
                             new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $ucastnik->id)))
                         );
-                        $ucastnik->odeberVsechnyVlastnostiIterator();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $ucastnik->pridejVlastnostIterator($sloupec->nazevVlastnosti);
-                        }
+                        $this->pouzijHlavicku($ucastnik, $hlavickaTabulky);
                     }
                     $this->novaPromenna("seznam", $ucastnici);
                 } else {
@@ -214,13 +207,26 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 
         private function generujHlavickuTabulky() 
         {
-                /* Hlavicka tabulky */
+		/* Hlavicka tabulky */
 		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
-                $hlavickaTabulky->pridejSloupec("id", "ID", Data_Ucastnik::ID);
-                $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Ucastnik::IDENTIFIKATOR);
-                $hlavickaTabulky->pridejSloupec("turnusText", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "text");
-                $hlavickaTabulky->pridejSloupec("kancelarText", "Kancelář", Data_Ucastnik::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')","text");
+                //sloupce pro zobrazení vlastností odpovidajících sloupcům v db tabulce zajemce
+                $hlavickaTabulky->pridejSloupec("id", "ID", Data_Zajemce::ID);
+                $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Zajemce::IDENTIFIKATOR);
+                //sloupce pro zobrazení vlastností odpovidajících těm sloupcům v db tabulce zajemce, které obsahují cizí klíče
+                $hlavickaTabulky->pridejSloupec("idSBehProjektuFK", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "Data_Seznam_SBehProjektu::najdiPodleId(%ID%)", "text");
+                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Ucastnik::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId('kancelar', %ID%)", "text");                
+                //sloupec pro zobrazení vlastnosti, která nemá odpovídající sloupec v db tabulce zajemce (byla vytvořena v konstruktoru Data_Zajemce)
                 $hlavickaTabulky->pridejSloupec("celeJmeno", "Celé jméno");
+                //sloupce pro zobrazení vlastností některého ObjektuVlastnosti (např. za_xxxx_flat_table) hlavního objektu (Zajemce)
+                $hlavickaTabulky->pridejSloupec("dotaznik".self::SEPARATOR."vzdelani1", "Vzdělání1");
+                $hlavickaTabulky->pridejSloupec("dotaznik".self::SEPARATOR."KZAM_cislo1", "KZAM 1");
+                $hlavickaTabulky->pridejSloupec("dotaznik".self::SEPARATOR."KZAM_cislo2", "KZAM 2");
+                $hlavickaTabulky->pridejSloupec("dotaznik".self::SEPARATOR."KZAM_cislo3", "KZAM 3");
+                $hlavickaTabulky->pridejSloupec("dotaznik".self::SEPARATOR."KZAM_cislo4", "KZAM 4");
+                $hlavickaTabulky->pridejSloupec("dotaznik".self::SEPARATOR."KZAM_cislo5", "KZAM 5");
+                
+                
                 return $hlavickaTabulky;
+            
         }
 }

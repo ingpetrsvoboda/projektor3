@@ -3,7 +3,6 @@ class Stranka_Zajemce extends Stranka_HlavniObjekt
 {
         const HLAVNI_OBJEKT = "Zajemce";
 
-//TODO: Stranka_Zajemce a Stranka_Ucastnik -> upravit na jednu univerzální třídu Stranka_Osoba (??)        
 	public static function priprav($cesta)
 	{
 		return new self($cesta, __CLASS__);
