@@ -66,7 +66,33 @@ class Data_Zajemce extends Data_HlavniObjekt
     public static function vypisVse($filtr = "", $orderBy = "", $order = "") {
         return parent::vypisVse($filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);        
     }   
-
+    
+    /**
+     * Najde a vrati vsechny Ucastniky prihlasene k Akce
+     * @return array() Pole instanci Ucastnik
+     */
+    public static function vypisVhodneNaPozici($iscoKod)
+    {
+        $prefix = substr($iscoKod, 0, 2);
+        $delkaPrefixu = strlen($prefix);
+//        $seznamisco = Data_Seznam_SISCO::vypisVse("LENGTH(`".Data_Seznam_SISCO::KOD."`)=".$delkaKodu." AND LEFT(`".Data_Seznam_SISCO::KOD."`, ".$delkaPrefixu.")='".$prefix."'");
+// natvrdo zadané hodnoty v vypisVhodneNaPozici - nevhodné - předělat
+        $tabulka = 'za_flat_table';
+        $filtr = "LENGTH(`KZAM_cislo1`)=5 AND LEFT(`KZAM_cislo1`, ".$delkaPrefixu.")='".$prefix."'".
+                " OR LENGTH(`KZAM_cislo2`)=5 AND LEFT(`KZAM_cislo2`, ".$delkaPrefixu.")='".$prefix."'".
+                " OR LENGTH(`KZAM_cislo3`)=5 AND LEFT(`KZAM_cislo3`, ".$delkaPrefixu.")='".$prefix."'".
+                " OR LENGTH(`KZAM_cislo4`)=5 AND LEFT(`KZAM_cislo4`, ".$delkaPrefixu.")='".$prefix."'".
+                " OR LENGTH(`KZAM_cislo5`)=5 AND LEFT(`KZAM_cislo5`, ".$delkaPrefixu.")='".$prefix."'"
+                ;
+        $vhodneDotazniky = Data_Flat_FlatTable::vypisVse($tabulka, $filtr, "", "", TRUE, self::TABULKA, self::ID, "", "", "", FALSE, $databaze);
+        $vhodniZajemci = array();
+        foreach ($vhodneDotazniky as $vhodnyDotaznik) {
+            $vhodnyZajemce = parent::najdiPodleId($vhodnyDotaznik->id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
+            if ($vhodnyZajemce) $vhodniZajemci[] = $vhodnyZajemce;      // pro nevalidní zájemce vrací FALSE
+        }
+        return $vhodniZajemci;
+    }    
+    
     /**
      * Najde a vrati vsechny Ucastniky prihlasene k Akce
      * @return array() Pole instanci Ucastnik

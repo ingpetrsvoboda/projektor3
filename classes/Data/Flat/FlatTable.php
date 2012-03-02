@@ -88,11 +88,13 @@ class Data_Flat_FlatTable extends Data_Iterator {
         if ($objektJeVlastnostiHlavnihoObjektu)
         {
             $jmenoId = $jmenoSloupceIdHlavnihoObjektu;
+            // tabulky objektů, které jsou vlastností hlavního objektu neobsahují sloupec valid (ten má je tabulka hlavního objektu)
+            $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, $orderBy, $order, TRUE);
         } else {            
             $jmenoId = Data_Flat_CacheStruktury::getStrukturu($dbh, $jmenoTabulky)->primaryKeyFieldName;            
+            $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, $orderBy, $order, $vsechnyRadky);
         } 
 
-        $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, $orderBy, $order, $vsechnyRadky);
         $query = "SELECT ~1 FROM ~2".$kontextFiltr;
         $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
         foreach($radky as $radek)

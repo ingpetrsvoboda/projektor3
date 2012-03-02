@@ -57,17 +57,19 @@ class Stranka_ISCOJ extends Stranka implements Stranka_Interface
                         else
                             $this->novaPromenna("ulozeno_chyba", true);
 		}		
-		
+
 		/* Generovani */
 		return $this->vytvorStranku("detail", self::SABLONA_DETAIL, $parametry, $form->toHtml());
 	}
 
 	protected function detail°vzdy()
 	{
+            $isco = Data_Seznam_SISCO::najdiPodleId($this->parametry["id"]);
             /* Ovladaci tlacitka stranky */
             $tlacitka = array
             (
                     new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
+                    new Stranka_Element_Tlacitko("Zájemci vhodní na pozici", $this->cestaSem->generujUriDalsi("Stranka_Zajemci.vhodniNaPozici", array("iscoKod" => $isco->kod)))
             );
             $this->novaPromenna("tlacitka", $tlacitka);
 	}
@@ -77,4 +79,5 @@ class Stranka_ISCOJ extends Stranka implements Stranka_Interface
 
 	}
 
+	protected function detail°potomek°Stranka_Zajemci°vhodniNaPozici(){}        
 }

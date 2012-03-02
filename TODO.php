@@ -4,10 +4,12 @@
 
 //TODO: do PDF dodělat metody na odstavec se stylem, sada buněk se stylem, buňka se stylem, ??? automatické číslování
 
-//TODO: použít Vynucený download i pro zobrazení generovaného pdf
+//TODO: použít Vynucený download i pro zobrazení generovaného pdf a následně dodělat stránku pro výběr a download pdf uloženého na serveru (export excel, export pdf)
 
 //TODO: reporty:
 
-//TODO: dokumenty: zobrazovat smlouvy, objednávky, popis pozice
+//TODO: dokumenty: zprovoznit generování pdf 
+
+//TODO: zobrazovat smlouvy, objednávky, popis pozice???
 
 //TODO: 

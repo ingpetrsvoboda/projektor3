@@ -145,11 +145,14 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 
 
         /*
-        *  ~~~~~~~~PRIHLASENI~~~~~~~~~~
+        *  ~~~~~~~~VHODNI NA POZICI~~~~~~~~~~
         */
 	public function vhodniNaPozici($parametry = null)
 	{ 
-		return $this->vytvorStranku("vhodniNaPozici", self::SABLONA_MAIN, $parametry);
+            /* Vygenerovani filtrovaciho formulare */
+            $hlavickaTabulky = $this->generujHlavickuTabulky();
+            $filtrovaciFormular = $this->filtrovani("zajemci", $hlavickaTabulky); 
+            return $this->vytvorStranku("vhodniNaPozici", self::SABLONA_MAIN, $parametry, "", $filtrovaciFormular->toHtml());
 	}
 
 	protected function vhodniNaPozici°vzdy()
@@ -168,9 +171,18 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 	
 	protected function vhodniNaPozici°potomekNeni()
 	{
-            $zajemci = Data_Zajemce::vypisVse();
-                   ($this->parametry["id_akce"]);
-            $this->generujSeznamSTlacitky($zajemci);
+                $iscoKod = $this->parametry["iscoKod"];
+		$zajemci = Data_Zajemce::vypisVhodneNaPozici($iscoKod);
+                $this->generujSeznamSTlacitky($zajemci);
+                /* Nadpis stranky */
+                $this->novaPromenna("nadpis", "Zájemci vhodní na pozici");
+                /* Ovladaci tlacitka stranky */
+//		$tlacitka = array
+//		(
+//			new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
+//			new Stranka_Element_Tlacitko("Nový zájemce", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("objektVlastnost" => "smlouva")))
+//		);
+//                $this->novaPromenna("tlacitka", $tlacitka);
 	}
 	
 	protected function vhodniNaPozici°potomek°Stranka_Zajemce°detail()
