@@ -14,12 +14,12 @@
   //print_r($pdfpole);
 
 //*  
-    $pdfhlavicka = PDF_Kontext::dejHlavicku();
+    $pdfhlavicka = PDFContext::dejHlavicku();
 		$pdfhlavicka->text("Individuální plán účastníka - 1. část");
 		$pdfhlavicka->zarovnani("C");
 		$pdfhlavicka->vyskaPisma(14);
 		$pdfhlavicka->obrazek("./PDF/loga_SPZP_vedlesebe_bw.jpg", null, null,167,14);
-	$pdfpaticka = PDF_Kontext::dejPaticku();
+	$pdfpaticka = PDFContext::dejPaticku();
 		$pdfpaticka->text("S pomocí za prací - Individuální plán účastníka - 1. část  Účastník: ".$Ucastnik->identifikator);
 		$pdfpaticka->zarovnani("C");
 		$pdfpaticka->vyskaPisma(6);
@@ -439,7 +439,7 @@
 	
     	$podpisy->PridejBunku("Kontaktní kancelář: ", $kk, 1); 
     //	$podpisy->PridejBunku("Dne ", @$pdfpole["datum_reg"],1);
-    	$podpisy->PridejBunku("Dne ", @$pdfpole["datum_vytvor_dok"],1);
+    	$podpisy->PridejBunku("Dne ", @$pdfpole["datum_vytvor_dotazniku"],1);
         $podpisy->NovyRadek(0,5);
     	$podpisy->PridejBunku("                       ......................................................                                            ......................................................","",1);
      	$podpisy->PridejBunku("                                        účastník                                                                                     koordinátor","");
@@ -447,7 +447,7 @@
 
 
    //*******************************************************************
-    $pdfdebug = PDF_Kontext::dejDebug();
+    $pdfdebug = PDFContext::dejDebug();
     $pdfdebug->debug(0);
 
     ob_clean;

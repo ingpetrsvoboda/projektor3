@@ -5,7 +5,7 @@
 $pdfpole = $pole;
 
 //echo "<BR>pdfpole *"; print_r($pdfpole) ;
-//echo "<BR>pole pro zobrazeni*"; print_r($pole_) ;
+//echo "<BR>pole pro zobrazeni*"; print_r($pole_pro_zobrazeni) ;
  
 	foreach($pdfpole  as $klic => $hodnota) 
 	{
@@ -13,12 +13,12 @@ $pdfpole = $pole;
   	}
   	
 //*
-    $pdfhlavicka = PDF_Kontext::dejHlavicku();
+    $pdfhlavicka = PDFContext::dejHlavicku();
 		$pdfhlavicka->text("Individuální plán účastníka 2.část");
 		$pdfhlavicka->zarovnani("C");
 		$pdfhlavicka->vyskaPisma(14);
 		$pdfhlavicka->obrazek("./PDF/loga_SPZP_vedlesebe_bw.jpg", null, null,167,14);
-    $pdfpaticka = PDF_Kontext::dejPaticku();
+    $pdfpaticka = PDFContext::dejPaticku();
 		$pdfpaticka->text("S pomocí za prací - Individuální plán účastníka - 2.část  Účastník: ".$Ucastnik->identifikator);
 		$pdfpaticka->zarovnani("C");
 		$pdfpaticka->vyskaPisma(6);
@@ -113,27 +113,55 @@ $pdfpole = $pole;
 			
                         
                         
-	$pcKurz = new PDF_SadaBunek();
-        $pcKurz->Nadpis("PC kurz");
-                  //$pcKurz->Spoust("-", $pole_pro_zobrazeni['pc_pdf_kod_kurzu']);
-                  if ( ($pole_pro_zobrazeni['pc_pdf_kod_kurzu']!="nezařazen") and
-                       ($pole_pro_zobrazeni['pc_pdf_kod_kurzu']!="odmítl účast") and
-                       (mb_substr ($pole_pro_zobrazeni['pc_pdf_kod_kurzu'], 0,3)!= "---") 
+	$pc1Kurz = new PDF_SadaBunek();
+        $pc1Kurz->Nadpis("PC kurz");
+                  //$pcKurz->Spoust("-", $pole_pro_zobrazeni['pc1_pdf_kod_kurzu']);
+                  if ( ($pole_pro_zobrazeni['pc1_pdf_kod_kurzu']!="nezařazen") and
+                       ($pole_pro_zobrazeni['pc1_pdf_kod_kurzu']!="odmítl účast") and
+                       (mb_substr ($pole_pro_zobrazeni['pc1_pdf_kod_kurzu'], 0,3)!= "---") 
                      ) {
-                        $pcKurz->SpustSadu(true);
+                        $pc1Kurz->SpustSadu(true);
                   }  
-        $pcKurz->PridejBunku("Termín konání: ",$pole_pro_zobrazeni['pc_pdf_termin_konani'] );
-        $pcKurz->PridejBunku("Kód kurzu: ",$pole_pro_zobrazeni['pc_pdf_kod_kurzu'] );
-        $pcKurz->PridejBunku("Skupina účastníků: ",$pole_pro_zobrazeni['pc_pdf_skupina'],1 );
-        $pcKurz->PridejBunku("Počet absolvovaných hodin: ", @$pdfpole['pc_poc_abs_hodin'],1);
-        $pcKurz->PridejBunku("Důvod absence: ", @$pdfpole['pc_duvod_absence'],1);
-	$pcKurz->PridejBunku("Dokončeno úspěšně: ", @$pdfpole['pc_dokonceno'],1);
-       	if (@$pdfpole['pc_dokonceno'] == "Ne")
+        $pc1Kurz->PridejBunku("Termín konání: ",$pole_pro_zobrazeni['pc1_pdf_termin_konani'] );
+        $pc1Kurz->PridejBunku("Kód kurzu: ",$pole_pro_zobrazeni['pc1_pdf_kod_kurzu'] );
+        $pc1Kurz->PridejBunku("Skupina účastníků: ",$pole_pro_zobrazeni['pc1_pdf_skupina'],1 );
+        $pc1Kurz->PridejBunku("Počet absolvovaných hodin: ", @$pdfpole['pc1_poc_abs_hodin'],1);
+        $pc1Kurz->PridejBunku("Důvod absence: ", @$pdfpole['pc1_duvod_absence'],1);
+	$pc1Kurz->PridejBunku("Dokončeno úspěšně: ", @$pdfpole['pc1_dokonceno'],1);
+       	if (@$pdfpole['pc1_dokonceno'] == "Ne")
         {
-            $pcKurz->PridejBunku("Důvod neúspěšného ukončení: ", @$pdfpole['pc_duvod_neukonceni'],1);
+            $pc1Kurz->PridejBunku("Důvod neúspěšného ukončení: ", @$pdfpole['pc1_duvod_neukonceni'],1);
         }       
-        $pcKurz->PridejBunku("Datum vydání osvědčení o rekvalifikaci (certifikátu): ", @$pdfpole['pc_datum_certif'],1);        
-        $pcKurz->NovyRadek();
+        $pc1Kurz->PridejBunku("Datum vydání osvědčení o rekvalifikaci (certifikátu): ", @$pdfpole['pc1_datum_certif'],1);        
+        $pc1Kurz->NovyRadek();
+        
+        
+        
+        
+        $pc2Kurz = new PDF_SadaBunek();
+        $pc2Kurz->Nadpis("PC kurz - další");
+                  //$pcKurz->Spoust("-", $pole_pro_zobrazeni['pc2_pdf_kod_kurzu']);
+                  if ( ($pole_pro_zobrazeni['pc2_pdf_kod_kurzu']!="nezařazen") and
+                       ($pole_pro_zobrazeni['pc2_pdf_kod_kurzu']!="odmítl účast") and
+                       (mb_substr ($pole_pro_zobrazeni['pc2_pdf_kod_kurzu'], 0,3)!= "---") 
+                     ) {
+                        $pc2Kurz->SpustSadu(true);
+                  }  
+        $pc2Kurz->PridejBunku("Termín konání: ",$pole_pro_zobrazeni['pc2_pdf_termin_konani'] );
+        $pc2Kurz->PridejBunku("Kód kurzu: ",$pole_pro_zobrazeni['pc2_pdf_kod_kurzu'] );
+        $pc2Kurz->PridejBunku("Skupina účastníků: ",$pole_pro_zobrazeni['pc2_pdf_skupina'],1 );
+        $pc2Kurz->PridejBunku("Počet absolvovaných hodin: ", @$pdfpole['pc2_poc_abs_hodin'],1);
+        $pc2Kurz->PridejBunku("Důvod absence: ", @$pdfpole['pc2_duvod_absence'],1);
+	$pc2Kurz->PridejBunku("Dokončeno úspěšně: ", @$pdfpole['pc2_dokonceno'],1);
+       	if (@$pdfpole['pc2_dokonceno'] == "Ne")
+        {
+            $pc2Kurz->PridejBunku("Důvod neúspěšného ukončení: ", @$pdfpole['pc2_duvod_neukonceni'],1);
+        }       
+        $pc2Kurz->PridejBunku("Datum vydání osvědčení o rekvalifikaci (certifikátu): ", @$pdfpole['pc2_datum_certif'],1);        
+        $pc2Kurz->NovyRadek();
+        
+        
+        
         
         
         
@@ -211,7 +239,7 @@ $pdfpole = $pole;
         
         
     $prof1Kurz = new PDF_SadaBunek();
-        $prof1Kurz->Nadpis("Profesní rekvalifikace");
+        $prof1Kurz->Nadpis("Profesní rekvalifikace I");
                   //$prof1Kurz->Spoust("-", $pole_pro_zobrazeni['prof1_pdf_kod_kurzu']);
                   if ( ($pole_pro_zobrazeni['prof1_pdf_kod_kurzu']!="nezařazen") and
                        ($pole_pro_zobrazeni['prof1_pdf_kod_kurzu']!="odmítl účast") and
@@ -236,7 +264,7 @@ $pdfpole = $pole;
 	
 	
      $prof2Kurz = new PDF_SadaBunek();
-        $prof2Kurz->Nadpis("Profesní rekvalifikace - další");
+        $prof2Kurz->Nadpis("Profesní rekvalifikace II");
                   //$prof2Kurz->Spoust("-", $pole_pro_zobrazeni['prof2_pdf_kod_kurzu']);
                   if ( ($pole_pro_zobrazeni['prof2_pdf_kod_kurzu']!="nezařazen") and
                        ($pole_pro_zobrazeni['prof2_pdf_kod_kurzu']!="odmítl účast") and
@@ -258,7 +286,29 @@ $pdfpole = $pole;
         $prof2Kurz->PridejBunku("Datum vydání osvědčení o rekvalifikaci (certifikátu): ", @$pdfpole['prof2_datum_certif'],1);        
         $prof2Kurz->NovyRadek();
 	
-	
+		
+    $prof3Kurz = new PDF_SadaBunek();
+        $prof3Kurz->Nadpis("Profesní rekvalifikace III");
+                  //$prof3Kurz->Spoust("-", $pole_pro_zobrazeni['prof3_pdf_kod_kurzu']);
+                  if ( ($pole_pro_zobrazeni['prof3_pdf_kod_kurzu']!="nezařazen") and
+                       ($pole_pro_zobrazeni['prof3_pdf_kod_kurzu']!="odmítl účast") and
+                       (mb_substr ($pole_pro_zobrazeni['prof3_pdf_kod_kurzu'], 0,3)!= "---") 
+                     ) {
+                        $prof3Kurz->SpustSadu(true);
+                  }
+        $prof3Kurz->PridejBunku("Název rekvalifikačního kurzu: ",$pole_pro_zobrazeni['prof3_pdf_nazev'], 1 );             
+        $prof3Kurz->PridejBunku("Termín konání: ",$pole_pro_zobrazeni['prof3_pdf_termin_konani'] );
+        $prof3Kurz->PridejBunku("Kód kurzu: ",$pole_pro_zobrazeni['prof3_pdf_kod_kurzu'],1 );
+        
+ 	$prof3Kurz->PridejBunku("Počet absolvovaných hodin: ", @$pdfpole['prof3_poc_abs_hodin'],1);
+        $prof3Kurz->PridejBunku("Důvod absence: ", @$pdfpole['prof3_duvod_absence'],1); 
+	$prof3Kurz->PridejBunku("Dokončeno úspěšně: ", @$pdfpole['prof3_dokonceno'],1);
+		if (@$pdfpole['prof3_dokonceno'] == "Ne")
+        {
+            $prof3Kurz->PridejBunku("Důvod neúspěšného ukončení: ", @$pdfpole['prof3_duvod_neukonceni'],1);
+        }
+        $prof3Kurz->PridejBunku("Datum vydání osvědčení o rekvalifikaci (certifikátu): ", @$pdfpole['prof3_datum_certif'],1);        
+        $prof3Kurz->NovyRadek();   
 	
 	
         
@@ -283,7 +333,7 @@ $pdfpole = $pole;
 //*/       
         
   //******************************************  
-    $pdfdebug = PDF_Kontext::dejDebug();
+    $pdfdebug = PDFContext::dejDebug();
     $pdfdebug->debug(0);
     
 	ob_clean;
@@ -300,12 +350,14 @@ $pdfpole = $pole;
 	$pdf->TiskniSaduBunek($motivacniProgram, 3  ,0,1);            //sada, pocet mezer, tiskni vzdy, tiskni jen spustenou
 	$pdf->TiskniSaduBunek($kurzZZTP, 3    ,0,1); 
 	$pdf->TiskniSaduBunek($komunikacniKurz, 3   ,0,1);
-	$pdf->TiskniSaduBunek($pcKurz, 3  ,0,1);
+	$pdf->TiskniSaduBunek($pc1Kurz, 3  ,0,1);
+        $pdf->TiskniSaduBunek($pc2Kurz, 3  ,0,1);
     $pdf->TiskniSaduBunek($bilancDiag, 3  ,0,1);
     $pdf->TiskniSaduBunek($pracDiag, 3  ,0,1);
    // $pdf->TiskniSaduBunek($prax, 3);
     $pdf->TiskniSaduBunek($prof1Kurz, 3  ,0,1);
     $pdf->TiskniSaduBunek($prof2Kurz, 3  ,0,1);
+    $pdf->TiskniSaduBunek($prof3Kurz, 3  ,0,1);
     
     $pdf->Ln(5);
     $pdf->TiskniSaduBunek($podpisy, 0, 1);

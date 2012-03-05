@@ -16,15 +16,10 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
 	public function main($parametry = null)
 	{ 
                 /* Vygenerovani vyhledavaciho formulare */
-                $dalsi = $this->dalsi;
-                $formAjax = print_r('
-                    <form>
-                    Sem pište ajaxem hledaný text: <input type="text" onkeyup="naseptavani(this.value)" size="40" />
-                    </form>
-                ', TRUE);           
+                $dalsi = $this->dalsi;      
 
                 $vyhledavaciFormular = $this->hledani($dalsi->parametry['hledanyText']);
-                return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry, $formAjax, $vyhledavaciFormular->toHtml());
+                return $this->vytvorStranku("main", self::SABLONA_MAIN, $parametry, "", $vyhledavaciFormular->toHtml());
 	}
 
 	protected function main°vzdy()
@@ -77,9 +72,11 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
         private function hledani($vychoziHodnotaTextu="")
         {
             $form = new HTML_QuickForm("iscom", "post", $this->cestaSem->generujUri());
-            $form->addElement("text", "hledanyText", "Hledany text");
+            // javascript nastavuje focus na příslučný input a následně (onMouse je nejlepší co jsem našel) kurzor na konec textu
+            $form->addElement("text", "hledanyText", "Hledany text", array('onkeyup' => "self.document.forms.iscom.submit()",
+                "onMouseover" => "self.document.forms.iscom.hledanyText.focus(); var val=self.document.forms.iscom.hledanyText.value; self.document.forms.iscom.hledanyText.value = '';self.document.forms.iscom.hledanyText.value=val"));
             if ($vychoziHodnotaTextu) $form->getElement("hledanyText")->setValue($vychoziHodnotaTextu);
-
+//self.document.forms.form1.submit()
             $form->addElement("submit", "submitHledat", "Hledat");
 
             if($form->validate())
@@ -88,6 +85,9 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
                 $data = $form->exportValues();
                 if ($data["submitHledat"]) {
                     $this->hledanyText = $data["hledanyText"];  //protected proměnná
+                } else {
+                    $this->hledanyText = $data["hledanyText"];  //protected proměnná
+                    
                 }
             }
 

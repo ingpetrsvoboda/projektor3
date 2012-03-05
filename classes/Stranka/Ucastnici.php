@@ -154,7 +154,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                         $hlavickaTabulky = $this->generujHlavickuTabulky();
                         $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky); 
                         
-                        $ucastnik->odkaz = $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id));
+//                        $ucastnik->odkaz = $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id));
                         $ucastnik->tlacitka = array
                         (
                             new Stranka_Element_Tlacitko("Smlouva", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id, "objektVlastnost" => "smlouva", "textDoNadpisuStranky" => "smlouva", "zmraz" => 1))),

@@ -73,23 +73,39 @@ class Data_Zajemce extends Data_HlavniObjekt
      */
     public static function vypisVhodneNaPozici($iscoKod)
     {
-        $prefix = substr($iscoKod, 0, 2);
-        $delkaPrefixu = strlen($prefix);
+        $isco1 = substr($iscoKod, 0, 1);
 //        $seznamisco = Data_Seznam_SISCO::vypisVse("LENGTH(`".Data_Seznam_SISCO::KOD."`)=".$delkaKodu." AND LEFT(`".Data_Seznam_SISCO::KOD."`, ".$delkaPrefixu.")='".$prefix."'");
 // natvrdo zadané hodnoty v vypisVhodneNaPozici - nevhodné - předělat
         $tabulka = 'za_flat_table';
-        $filtr = "LENGTH(`KZAM_cislo1`)=5 AND LEFT(`KZAM_cislo1`, ".$delkaPrefixu.")='".$prefix."'".
-                " OR LENGTH(`KZAM_cislo2`)=5 AND LEFT(`KZAM_cislo2`, ".$delkaPrefixu.")='".$prefix."'".
-                " OR LENGTH(`KZAM_cislo3`)=5 AND LEFT(`KZAM_cislo3`, ".$delkaPrefixu.")='".$prefix."'".
-                " OR LENGTH(`KZAM_cislo4`)=5 AND LEFT(`KZAM_cislo4`, ".$delkaPrefixu.")='".$prefix."'".
-                " OR LENGTH(`KZAM_cislo5`)=5 AND LEFT(`KZAM_cislo5`, ".$delkaPrefixu.")='".$prefix."'"
+        //filtr vybírá dozazníky, kde je alespoň jedno KZAM se stejnou hlavní skupinou jako hledané isco - vychází predpoklad alespoň 100
+//        $filtr = "LENGTH(`KZAM_cislo1`)=5 AND LEFT(`KZAM_cislo1`, 1)='".$isco1."'".
+//                " OR LENGTH(`KZAM_cislo2`)=5 AND LEFT(`KZAM_cislo2`, 1)='".$isco1."'".
+//                " OR LENGTH(`KZAM_cislo3`)=5 AND LEFT(`KZAM_cislo3`, 1)='".$isco1."'".
+//                " OR LENGTH(`KZAM_cislo4`)=5 AND LEFT(`KZAM_cislo4`, 1)='".$isco1."'".
+//                " OR LENGTH(`KZAM_cislo5`)=5 AND LEFT(`KZAM_cislo5`, 1)='".$isco1."'"
+//                ;
+        //filtr vybírá dozazníky, kde je alespoň jedno KZAM se stejnou hlavní skupinou jako hledané isco - ostatním vyjde hodnota předpoklady nula
+        $filtr = "LENGTH(`KZAM_cislo1`)=5".
+                " OR LENGTH(`KZAM_cislo2`)=5".
+                " OR LENGTH(`KZAM_cislo3`)=5".
+                " OR LENGTH(`KZAM_cislo4`)=5".
+                " OR LENGTH(`KZAM_cislo5`)=5"
                 ;
-        $vhodneDotazniky = Data_Flat_FlatTable::vypisVse($tabulka, $filtr, "", "", TRUE, self::TABULKA, self::ID, "", "", "", FALSE, $databaze);
+        $dotazniky = Data_Flat_FlatTable::vypisVse($tabulka, $filtr, "", "", TRUE, self::TABULKA, self::ID, "", "", "", FALSE, $databaze);
+
         $vhodniZajemci = array();
-        foreach ($vhodneDotazniky as $vhodnyDotaznik) {
-            $vhodnyZajemce = parent::najdiPodleId($vhodnyDotaznik->id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
-            if ($vhodnyZajemce) $vhodniZajemci[] = $vhodnyZajemce;      // pro nevalidní zájemce vrací FALSE
+        foreach ($dotazniky as $dotaznik) {
+            $zajemce = parent::najdiPodleId($dotaznik->id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);// pro nevalidní zájemce vrací FALSE
+            if ($zajemce) 
+            {
+                $zajemce->predpoklad = self::predpoklady($iscoKod, $dotaznik);   //přidá objektu zajemce novou vlastnost predpoklad
+                $vhodniZajemci[] = $zajemce; 
+            }
         }
+
+         usort($vhodniZajemci, "self::porovnejPredpoklady");
+
+
         return $vhodniZajemci;
     }    
     
@@ -101,5 +117,40 @@ class Data_Zajemce extends Data_HlavniObjekt
     {
         return parent::najdiPodleId($idAkce, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
     }    
+    
+    /**
+     * funkce vypočítá hodnotu předpokladů plynoucích ze zadaného dotazníku pro zadané ISCO
+     * @param string $iscoKod
+     * @param objekt $dotaznik
+     * @return integer  
+     */
+    private static function predpoklady($iscoKod, $dotaznik)
+        {
+            $isco1 = substr($iscoKod, 0, 1);
+            $filtr = "pozadovane_kzam1 = ".$isco1;
+            $kzamKvalikacniPredpoklady = Data_Flat_FlatTable::vypisVse("s_kzam_kvalifikacni_predpoklady", $filtr, "", "", FALSE, "", "", "", "", "", TRUE, $databaze);
+            $predpoklad = 0;
+            for ($i = 1; $i <= 5; $i++) {
+                $vlastnostKzam = "KZAM_cislo".$i;
+                $kz1 = substr($dotaznik->$vlastnostKzam, 0, 1);
+                $vlastnostPredpoklad = "predpoklad_kz".$kz1;
+                $p = $kzamKvalikacniPredpoklady[0]->$vlastnostPredpoklad;
+                $predpoklad = $predpoklad + pow($p, 4);
+            }
+            $predpoklad = intval(pow($predpoklad, 1/4));  //čtrvtá odmocnina ze součtu čtvrtých mocnin kvalifikačních předpokladů 
+            return $predpoklad;    
+        }    
+
+     /*
+      * callback funkce pro usort - funkce pro porovnání dvou zájemců podle předpokladů
+      */
+     function porovnejPredpoklady($a,$b) {
+            if ($a->predpoklad == $b->predpoklad) {
+                return 0;
+            }
+//            return ($a->predpoklad < $b->predpoklad) ? -1 : 1;         // řadí vzestupně 
+            return ($a->predpoklad > $b->predpoklad) ? -1 : 1;         // řadí sestupně
+    }        
+        
 }
 ?>

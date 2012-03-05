@@ -12,12 +12,12 @@
   
  
 //*
-    $pdfhlavicka = PDF_Kontext::dejHlavicku();
+    $pdfhlavicka = PDFContext::dejHlavicku();
 		$pdfhlavicka->text("Individuální plán účastníka 3.část");
 		$pdfhlavicka->zarovnani("C");
 		$pdfhlavicka->vyskaPisma(14);
 		$pdfhlavicka->obrazek("./PDF/loga_BW_Rodina_neni_handicap.jpg", null, null,165,8.6);
-    $pdfpaticka = PDF_Kontext::dejPaticku();
+    $pdfpaticka = PDFContext::dejPaticku();
 		$pdfpaticka->text("Rodina není handicap - Individuální plán účastníka - 3.část  Účastník: ".$Ucastnik->identifikator);
 		$pdfpaticka->zarovnani("C");
 		$pdfpaticka->vyskaPisma(6);
@@ -143,8 +143,10 @@
     $vyhodnoceni->Nadpis("Vyhodnocení");
     $vyhodnoceniMot = new PDF_Odstavec;
     $vyhodnoceniMot->Text(@$pdfpole['mot_hodnoceni']);
-    $vyhodnoceniPC = new PDF_Odstavec;
-    $vyhodnoceniPC->Text(@$pdfpole['pc_hodnoceni']);
+    $vyhodnoceniPC1 = new PDF_Odstavec;
+    $vyhodnoceniPC1->Text(@$pdfpole['pc1_hodnoceni']);
+    $vyhodnoceniPC2 = new PDF_Odstavec;
+    $vyhodnoceniPC2->Text(@$pdfpole['pc2_hodnoceni']);
     $vyhodnoceniBidi = new PDF_Odstavec;
     $vyhodnoceniBidi->Text(@$pdfpole['bidi_hodnoceni']);
     $vyhodnoceniPrdi = new PDF_Odstavec;
@@ -155,6 +157,8 @@
     $vyhodnoceniProf1->Text(@$pdfpole['prof1_hodnoceni']);
     $vyhodnoceniProf2 = new PDF_Odstavec;
     $vyhodnoceniProf2->Text(@$pdfpole['prof2_hodnoceni']);
+    $vyhodnoceniProf3 = new PDF_Odstavec;
+    $vyhodnoceniProf3->Text(@$pdfpole['prof3_hodnoceni']);
     $vyhodnoceniPoradenstvi = new PDF_Odstavec;
     $vyhodnoceniPoradenstvi->Text(@$pdfpole['porad_hodnoceni']);
     $vyhodnoceniDoporuceni = new PDF_Odstavec;
@@ -201,7 +205,7 @@
     
         
   //******************************************  
-    $pdfdebug = PDF_Kontext::dejDebug();
+    $pdfdebug = PDFContext::dejDebug();
     $pdfdebug->debug(0);
 	    
     ob_clean;
@@ -243,12 +247,14 @@
     $pdf->AddPage();
     $pdf->TiskniSaduBunek($vyhodnoceni, 0, 1);
     $pdf->TiskniOdstavec($vyhodnoceniMot);
-    $pdf->TiskniOdstavec($vyhodnoceniPC);
+    $pdf->TiskniOdstavec($vyhodnoceniPC1);
+    $pdf->TiskniOdstavec($vyhodnoceniPC2);
     $pdf->TiskniOdstavec($vyhodnoceniBidi);
     $pdf->TiskniOdstavec($vyhodnoceniPrdi);
     /*$pdf->TiskniOdstavec($vyhodnoceniPraxe);*/
     $pdf->TiskniOdstavec($vyhodnoceniProf1);
     $pdf->TiskniOdstavec($vyhodnoceniProf2);
+    $pdf->TiskniOdstavec($vyhodnoceniProf3);
     $pdf->TiskniOdstavec($vyhodnoceniPoradenstvi);
     $pdf->TiskniOdstavec($vyhodnoceniDoporuceni);
     $pdf->TiskniOdstavec($vyhodnoceniDalsi);

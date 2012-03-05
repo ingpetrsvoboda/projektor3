@@ -12,13 +12,13 @@
   
 
 
-    $pdfhlavicka = PDF_Kontext::dejHlavicku();
+    $pdfhlavicka = PDFContext::dejHlavicku();
 		//$pdfhlavicka->text("Individuální plán účastníka - 1. část");
 		$pdfhlavicka->zarovnani("C");
 		$pdfhlavicka->vyskaPisma(14);
 		$pdfhlavicka->obrazek("./PDF/loga_BW_Rodina_neni_handicap.jpg", null, null,165,8.6);
 		
-    $pdfpaticka = PDF_Kontext::dejPaticku();
+    $pdfpaticka = PDFContext::dejPaticku();
 		$pdfpaticka->text("Dohoda o účasti v projektu „Rodina není handicap v Plzeňském kraji“  Účastník: ".$Ucastnik->identifikator);
 		$pdfpaticka->zarovnani("C");
 		$pdfpaticka->vyskaPisma(6);
@@ -436,7 +436,7 @@ $podpisy = new PDF_SadaBunek();
 	$kk = $Kancelar->plny_text;
        	
     	$podpisy->PridejBunku("Kontaktní kancelář: ", $kk, 1); 
-    	$podpisy->PridejBunku("Dne ", @$pdfpole["datum_vytvor_dok"],1);
+    	$podpisy->PridejBunku("Dne ", @$pdfpole["datum_vytvor_smlouvy"],1);
 	$podpisy->NovyRadek(0,1);
 	$podpisy->PridejBunku("                       Účastník:                                                                                   Dodavatel:","",1);
         $podpisy->NovyRadek(0,5);
@@ -453,7 +453,7 @@ $podpisy = new PDF_SadaBunek();
 
 //**********************************************
 
-    $pdfdebug = PDF_Kontext::dejDebug();
+    $pdfdebug = PDFContext::dejDebug();
     $pdfdebug->debug(0);
 
     ob_clean;
