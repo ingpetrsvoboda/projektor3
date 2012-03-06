@@ -91,7 +91,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
             // tabulky objektů, které jsou vlastností hlavního objektu neobsahují sloupec valid (ten má je tabulka hlavního objektu)
             $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, $orderBy, $order, TRUE);
         } else {            
-            $jmenoId = Data_Flat_CacheStruktury::getStrukturu($dbh, $jmenoTabulky)->primaryKeyFieldName;            
+            $jmenoId = Data_Flat_CacheStruktury::getStrukturu($databaze, $jmenoTabulky)->primaryKeyFieldName;            
             $kontextFiltr = App_Kontext::getKontextFiltrSQL($nazevIdProjekt, $nazevIdKancelar, $nazevIdBeh, $filtr, $orderBy, $order, $vsechnyRadky);
         } 
 
