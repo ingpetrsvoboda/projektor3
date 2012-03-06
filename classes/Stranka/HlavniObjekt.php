@@ -19,7 +19,7 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                         $hlavniObjekt = new $tridaHlavnihoObjektu(NULL, NULL, $kontext->projekt->id, $kontext->beh->id, $kontext->kancelar->id);                                                                
                     } else {
                         $this->novaPromenna("hlaseni", "Pro uložení údajů ".$nazevHlavnihoObjektu." je nezbytné mít zvolen projekt, běh i kancelář.");  
-                        return;
+                        return FALSE;
                     }                        
                 }
 
@@ -84,6 +84,10 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                     if($parametry["id"]) 
                     {
                         $form->addElement("submit", "submit", "Ulozit");
+                        if ($parametry["pdf"])
+                        {
+                        $form->addElement("submit", $parametry["pdf"], "Vytvořit PDF dokument ".$parametry["pdf"]);
+                        }
                         $this->novaPromenna("nadpis", "Úprava údajů: ".$parametry["textDoNadpisuStranky"]);                        
                     }
                     else
@@ -101,6 +105,10 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
 		if($form->validate())
 		{
                     $form->removeElement("submit");
+                    if ($parametry["pdf"])
+                    {
+                        $form->removeElement($parametry["pdf"]);
+                    }
                     $form->freeze();
                     $data = $form->exportValues();
                     foreach ($data as $key => $value) {
@@ -118,7 +126,7 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
                             $hlavniObjekt->$vlastnost[0]->$vlastnost[1] = $value;
                         }
                     }
-                    if($hlavniObjekt->uloz($tridaHlavnihoObjektu::TABULKA))
+                    if($hlavniObjekt->uloz())
                         $this->novaPromenna("ulozeno", true);
                     else
                         $this->novaPromenna("ulozeno_chyba", true);                    
@@ -144,5 +152,29 @@ abstract class Stranka_HlavniObjekt extends Stranka implements Stranka_Interface
             $this->promenne["ucastnik_zpet"] = $this->cestaSem->generujUriZpet();*/
 	}
 
-    
+ 
+        protected function smaz($nazevHlavnihoObjektu = null, $parametry = NULL)
+        {
+                if ($parametry["id"] AND $nazevHlavnihoObjektu) {
+                    $tridaHlavnihoObjektu = "Data_".$nazevHlavnihoObjektu;
+                    $hlavniObjekt = $tridaHlavnihoObjektu::najdiPodleId($parametry["id"]);                    
+                    if ($hlavniObjekt) 
+                    {
+                        return $hlavniObjekt->smaz();                    
+                    }
+                    return FALSE;
+                } else {
+                    return FALSE;
+                }            
+        }
+
+        protected function smaz°vzdy()
+        {
+            
+        }
+
+	protected function smaz°potomekNeni()
+	{
+	}        
+        
 }

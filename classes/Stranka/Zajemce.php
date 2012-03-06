@@ -8,7 +8,7 @@ class Stranka_Zajemce extends Stranka_HlavniObjekt
 		return new self($cesta, __CLASS__);
 	}
 
-        public function detail($parametry)
+        public function detail($parametry=NULL)
         {
             return parent::detail(self::HLAVNI_OBJEKT, $parametry);
         }
@@ -43,4 +43,11 @@ class Stranka_Zajemce extends Stranka_HlavniObjekt
 		$this->detail°potomekNeni();
 	}
 
+        public function smaz($parametry=NULL)
+        {
+            return parent::smaz(self::HLAVNI_OBJEKT, $parametry);            
+        }
+     
+        
+        
 }

@@ -20,6 +20,7 @@
 class Data_Zajemce extends Data_HlavniObjekt
 {
     const HLAVNI_OBJEKT = "Zajemce";
+    const DATABAZE = App_Kontext::PROJEKTOR;
     const TABULKA = "zajemce"; 
 //TODO: přejmenovat sloupec v db na id_zajemce_FK a změnit konstantu
     const ID = "id_zajemce";
@@ -47,7 +48,7 @@ class Data_Zajemce extends Data_HlavniObjekt
     public function __construct($cisloHlavnihoObjektu = 0, $identifikator =0, $idCProjektFK = null, $idSBehProjektuFK = null, $idCKancelarFK = null,
                                 $updated = 0, $id = null)
     {
-            parent::__construct(__CLASS__, self::TABULKA, self::PREFIX, self::ID, self::KONTEXT_IDENTIFIKATORU, 
+            parent::__construct(__CLASS__, self::DATABAZE, self::TABULKA, self::PREFIX, self::ID, self::KONTEXT_IDENTIFIKATORU, 
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id);
 
@@ -60,11 +61,11 @@ class Data_Zajemce extends Data_HlavniObjekt
     }
 
     public static function najdiPodleId($id) {
-        return parent::najdiPodleId($id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
+        return parent::najdiPodleId($id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU, FALSE, self::DATABAZE);
     }
     
     public static function vypisVse($filtr = "", $orderBy = "", $order = "") {
-        return parent::vypisVse($filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);        
+        return parent::vypisVse($filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU, FALSE, self::DATABAZE);        
     }   
     
     /**
@@ -75,7 +76,7 @@ class Data_Zajemce extends Data_HlavniObjekt
     {
         $isco1 = substr($iscoKod, 0, 1);
 //        $seznamisco = Data_Seznam_SISCO::vypisVse("LENGTH(`".Data_Seznam_SISCO::KOD."`)=".$delkaKodu." AND LEFT(`".Data_Seznam_SISCO::KOD."`, ".$delkaPrefixu.")='".$prefix."'");
-// natvrdo zadané hodnoty v vypisVhodneNaPozici - nevhodné - předělat
+//TODO: natvrdo zadané hodnoty $tabulka v vypisVhodneNaPozici - nevhodné - předělat (v době volání vypisVhodneNaPozici jeětě není instancován objekt a není dostupné pole $_mapovaniObjektTabulka
         $tabulka = 'za_flat_table';
         //filtr vybírá dozazníky, kde je alespoň jedno KZAM se stejnou hlavní skupinou jako hledané isco - vychází predpoklad alespoň 100
 //        $filtr = "LENGTH(`KZAM_cislo1`)=5 AND LEFT(`KZAM_cislo1`, 1)='".$isco1."'".
@@ -91,7 +92,7 @@ class Data_Zajemce extends Data_HlavniObjekt
                 " OR LENGTH(`KZAM_cislo4`)=5".
                 " OR LENGTH(`KZAM_cislo5`)=5"
                 ;
-        $dotazniky = Data_Flat_FlatTable::vypisVse($tabulka, $filtr, "", "", TRUE, self::TABULKA, self::ID, "", "", "", FALSE, $databaze);
+        $dotazniky = Data_Flat_FlatTable::vypisVse($tabulka, $filtr, "", "", TRUE, self::TABULKA, self::ID, "", "", "", FALSE, self::DATABAZE);
 
         $vhodniZajemci = array();
         foreach ($dotazniky as $dotaznik) {

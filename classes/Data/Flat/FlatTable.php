@@ -2,7 +2,7 @@
 class Data_Flat_FlatTable extends Data_Iterator {
     public $id;
     public $jmenoTabulky;
-    public $dbh;
+    public $databaze;
     public $objektJeVlastnostiHlavnihoObjektu;
     public $jmenoTabulkyHlavnihoObjektu;
     public $jmenoSloupceIdHlavnihoObjektu;
@@ -31,9 +31,9 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param boolean $vsechnyRadky Konstuktor vytvoří objekt pro všechny řádky tabulky bez ohledu na hodnotu ve sloupci valid
      * @param int $id V závislosti na $objektJeVlastnostiHlavnihoObjektu primární klíč tabulky nebo cizí klíč - id hlavního objektu
      */
-    public function __construct($jmenoTabulky, $dbh=NULL, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu=NULL, $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky=0, $id=NULL)
+    public function __construct($databaze, $jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu=NULL, $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky=0, $id=NULL)
     {
-        $this->dbh = $dbh;
+        $this->databaze = $databaze;
         $this->jmenoTabulky = $jmenoTabulky;
         $this->objektJeVlastnostiHlavnihoObjektu = $objektJeVlastnostiHlavnihoObjektu;
         $this->jmenoTabulkyHlavnihoObjektu = $jmenoTabulkyHlavnihoObjektu;
@@ -66,7 +66,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
     public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $databaze=NULL)
     {
         $dbh = App_Kontext::getDbh($databaze);
-        return new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $id); 
+        return new Data_Flat_FlatTable($databaze, $jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $id); 
     }
     
     /**
@@ -98,7 +98,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         $query = "SELECT ~1 FROM ~2".$kontextFiltr;
         $radky = $dbh->prepare($query)->execute($jmenoId, $jmenoTabulky)->fetchall_assoc();
         foreach($radky as $radek)
-            $vypis[] = new Data_Flat_FlatTable($jmenoTabulky, $dbh, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $radek[$jmenoId]);		 
+            $vypis[] = new Data_Flat_FlatTable($databaze, $jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $radek[$jmenoId]);		 
         return $vypis;
     }      
     
@@ -115,7 +115,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         if (property_exists($this, $name)){
             return $this->$name;
         }
-        $columnId = array_search($name,Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->nazvy);
+        $columnId = array_search($name,Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->nazvy);
         if($columnId===false)
         {
         // TODO: chyby - dočasně zrušeno
@@ -136,14 +136,14 @@ class Data_Flat_FlatTable extends Data_Iterator {
      */
     public function __set($name,$value)
     {   //hodnota ve sloupci autoIncrementFieldName je id zaznamu, hodnota se uklada do vlastnosti autoIncrementFieldValue pro snazsi pristup
-        if ($name == Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->primaryKeyFieldName)
+        if ($name == Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->primaryKeyFieldName)
         {
             $this->primaryKeyFieldValue = $value;
         }
         else
         {   
             //kontrola existence sloupoe se zadaným názvem v db tabulce
-            $columnid = array_search($name,Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->nazvy);
+            $columnid = array_search($name,Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->nazvy);
             if($columnid===false)
             {
                 if (property_exists($this, $name))
@@ -217,7 +217,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
         // INSERT
             $query_column_names = "";       //část SQL příkazu INSERT se jmény sloupců
             $query_values = "";             //část SQL příkazu INSERT s daty
-            foreach(Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->nazvy as $key=>$column_name) {
+            foreach(Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->nazvy as $key=>$column_name) {
                 if ($column_name != Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->primaryKeyFieldName) {    //neukládá se do sloupce, který je primary key
                     $value = $this->value[$key];                //neukládá se do sloupce, kde není hodnota vlastnosti objektu //TODO: ??? hodnota === NULL ?? abys mohl ukládat nulu nebo prázdný string
                     if($value) {
@@ -232,8 +232,8 @@ class Data_Flat_FlatTable extends Data_Iterator {
         } else {
         // UPDATE
             $query="UPDATE ".$this->jmenoTabulky." SET ";
-            foreach(Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->nazvy as $column_name) {
-                if ($column_name != Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->primaryKeyFieldName) {
+            foreach(Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->nazvy as $column_name) {
+                if ($column_name != Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->primaryKeyFieldName) {
                     $value= $this->$column_name ;
                     if($value) {
                         $query.=$column_name." = '".$value."',";
@@ -241,9 +241,10 @@ class Data_Flat_FlatTable extends Data_Iterator {
                 }
             }
             $query=substr($query,0,strlen($query)-1);
-            $query.=" WHERE ".Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->primaryKeyFieldName." = ".$this->primaryKeyFieldValue;
+            $query.=" WHERE ".Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->primaryKeyFieldName." = ".$this->primaryKeyFieldValue;
         }
-        $this->dbh->prepare($query)->execute("");
+        $dbh = App_Kontext::getDbh($this->databaze);
+        $dbh->prepare($query)->execute("");
         return true;
     }
 
@@ -253,18 +254,19 @@ class Data_Flat_FlatTable extends Data_Iterator {
     private function precti_zaznam() {
     //SVOBODA metoda přečte záznam z db, ale nezamyká záznam v db - kdokoli může mezi přečtením a zápisem zapsat bo db a při zápisu se pak takováto data přepíší
     //metoda by mohla zamykat, ale asi to by znamenalo zamknou (?transakci) celý hlavní objekt
+        $dbh = App_Kontext::getDbh($this->databaze);
         $query="SELECT * FROM ~1 WHERE ~2 = :3";
         if ($this->objektJeVlastnostiHlavnihoObjektu) {
-            $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();                    
+            $data = $dbh->prepare($query)->execute($this->jmenoTabulky, $this->jmenoSloupceIdHlavnihoObjektu, $this->id)->fetch_assoc();                    
         } else {
-            $data = $this->dbh->prepare($query)->execute($this->jmenoTabulky, Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->primaryKeyFieldName, $this->id)->fetch_assoc();
+            $data = $dbh->prepare($query)->execute($this->jmenoTabulky, Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->primaryKeyFieldName, $this->id)->fetch_assoc();
         }
         if ($data) {
-            foreach(Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->nazvy as $columnID => $columnName)
+            foreach(Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->nazvy as $columnID => $columnName)
             {
                 $this->value[$columnID] = $data[$columnName];
             }
-            $this->primaryKeyFieldValue = $data[Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->primaryKeyFieldName]; 
+            $this->primaryKeyFieldValue = $data[Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->primaryKeyFieldName]; 
             $this->precteno_z_db = true;
             return TRUE;
         } else {

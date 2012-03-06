@@ -20,6 +20,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
 
     public $id;
     public $nazevTridy;
+    public $databaze;
     public $tabulka;
     public $jmenoId;
     public $prefix;
@@ -37,10 +38,11 @@ abstract class Data_HlavniObjekt extends Data_Iterator
     //pole pro uložení "podřízených" objektů = objektu s vlastnostmi, vlastnosti jsou dostupné pouze přes getter __get() a jsou lazy initiation
     protected $_vlatnostiObjekty = array();
 
-    public function __construct($nazevTridy, $tabulka, $prefix, $jmenoId, $kontextIdentifikatoru,
+    public function __construct($nazevTridy, $databaze, $tabulka, $prefix, $jmenoId, $kontextIdentifikatoru,
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id) {
         $this->nazevTridy = $nazevTridy;
+        $this->databaze = $databaze;
         $this->tabulka = $tabulka;
         $this->prefix = $prefix;
         $this->jmenoId = $jmenoId;
@@ -95,7 +97,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
             {
                 //instancuje "lazy load" vlastnost
                 $tabulka = $this->prefix.$this->_mapovaniObjektTabulka[$vlastnost];
-                $ft = Data_Flat_FlatTable::najdiPodleId($tabulka, $this->id, TRUE, $this->tabulka, $this->jmenoId);
+                $ft = Data_Flat_FlatTable::najdiPodleId($tabulka, $this->id, TRUE, $this->tabulka, $this->jmenoId, FALSE, $this->databaze);
                 $this->_vlatnostiObjekty[$vlastnost] = $ft;
             }
         }
@@ -154,7 +156,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
      * Ulozi parametry tridy jako radek do DB.
      * @return int ID naposledy vlozeneho radku, -1 pokud doslo k chybe.
      */
-    public function uloz($tabulka="")
+    public function uloz()
     {
 //        return parent::najdiPodleId($id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
 
@@ -163,9 +165,9 @@ abstract class Data_HlavniObjekt extends Data_Iterator
         $objektLzeUlozit = true;
         $ulozeno = false;
         try {
-            if (!$tabulka)
+            if (!$this->tabulka)
             {
-                throw new Data_Exception("Nebyla zadana tabulka pro uložení objektu - objekt neni mozno ulozit.");
+                throw new Data_Exception("Objekt namá vlastnost tabulka pro uložení objektu - objekt neni mozno ulozit.");
             }
             if ($kontext->projekt AND !($this->Projekt == $kontext->projekt))
             {
@@ -193,44 +195,40 @@ abstract class Data_HlavniObjekt extends Data_Iterator
                 echo ("Při pokusu o uložení nového objektu se nepodařilo vygenerovat identifikátor - objekt pro tabulku ".self::TABULKA." neni mozno ulozit.<BR>");
                 $objektLzeUlozit = false;
             }
-
             // objekt nelze uložit -> konec
             if (!$objektLzeUlozit)
             {
                 return false;
             }
-
             $this->cisloHlavnihoObjektu = $noveCisloObjektu;
             $this->identifikator = $identifikator->identifikator;
-            
             $query = "INSERT INTO  ~1 (cislo_ucastnika, identifikator, id_c_projekt_FK, id_c_kancelar_FK,id_s_beh_projektu_FK ) VALUES (:2, :3, :4, :5, :6)" ;
+            $dbh = App_Kontext::getDbh($this->databaze);
             $pocet = $dbh->prepare($query)->execute($tabulka, $this->cisloHlavnihoObjektu, $this->identifikator ,$this->Projekt->id,$this->Kancelar->id,$this->Beh->id)->result;
             if ($pocet == 1) $ulozeno = true;
-
         } else {
             // starý účastník
             $ulozeno = true;
         }
-            // uložení vlastností-objektů
-            if ($ulozeno) {
-                foreach ($this->_vlatnostiObjekty as $key=>$obj) {
-                    if ( !$obj->uloz()) $ulozeno = false;
-                }
+        // uložení vlastností-objektů
+        if ($ulozeno) {
+            foreach ($this->_vlatnostiObjekty as $key=>$obj) {
+                if ( !$obj->uloz()) $ulozeno = false;
             }
-            return $ulozeno;
-
+        }
+        return $ulozeno;
     }
 
-	/**
-	 * Nastavi v radku v databaze odpovidajici parametru $id tridy hodnotu valid = 0
-	 * @return unknown_type
-	 */
-	public static function smaz()
-	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
-		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
-		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
-	}      
+    /**
+        * Nastavi v radku v databaze odpovidajici parametru $id tridy hodnotu valid = 0
+        * @return unknown_type
+        */
+    public function smaz()
+    {
+        $dbh = App_Kontext::getDbh($this->databaze);
+        $query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
+        $dbh->prepare($query)->execute($this->tabulka, $this->jmenoId, $this->id);
+    }      
 
     /**
      * Najde a vrati vsechny Ucastniky prihlasene k Akce
@@ -238,10 +236,10 @@ abstract class Data_HlavniObjekt extends Data_Iterator
      */
     public static function vypisPrihlaseneNaAkci($idAkce, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
     {
-            $dbh = App_Kontext::getDbMySQLProjektor();
+            $dbh = App_Kontext::getDbh($this->databaze);
             $query = "SELECT ~1 FROM ~2 WHERE ~3=:4";
             $radky = $dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK, Data_Vzb_UcastnikAkce::TABULKA,
-            Data_Vzb_UcastnikAkce::ID_AKCE_FK, $idAkce)->fetchall_assoc();
+                        Data_Vzb_UcastnikAkce::ID_AKCE_FK, $idAkce)->fetchall_assoc();
             
             if(!$radky) return false;
             $tridaHlavnihoObjektu = "Data_".$jmenoHlavnihoObjektu;

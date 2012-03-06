@@ -96,6 +96,7 @@ abstract class Stranka
                 $this->nazev_jednotne = $nazev_jednotne;
                 $this->nazev_mnozne = $nazev_mnozne;
                 $this->vsechny_radky = $vsechny_radky;
+// TODO: nedrž "databaze ve strance -> vlastnost Data objektů
                 $this->databaze = $databaze;
                 
 	}

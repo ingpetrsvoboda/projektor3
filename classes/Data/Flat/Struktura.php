@@ -1,6 +1,7 @@
 <?php
 class Data_Flat_Struktura
 {
+    public $databaze;
     public $nazevTabulky;
     // vlastnosti databázové tabulky vracené příkazem SHOW COLUMNS
     public $nazvy = array();         //názvy sloupců tabulky
@@ -9,7 +10,8 @@ class Data_Flat_Struktura
     public $pk = array();           //TRUE pokud slopupec je primární klíč
     public $primaryKeyFieldName; //jméno sloupce tabulky s primárním klíčem
     
-    public function __construct($nazevTabulky, $nazvy, $typy, $delky, $pk, $primaryKeyFieldName) {
+    public function __construct($databaze, $nazevTabulky, $nazvy, $typy, $delky, $pk, $primaryKeyFieldName) {
+        $this->databaze = $databaze;
         $this->nazevTabulky  = $nazevTabulky;
         $this->nazvy = $nazvy;
         $this->typy = $typy;

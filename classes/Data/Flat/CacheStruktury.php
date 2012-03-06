@@ -4,19 +4,20 @@ abstract class Data_Flat_CacheStruktury
 {
     private static $cache = array( );
         
-    public static function getStrukturu($dbh, $nazevTabulky = "") {
-        if ($dbh AND $nazevTabulky) 
+    public static function getStrukturu($databaze = "", $nazevTabulky = "") {
+        if ($databaze AND $nazevTabulky) 
         {
-                if(!self::$cache[$nazevTabulky])
-                self::$cache[$nazevTabulky] = self::nactiStrukturu($dbh, $nazevTabulky);
-		return self::$cache[$nazevTabulky];
+                if(!self::$cache[$databaze][$nazevTabulky])
+                self::$cache[$databaze][$nazevTabulky] = self::nactiStrukturu($databaze, $nazevTabulky);
+		return self::$cache[$databaze][$nazevTabulky];
         } else {
             return FALSE;
         }
     }
     
-    private static function nactiStrukturu($dbh, $nazevTabulky)
+    private static function nactiStrukturu($databaze, $nazevTabulky)
     {
+            $dbh = App_Kontext::getDbh($databaze);
         //názvy sloupců tabulky, datové typy sloupců tabulky, TRUE pokud slopupec je primární klíč, délky datových typů sloupců tabulky typu char, varchar atd.
         $nazvy = array();         
         $typy = array();          
@@ -61,7 +62,7 @@ abstract class Data_Flat_CacheStruktury
                 $primaryKeyFieldName = $data['Nazev'];
             }
         }
-        return new Data_Flat_Struktura($nazevTabulky, $nazvy, $typy, $delky, $pk, $primaryKeyFieldName);
+        return new Data_Flat_Struktura($databaze, $nazevTabulky, $nazvy, $typy, $delky, $pk, $primaryKeyFieldName);
     }
             
 }

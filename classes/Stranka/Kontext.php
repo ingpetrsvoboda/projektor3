@@ -40,7 +40,7 @@ private function kontextSelect()
             $form = new HTML_QuickForm("kontext", "post", $this->cestaSem->generujUri());
             $kontextUser = App_Kontext::getUserKontext();
 
-            /* element Projekty */
+            /* element select Projekt a běh */
             if ($kontextUser->povoleneProjekty) 
             {
                 $projektySelect[""] = "";
@@ -63,11 +63,11 @@ private function kontextSelect()
                 $sel->setOptions(array($projektySelect, $behySelect));
 //                $form->addElement("select", Data_Ucastnik::ID_C_PROJEKT_FK, "Projekt", $projektySelect);
             }
-            /* element Kanceláře */
+            /* element select Kanceláře */
             if ($kontextUser->povoleneKancelare) {
                 $kancelareSelect[""] = "";
                 foreach($kontextUser->povoleneKancelare as $kancelar) $kancelareSelect[$kancelar->id] = $kancelar->text;
-                $form->addElement("select", Data_Ucastnik::ID_C_KANCELAR_FK, "Kancelář", $kancelareSelect);
+                $form->addElement("select", "kancelar", "Kancelář", $kancelareSelect);
             }
             /* element Běhy */
 //            if ($kontextUser->projekt) 
@@ -89,7 +89,7 @@ private function kontextSelect()
                     unset($data["Vyber"]);
                     $projekt = Data_Ciselnik::najdiPodleId("projekt", $data["projektbeh"][0]);
                     $beh = Data_Seznam_SBehProjektu::najdiPodleId($data["projektbeh"][1]); 
-                    $kancelar = Data_Ciselnik::najdiPodleId("kancelar", $data[Data_Ucastnik::ID_C_KANCELAR_FK]);
+                    $kancelar = Data_Ciselnik::najdiPodleId("kancelar", $data["kancelar"]);
                     $kontextUser->projekt = $projekt;
                     $kontextUser->beh = $beh;
                     $kontextUser->kancelar = $kancelar;
@@ -104,7 +104,7 @@ private function kontextSelect()
                 $elm->setValue(array(0 => $kontextUser->projekt->id, 1 =>$kontextUser->beh->id));
 //                $elm->setValue($kontextUser->projekt->id);
             }
-            if ($kontextUser->kancelar) $form->getElement(Data_Ucastnik::ID_C_KANCELAR_FK)->setValue($kontextUser->kancelar->id);
+            if ($kontextUser->kancelar) $form->getElement("kancelar")->setValue($kontextUser->kancelar->id);
 //            if ($kontextUser->beh) $form->getElement(Data_Ucastnik::ID_S_BEH_PROJEKTU_FK)->setValue($kontextUser->beh->id);            
             return $form;
         }        
