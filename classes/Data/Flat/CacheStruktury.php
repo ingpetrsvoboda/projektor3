@@ -11,7 +11,9 @@ abstract class Data_Flat_CacheStruktury
                 self::$cache[$databaze][$nazevTabulky] = self::nactiStrukturu($databaze, $nazevTabulky);
 		return self::$cache[$databaze][$nazevTabulky];
         } else {
-            return FALSE;
+            throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.': '."Není zadána databáze ".$databaze." nebo název tabulky ".$nazevTabulky);
+
+//            return FALSE;
         }
     }
     

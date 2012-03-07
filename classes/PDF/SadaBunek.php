@@ -96,8 +96,8 @@ class PDF_SadaBunek
      */
     function Spoust($prazdnaHodnota=false, $promennaUTF8=false)  
     {
-	echo "SPOUST - strlen :";     echo (strlen($promennaUTF8));
-	echo "SPOUST - substr_count :";     echo (substr_count($promennaUTF8, $prazdnaHodnota));
+//	echo "SPOUST - strlen :";     echo (strlen($promennaUTF8));
+//	echo "SPOUST - substr_count :";     echo (substr_count($promennaUTF8, $prazdnaHodnota));
 	
     	if (substr_count($promennaUTF8, $prazdnaHodnota) <> strlen($promennaUTF8))
       	{

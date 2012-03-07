@@ -48,6 +48,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
 
         if (!$this->precteno_z_db)
         {
+//TODO: try $this->precti_zaznam(); -> výjimka
             $this->precti_zaznam();
             parent::__construct(__CLASS__);   //doplni objektu flat table rozhrani iterator
         }

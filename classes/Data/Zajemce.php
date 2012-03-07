@@ -129,7 +129,7 @@ class Data_Zajemce extends Data_HlavniObjekt
         {
             $isco1 = substr($iscoKod, 0, 1);
             $filtr = "pozadovane_kzam1 = ".$isco1;
-            $kzamKvalikacniPredpoklady = Data_Flat_FlatTable::vypisVse("s_kzam_kvalifikacni_predpoklady", $filtr, "", "", FALSE, "", "", "", "", "", TRUE, $databaze);
+            $kzamKvalikacniPredpoklady = Data_Flat_FlatTable::vypisVse("s_kzam_kvalifikacni_predpoklady", $filtr, "", "", FALSE, "", "", "", "", "", TRUE, self::DATABAZE);
             $predpoklad = 0;
             for ($i = 1; $i <= 5; $i++) {
                 $vlastnostKzam = "KZAM_cislo".$i;

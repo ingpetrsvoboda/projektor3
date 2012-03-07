@@ -99,14 +99,14 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 	protected function prihlasovaci°potomek°Stranka_Zajemce°prihlaseni()
 	{
                 $this->generujPolozkuSTlacitky();
-                $this->novaPromenna("tlacitka", $tlacitka);
+//                $this->novaPromenna("tlacitka", $tlacitka);
         }
 	
 	protected function prihlasovaci°potomek°Stranka_Zajemce°detail()
 	{
 //		$this->prihlasovaci°potomek°Stranka_Zajemce°prihlaseni();
                 $this->generujPolozkuSTlacitky();
-                $this->novaPromenna("tlacitka", $tlacitka);
+//                $this->novaPromenna("tlacitka", $tlacitka);
 	}
 
         /*
@@ -140,13 +140,13 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 	protected function prihlaseni°potomek°Stranka_Zajemce°detail()
 	{
                 $this->generujPolozkuSTlacitky();
-                $this->novaPromenna("tlacitka", $tlacitka);
+//                $this->novaPromenna("tlacitka", $tlacitka);
         }	
 
         protected function prihlaseni°potomek°Stranka_AkceM°akceUcastnika()
         {
                 $this->generujPolozkuSTlacitky();            
-                $this->novaPromenna("tlacitka", $tlacitka);
+//                $this->novaPromenna("tlacitka", $tlacitka);
         }
 
 
@@ -248,6 +248,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                         $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
                     }    
                     $this->novaPromenna("seznam", $zajemci);
+                    $this->novaPromenna("zprava", "Celkem nalezeno:".  count($zajemci));
                 } else {
                 $this->novaPromenna("zprava", "Nic nenalezeno!");
                 }
