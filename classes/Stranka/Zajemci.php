@@ -221,7 +221,8 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Test", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "test", "textDoNadpisuStranky" => "test", "zmraz" => 1))),
                             new Stranka_Element_Tlacitko("Uprav test", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "test", "textDoNadpisuStranky" => "test"))),
                             new Stranka_Element_Tlacitko("Akce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceZajemce", array("id" => $zajemce->id))),
-                            new Stranka_Element_Tlacitko("Smaž zájemce", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.smaz", array("id" => $zajemce->id)))
+                            new Stranka_Element_Tlacitko("Smaž zájemce", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.smaz", array("id" => $zajemce->id))),
+                            new Stranka_Element_Tlacitko("Souhlas", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.exportPDF", array("id" => $zajemce->id, "pdfDokument" => "AGPSouhlas")))
                         );
                         $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
                         $this->novaPromenna("polozka", $zajemce);

@@ -1,7 +1,7 @@
 <?php
 class PDF_Dokument_AGPSouhlas extends PDF_Dokument
 {
-
+    const FILENAME_PREFIX = "AGP Souhlas se zpracováním ";
         //define('FPDF_FONTPATH','/fpdf16/font/');
         //require('/fpdf16/fpdf.php');
         //	require_once("autoload.php");  
@@ -13,13 +13,13 @@ class PDF_Dokument_AGPSouhlas extends PDF_Dokument
 //        }
 
 
-     public function definuj($zajemce)
+     public function vytvor($zajemce)
      {             
             $pdfhlavicka = PDF_Kontext::dejHlavicku();
                 //$pdfhlavicka->text("Individuální plán účastníka - 1. část");
                 $pdfhlavicka->zarovnani("C");
                 $pdfhlavicka->vyskaPisma(14);
-                $pdfhlavicka->obrazek("./PDF/logo_agp_bw.png", null, null,90,12);
+                $pdfhlavicka->obrazek(__DIR__."/images/logo_agp_bw.png", null, null,90,12);
 
             $pdfpaticka = PDF_Kontext::dejPaticku();
                 $pdfpaticka->text("Souhlas zájemce o zaměstnání s poskytováním osobních údajů  Zájemce: ".$zajemce->identifikator);
@@ -113,19 +113,18 @@ class PDF_Dokument_AGPSouhlas extends PDF_Dokument
             //$podpisy->PridejBunku("                                     podpis účastníka                                                                podpis, jméno a příjmení","",1);
             $podpisy->NovyRadek();
 
-     }
 
 //**********************************************
 
-     public function tiskni()
-     {
-        $pdfdebug = PDFContext::dejDebug();
+        $pdfdebug = PDF_Kontext::dejDebug();
         $pdfdebug->debug(0);
 
         ob_clean;
-	$pdf = new PDF_VytvorPDF ();
+	$pdf = new self($zajemce);
+//        $pdf = parent::__construct($zajemce);
 
-	$pdf->AddFont('Times','','times.php');
+
+        $pdf->AddFont('Times','','times.php');
 	$pdf->AddFont('Times','B','timesbd.php');
 	$pdf->AddFont("Times","BI","timesbi.php");
 	$pdf->AddFont("Times","I","timesi.php");
@@ -160,18 +159,23 @@ class PDF_Dokument_AGPSouhlas extends PDF_Dokument
         
         $pdf->Ln(20);
         $pdf->TiskniSaduBunek($podpisy, 0, 1);
+        return $pdf;
      }
      
      public function uloz()
      {
         //$pdf->Output("doc.pdf",D);
+         $cas = date("Ymd_His", time());
+        if (!file_exists(App_Config::EXPORT_PDF_DIRECTORY)) throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.': '."Neexistuje adresář pro export pdf souboru zadaný v App_Config: ".App_Config::EXPORT_PDF_DIRECTORY);
 
-        $filepathprefix= iconv('UTF-8', 'windows-1250', "./doku/AGP_SOUHLAS_ZA_");  //C:/_Export Projektor/PDF/AGP_SOUHLAS_ZA_
-        if (file_exists($filepathprefix. $Zajemce->identifikator . ".pdf"))  	{
-                unlink($filepathprefix. $Zajemce->identifikator . ".pdf");
+        $fileName = App_Config::EXPORT_PDF_DIRECTORY.self::FILENAME_PREFIX.  $this->identifikator . $cas . ".pdf";
+        $pdf->Output($fileName, F);  
+        if (file_exists($fileName))
+        {
+            return TRUE;
+        } else {
+            return FALSE;
         }
-
-        $pdf->Output($filepathprefix. $Zajemce->identifikator . ".pdf", F);  
 
 
 

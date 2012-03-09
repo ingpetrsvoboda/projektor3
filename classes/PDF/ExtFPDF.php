@@ -20,7 +20,7 @@ class PDF_ExtFPDF extends FPDF
     parent::__construct();
     }
 
-    /* Funkce přetěžuje metodu Cell rodičovské třídy FPDP
+    /* Funkce přetěžuje metodu Cell rodičovské třídy FPDF
     * http://www.fpdf.org/ Extended Cell functions 
     * @author: Pivkin Vladimir, úprava Petr Svoboda
     * @param char w | šířka buňky, pokud je 0, šířka buňky je nastavena až k pravému okraji stránky

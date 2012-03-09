@@ -15,10 +15,10 @@ class PDF_VytvorPDF extends PDF_ExtFPDF
   	 * @return 
   	 */
 	
-  	public function __construct($orientation='P', $unit='mm', $format='A4') 
-	{
-    parent::__construct();
-    $this->FPDF($orientation, $unit, $format);     
+    public function __construct($orientation='P', $unit='mm', $format='A4') 
+    {
+        parent::__construct();
+        $this->FPDF($orientation, $unit, $format);     
     }
 
     function Debug($debug=false)

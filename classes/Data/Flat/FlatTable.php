@@ -280,7 +280,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole názvů sloupců db tabulky
      */
     public function dejNazvy() {
-    return Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->nazvy;
+    return Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->nazvy;
     }
     
     /**
@@ -288,7 +288,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole hodnot příznaku KEY sloupců db tabulky
      */
     public function dejKlice() {
-    return Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->pk;
+    return Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->pk;
     }
 
     /**
@@ -296,7 +296,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole hodnot typů sloupců db tabulky
      */    
     public function dejTypy() {
-    return Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->typy;
+    return Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->typy;
     }
 
     /**
@@ -305,7 +305,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @return array() Pole celočíselných délek sloupců db tabulky
      */    
     public function dejDelky() {
-    return Data_Flat_CacheStruktury::getStrukturu($this->dbh, $this->jmenoTabulky)->delky;
+    return Data_Flat_CacheStruktury::getStrukturu($this->databaze, $this->jmenoTabulky)->delky;
     }
     
     
