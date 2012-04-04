@@ -17,8 +17,8 @@ if(isset($_GET['uri'])) {
     $uri = $_GET['uri'];
 }
 else {
-    $uri = @$_REQUEST['originating_uri'];   //obsahuje "header("Location: ./login.php?originating_uri=".$_SERVER['REQUEST_URI'])" pokud se na login přesměrovalo z index
-    if(!$uri) {                             //$_REQUEST['originating_uri' neexistuje a $uripak také ne, pokud se sem přišlo ze zobrazené přuhlašovací stránky po stisku přihlásit
+    $uri = @$_REQUEST['originating_uri'];  
+    if(!$uri) {                             //$_REQUEST['originating_uri' neexistuje a $uri pak také ne, pokud se sem přišlo ze zobrazené přuhlašovací stránky po stisku přihlásit
 	$uri = "index.php";
     }
 }
@@ -37,7 +37,9 @@ if( isset($_POST['sent']) && $_POST['sent']){
 //	header("Location: login.php?uri=$uri&warning=$warning");
 //	exit;
 //    }
-    $userid = Auth_Authentication::check_credentials($name,$password);   
+
+    $userid = Auth_Authentication::check_credentials($name,$password);    
+
     //echo "name:".$name." pass:".$password." userid:".$userid."<br>";
     if($userid){
 	

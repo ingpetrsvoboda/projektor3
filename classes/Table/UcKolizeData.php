@@ -169,7 +169,7 @@ public static function Najdi_kolize_pro_formular_a_lokaci ($iducast, $formular, 
 
 private static function Najdi_kolize ($query,$iducast){
   $kolize_pole = array();
-  $dbh = App_Kontext::getDbMySQLProjektor();
+  $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
   
   //echo " <br>". $query . " " . $iducast;
   
@@ -400,7 +400,7 @@ private static function Vypis_jednu_kolizi_do_formulare($kprvek){
 public static function Znevalidni_kolize_ucastnika_vsechny($iducast) {
 //echo "<hr><br>*Znevalidnuji vsechny kolize ucastnika , formular=" . $formular;
     
-    $dbh = App_Kontext::getDbMySQLProjektor();
+    $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
     //vyberu vsechny ulozene kolize  z tabulky uc_kolize_table
     $query= "SELECT * FROM uc_kolize_table " .
@@ -434,7 +434,7 @@ public static function Znevalidni_kolize_ucastnika_vsechny($iducast) {
 public static function Znevalidni_kolize_ucastnika_formulare($iducast,$formular) {
 //echo "<hr><br>*Znevalidnuji vsechny kolize ucastnika , formular=" . $formular;
     
-    $dbh = App_Kontext::getDbMySQLProjektor();
+    $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
     //vyberu vsechny ulozene kolize  z tabulky uc_kolize_table
     $query= "SELECT * FROM uc_kolize_table left join s_typ_kolize on (s_typ_kolize.id_s_typ_kolize = uc_kolize_table.id_s_typ_kolize_FK) " .
@@ -469,7 +469,7 @@ public static function Znevalidni_kolize_ucastnika_formulare($iducast,$formular)
  * kdyz neni, tak vlozi.
 */
 private function  Zapis_jednu_kolizi() {  
-  $dbh = App_Kontext::getDbMySQLProjektor();
+  $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 //echo "<hr><br>* v Zapis_jednu_kolizi:";
 

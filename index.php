@@ -1,7 +1,6 @@
 <?php
 ob_start();
 
-//require_once("autoload_define.php");
 require_once("ProjektorAutoload.php");
                 
 try {
@@ -25,43 +24,66 @@ $povoleneKancelare = Data_Sys_AccUsrKancelar::dejPovoleneKancelare($user->id);
 //TODO: OPRAVIT COOKIES - kydyž se hlásí jiný uživatel, nastavit cookies projekt, kencelar, beh, debug
 //TODO: session
 if(isset($_COOKIE)) {
-    $cookieProjektId = @$_COOKIE['projektId'];
-    $cookieKancelarId = @$_COOKIE['kancelarId'];
-    $cookieBehId = @$_COOKIE['behId'];
+//    $cookieProjektId = @$_COOKIE['projektId'];
+//    $cookieKancelarId = @$_COOKIE['kancelarId'];
+//    $cookieBehId = @$_COOKIE['behId'];
     $cookieJeDebug = @$_COOKIE['jeDebug'];
-    $kancelarZCookie = Data_Ciselnik::najdiPodleId("kancelar", $_COOKIE['kancelarId']);
-    $projektZCookie = Data_Ciselnik::najdiPodleId("projekt", $_COOKIE['projektId']);
-    $behZCookie = Data_Seznam_SBehProjektu::najdiPodleId($_COOKIE['behId']);
+    if (array_key_exists('kancelarId', $_COOKIE)) $kancelarZCookie = Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, "kancelar", $_COOKIE['kancelarId']);
+    if (array_key_exists('projektId', $_COOKIE)) $projektZCookie = Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, "projekt", $_COOKIE['projektId']);
+    if (array_key_exists('behId', $_COOKIE)) $behZCookie = Data_Seznam_SBehProjektu::najdiPodleId($_COOKIE['behId']);
 }
 
 if ($povoleneProjekty)
 {
     foreach ($povoleneProjekty as $povolenyProjekt) {
-        if ($projektZCookie == $povolenyProjekt) $projekt = $projektZCookie;
-    }
-}
-
-if ($povoleneKancelare)
-{
-    foreach ($povoleneKancelare as $povolenaKancelar) {
-        if ($kancelarZCookie == $povolenaKancelar) $kancelar = $kancelarZCookie;
-    }
-}
-
-$kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, $kancelar, NULL, $povoleneProjekty, $povoleneKancelare));
-
-if ($projekt)
-{
-    $behyProjektu = Data_Seznam_SBehProjektu::vypisVse();   //diky kontext filtru vraci jen behy pro $kontextUser->projekt
-    if ($behyProjektu)
-    {
-        foreach ($behyProjektu as $behProjektu) {
-            if ($behZCookie == $behProjektu) $beh = $behZCookie;    
+        if ($projektZCookie == $povolenyProjekt) 
+        {
+            $projekt = $projektZCookie;
+            if ($povoleneKancelare)
+            {
+                foreach ($povoleneKancelare as $povolenaKancelar) {
+                    if ($kancelarZCookie == $povolenaKancelar) $kancelar = $kancelarZCookie;
+                }
+            } else {
+                $zprava = "Přihlášený uživatel nemá žádné povolené Kanceláře v projektu ". $projekt->text.". Výpis: ".  print_r($projekt, TRUE);
+            }
+            $behyProjektu = Data_Seznam_SBehProjektu::vypisVse();   //diky kontext filtru vraci jen behy pro $kontextUser->projekt
+            if ($behyProjektu)
+            {
+                foreach ($behyProjektu as $behProjektu) {
+                    if ($behZCookie == $behProjektu) $beh = $behZCookie;    
+                }
+            } else {
+                $zprava = "V projektu ". $projekt->text." nejsou nastaveny žádné bšhy. Výpis: ".  print_r($projekt, TRUE);
+            }           
         }
-    } 
-$kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, $kancelar, $beh, $povoleneProjekty, $povoleneKancelare));
+    }
+} else {
+    $zprava = "Přihlášený uživatel nemá žádné povolené projekty.";
 }
 
+if (isset($projekt))
+{
+    if (isset($kancelar))
+    {
+        if (isset($beh))
+        {
+            $kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, $kancelar, $beh, $povoleneProjekty, $povoleneKancelare));            
+        } else {
+            $kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, $kancelar, NULL, $povoleneProjekty, $povoleneKancelare));
+        }
+        
+    } else {
+        if (isset($beh))
+        {
+            $kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, NULL, $beh, $povoleneProjekty, $povoleneKancelare));            
+        } else {
+            $kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, $projekt, NULL, NULL, $povoleneProjekty, $povoleneKancelare));
+        }
+    }
+} else {
+    $kontextUser = App_Kontext::setUserKontext(new User_Kontext($user, NULL, NULL, NULL, $povoleneProjekty, $povoleneKancelare));
+}
 
 $html1 = print_r('
         <html>
@@ -100,9 +122,9 @@ $html2 = print_r('
 echo $html2;
 
 $kontextUser = App_Kontext::getUserKontext();
-        setcookie("projektId",$kontextUser->projekt->id);
-	setcookie("kancelarId",$kontextUser->kancelar->id);
-	setcookie("behId",$kontextUser->beh->id);
+        if ($kontextUser->projekt) setcookie("projektId",$kontextUser->projekt->id);
+	if ($kontextUser->kancelar) setcookie("kancelarId",$kontextUser->kancelar->id);
+	if ($kontextUser->beh) setcookie("behId",$kontextUser->beh->id);
         setcookie('jeDebug', App_Kontext::getDebug());
 
 ?>

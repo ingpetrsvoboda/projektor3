@@ -64,9 +64,8 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param $dbh handler databáze
      * @return object Data_Flat_FlatTable 
      */
-    public static function najdiPodleId($jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE, $databaze=NULL)
+    public static function najdiPodleId($databaze, $jmenoTabulky, $id, $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $vsechnyRadky = FALSE)
     {
-        $dbh = App_Kontext::getDbh($databaze);
         return new Data_Flat_FlatTable($databaze, $jmenoTabulky, $objektJeVlastnostiHlavnihoObjektu, $jmenoTabulkyHlavnihoObjektu, $jmenoSloupceIdHlavnihoObjektu, $vsechnyRadky, $id); 
     }
     
@@ -82,7 +81,7 @@ class Data_Flat_FlatTable extends Data_Iterator {
      * @param $dbh handler databáze
      * @return array() Pole objektů Data_Flat_FlatTable odpovidajicich radkum v DB
      */    
-    public static function vypisVse($jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL,  $vsechnyRadky = FALSE, $databaze=NULL)
+    public static function vypisVse($databaze, $jmenoTabulky, $filtr = "",  $orderBy = "", $order = "", $objektJeVlastnostiHlavnihoObjektu=FALSE, $jmenoTabulkyHlavnihoObjektu="", $jmenoSloupceIdHlavnihoObjektu=NULL, $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL,  $vsechnyRadky = FALSE)
     	//TODO: sjednotot pořadí argumentů metod vypisVse v Ciselnik, FlatTable, HlavniObjekt
     {
         $dbh = App_Kontext::getDbh($databaze);
@@ -120,10 +119,16 @@ class Data_Flat_FlatTable extends Data_Iterator {
         if($columnId===false)
         {
         // TODO: chyby - dočasně zrušeno
-        // $this->chyby->write($name,'',108);
+        // $this->chyby->write($name,'',108);  //neexistující vlastnost $name
             return false;
         }
-        return $this->value[$columnId];
+        if (array_key_exists($columnId, $this->value))
+        {
+            return $this->value[$columnId];
+        } else {
+            return FALSE;   //hodnota ve sloupci se zadaným názvem v databázi byla NULL - položka v poli hodnot value nebyla vytvořena
+        }
+
     }
 
      /**

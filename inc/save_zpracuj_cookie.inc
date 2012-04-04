@@ -26,7 +26,7 @@ catch (Auth_Exception $e) {
 //echo "<BR>POST*"; print_r($_POST) ; exit;
 
 // $dbh = new DB_Mysql_Projektor;    //DDBBHH //musi byt	//	klon
-    $dbh = App_Kontext::getDbMySQLProjektor();
+    $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 //ind_save_form.php se vola zvlast (ne pres zobrazeni indexem jako akce formulare v ind_reg_dot.inc)
 

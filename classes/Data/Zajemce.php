@@ -20,7 +20,7 @@
 class Data_Zajemce extends Data_HlavniObjekt
 {
     const HLAVNI_OBJEKT = "Zajemce";
-    const DATABAZE = App_Kontext::PROJEKTOR;
+    const DATABAZE = App_Config::DATABAZE_PROJEKTOR;
     const TABULKA = "zajemce"; 
 //TODO: přejmenovat sloupec v db na id_zajemce_FK a změnit konstantu
     const ID = "id_zajemce";

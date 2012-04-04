@@ -11,7 +11,7 @@ class Stranka_Predpoklad extends Stranka implements Stranka_Interface
 	public function detail($parametry = null)
 	{ 
 		/* Konstrukce objektu */
-		$form = new HTML_QuickForm("akcej", "post", $this->cestaSem->generujUri());
+		$form = new HTML_QuickForm("predpoklad", "post", $this->cestaSem->generujUri());
 		$predpoklad = Data_Seznam_SAkcePredpoklad::najdiPodleId($parametry["id"]);
 
 		/* Mazani */
@@ -31,7 +31,8 @@ class Stranka_Predpoklad extends Stranka implements Stranka_Interface
 				"predpoklad_fullText" => $predpoklad->fullText,
 				"predpoklad_idSTypAkceFK" => $predpoklad->idSTypAkceFK,
 				"predpoklad_idSTypAkcePredFK" => $predpoklad->idSTypAkcePredFK,
-				"predpoklad_idSStavUcastnikAkcePredFK" => $predpoklad->idSStavUcastnikAkcePredFK
+				"predpoklad_idSStavUcastnikAkcePredFK" => $predpoklad->idSStavUcastnikAkcePredFK,
+                                "predpoklad_valid" => $predpoklad->valid
 			));
 		}
 		
@@ -66,6 +67,7 @@ class Stranka_Predpoklad extends Stranka implements Stranka_Interface
 			"text" => "Název", 
 			"plnyText" => "Popis" 
 		));
+		$form->addElement("text", "predpoklad_valid", "valid");
 			
 		$form->addElement("submit", "predpoklad_submit", "Ulozit");
 		
@@ -103,7 +105,8 @@ class Stranka_Predpoklad extends Stranka implements Stranka_Interface
 			$data["predpoklad_idSTypAkceFK"],
 			$data["predpoklad_idSTypAkcePredFK"],
 			$data["predpoklad_idSStavUcastnikAkcePredFK"],
-			$data["predpoklad_id"]
+			$data["predpoklad_valid"],
+			$data["predpoklad_id"]  
 			);
 			            
 			if($predpoklad->uloz())

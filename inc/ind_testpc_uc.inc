@@ -69,7 +69,7 @@ If($id_ucastnik){
         
         
         
-       $dbh = App_Kontext::getDbMySQLProjektor();
+       $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query="SELECT * FROM s_test_pc_otazky WHERE cislo_testu = 1 ORDER BY otazka_poradi";    // vybiram otazky 1.testu
         $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
           //echo "<br>" . $query;   //sss*

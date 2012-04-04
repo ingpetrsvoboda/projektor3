@@ -10,6 +10,13 @@ class Stranka_StafferPoziceJ extends Stranka_FlatTableJ
             //tato třida stranka používá data z jine databáze, je třeba vytvořit databázový handler a předat ho jako parametr $dbh
             //používaná tabulka v databázi self::NAZEV_FLAT_TABLE nemá sloupec valid, je třeba jako parametr vesechny_radky zadat hodnoty TRUE,
             //pak se ve filtru nepoužije klauzule WHERE valid=1, která by způsobila chybu
-            return new self($cesta, __CLASS__, self::NAZEV_FLAT_TABLE, self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE, self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE, TRUE, App_Kontext::PERSONAL_SERVICE);            
-	}
+            $stranka = new self($cesta, __CLASS__);
+            $stranka->databaze = App_Config::DATABAZE_PERSONAL_SERVICE;
+            $stranka->nazev_flattable = self::NAZEV_FLAT_TABLE;
+            $stranka->nazev_jednotne = self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE;
+            $stranka->nazev_mnozne = self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE;
+            $stranka->vsechny_radky = TRUE;
+            
+            return $stranka;      
+        }
 }

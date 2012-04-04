@@ -54,7 +54,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 
     public static function najdiPodleId($id, $vsechnyRadky = FALSE)
     {
-            $dbh = App_Kontext::getDbMySQLProjektor();
+            $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
             $query = "SELECT * FROM ~1 WHERE ~2 = :3" . ($vsechnyRadky ? "" : " AND valid = 1");
             $radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -75,7 +75,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 
     public static function vypisVse($filtr = "", $orderBy = "", $order = "", $vsechnyRadky = FALSE)
     {
-            $dbh = App_Kontext::getDbMySQLProjektor();
+            $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
             $query = "SELECT ~1 FROM ~2".
                     ($filtr == "" ? ($vsechnyRadky ? "" : " WHERE valid = 1") : ($vsechnyRadky ? " WHERE {$filtr} " : " WHERE valid = 1 AND {$filtr}")).
                     ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
@@ -93,7 +93,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
 
     public function uloz()
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $this->id;
         $this->hlavniObjekt;
         $this->objektVlastnost;
@@ -134,7 +134,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
         */
     public static function smaz()
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
         $dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
     }        
@@ -147,12 +147,12 @@ class Data_Seznam_SPrezentace extends Data_Iterator
             $mapovani = $datovyObjekt->_mapovaniObjektTabulka;
             $prefix = $datovyObjekt->prefix;
 
-            $dbh = App_Kontext::getDbMySQLProjektor();
+            $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
             foreach ($mapovani as $jmenoObjektuVlastnosti => $tabulka) {
                 // Kontrola existence tabulky v databázi
                 switch($dbh->dbType){
                 case 'MySQL':
-                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
                     $query = Helper_SqlQuery::getShowTablesQueryMySQL();            
                     break;
                 case 'MSSQL':
@@ -167,7 +167,7 @@ class Data_Seznam_SPrezentace extends Data_Iterator
                 //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky
                 switch($dbh->dbType){
                 case 'MySQL':
-                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
                     $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
                     break;
                 case 'MSSQL':

@@ -6,16 +6,37 @@ and open the template in the editor.
 
 
 <root>
- <hosts>
-  <host1>
-      <name>
-          Jméno1
-      </name>
-  </host1>
-  <host2>
-      <name>
-          Jméno2
-      </name>
-  </host2>
- </hosts>
+    <export>
+        <pdf>
+            <directory>C:/_Export Projektor/PDF/</directory>
+        </pdf>
+    </export>
+    <db databaze='Projektor'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>localhost</dbhost>
+        <dbname>projektor_3_00_centrala_vyvoj</dbname>
+        <dbtype>MySQL</dbtype>
+    </db>
+    <db databaze='InformationSchema'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>localhost</dbhost>
+        <dbname>information_schema</dbname>
+        <dbtype>MySQL</dbtype>
+    </db>
+    <db databaze='PersonalService'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>localhost</dbhost>
+        <dbname>personalservice_web</dbname>
+        <dbtype>MySQL</dbtype>
+    </db>
+    <db databaze='test_projektor'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>NB-SVOBODA\SQLEXPRESS2008</dbhost>
+        <dbname>test_projektor</dbname>
+        <dbtype>MSSQL</dbtype>
+    </db>     
 </root>

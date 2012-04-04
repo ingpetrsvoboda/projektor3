@@ -73,8 +73,10 @@ class Stranka_ISCOVyhledani extends Stranka implements Stranka_Interface
         {
             $form = new HTML_QuickForm("iscom", "post", $this->cestaSem->generujUri());
             // javascript nastavuje focus na příslučný input a následně (onMouse je nejlepší co jsem našel) kurzor na konec textu
-            $form->addElement("text", "hledanyText", "Hledany text", array('onkeyup' => "self.document.forms.iscom.submit()",
-                "onMouseover" => "self.document.forms.iscom.hledanyText.focus(); var val=self.document.forms.iscom.hledanyText.value; self.document.forms.iscom.hledanyText.value = '';self.document.forms.iscom.hledanyText.value=val"));
+            //nastavování kurzoru na konec se dělá tak, že se text smaže a následně znovu napíše
+            $form->addElement("text", "hledanyText", "Hledany text",
+                    array('id' => "hledanyText", 'onkeyup' => "self.document.forms.iscom.submit()",
+                          "onMouseover" => "self.document.forms.iscom.hledanyText.focus(); var val=self.document.forms.iscom.hledanyText.value; self.document.forms.iscom.hledanyText.value = '';self.document.forms.iscom.hledanyText.value=val"));
             if ($vychoziHodnotaTextu) $form->getElement("hledanyText")->setValue($vychoziHodnotaTextu);
 //self.document.forms.form1.submit()
             $form->addElement("submit", "submitHledat", "Hledat");

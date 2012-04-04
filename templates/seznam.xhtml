@@ -19,31 +19,33 @@
 
 <p tal:content="%STRANKA%/zprava | nothing" />
 
-<table tal:condition="%STRANKA%/seznam | nothing">
-        <tr>
-		<th tal:repeat="sloupec %STRANKA%/hlavickaTabulky/sloupce">
-                    <span tal:condition="sloupec/vzestupne">
-                        <a href="" tal:attributes="href sloupec/sestupne">
-				<img src="img/desc.png" alt="Sestupně" title="Řadit sestupně" />
-			</a>
-                    </span>
-                    <span tal:content="sloupec/popisek" />
-                    <span tal:condition="sloupec/sestupne">
-			<a href="" tal:attributes="href sloupec/vzestupne">
-				<img src="img/asc.png" alt="Vzestupně" title="Řadit vzestupně" />
-			</a>
-                    </span>
-		</th>
-	</tr>
-	<tr tal:repeat="radek %STRANKA%/seznam">
-                <td tal:repeat="sloupecek radek">
-                    <span tal:replace="sloupecek" />
-                </td>
-                <td tal:repeat="tlacitko radek/tlacitka">
-			<a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz; class tlacitko/cssClass"/>
-		</td>
-	</tr>
-</table>
+<span id="ajax_seznam">
+    <table tal:condition="%STRANKA%/seznam | nothing">
+            <tr>
+                    <th tal:repeat="sloupec %STRANKA%/hlavickaTabulky/sloupce">
+                        <span tal:condition="sloupec/vzestupne">
+                            <a href="" tal:attributes="href sloupec/sestupne">
+                                    <img src="img/desc.png" alt="Sestupně" title="Řadit sestupně" />
+                            </a>
+                        </span>
+                        <span tal:content="sloupec/popisek" />
+                        <span tal:condition="sloupec/sestupne">
+                            <a href="" tal:attributes="href sloupec/vzestupne">
+                                    <img src="img/asc.png" alt="Vzestupně" title="Řadit vzestupně" />
+                            </a>
+                        </span>
+                    </th>
+            </tr>
+            <tr tal:repeat="radek %STRANKA%/seznam">
+                    <td tal:repeat="sloupecek radek">
+                        <span tal:replace="sloupecek" />
+                    </td>
+                    <td tal:repeat="tlacitko radek/tlacitka">
+                            <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz; class tlacitko/cssClass"/>
+                    </td>
+            </tr>
+    </table>
+</span>    
 
 <table tal:condition="%STRANKA%/polozka | nothing">
         <tr>

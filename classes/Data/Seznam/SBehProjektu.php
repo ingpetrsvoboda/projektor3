@@ -50,7 +50,7 @@ class Data_Seznam_SBehProjektu extends Data_Iterator
 
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, "", "", "~2 = :3");
 		$query = "SELECT * FROM ~1".$kontextFiltr;
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
@@ -71,7 +71,7 @@ class Data_Seznam_SBehProjektu extends Data_Iterator
 
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "")
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
                 $kontextFiltr = App_Kontext::getKontextFiltrSQL(self::ID_C_PROJEKT_FK, NULL, NULL, $filtr, $orderBy, $order);
 		$query = "SELECT * FROM ~1".$kontextFiltr;
 		$radky = $dbh->prepare($query)->execute(self::TABULKA)->fetchall_assoc();
@@ -90,7 +90,7 @@ class Data_Seznam_SBehProjektu extends Data_Iterator
 
 	public function uloz()
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 		if($this->id == null)
 		{
@@ -125,7 +125,7 @@ class Data_Seznam_SBehProjektu extends Data_Iterator
 
 	public static function smaz($sBehProjekt)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $sBehProjekt->id);
 	}

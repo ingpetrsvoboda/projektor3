@@ -6,7 +6,7 @@
 class Data_Ciselnik extends Data_Iterator
 {
 
-	public $dbh;
+	public $databaze;
         public $nazev;
 	public $nazevId;
 	public $id;
@@ -34,10 +34,10 @@ class Data_Ciselnik extends Data_Iterator
 	 * @param unknown_type $nazevCiselniku
 	 * @return unknown_type
 	 */
-	public function __construct($nazevCiselniku, $dbh, $razeni, $kod, $text, $plny_text, $valid, $vsechnyRadky, $id=NULL)
+	public function __construct($databaze, $nazevCiselniku, $razeni, $kod, $text, $plny_text, $valid, $vsechnyRadky, $id=NULL)
 	{
                 $this->nazev = $nazevCiselniku;
-		$this->dbh;
+		$this->databaze = $databaze;
 		$this->nazevTabulkyCiselniku = self::PREFIX_NAZEV_C.$nazevCiselniku;
 		$this->nazevId = self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku;
                 $this->id = $id;
@@ -56,6 +56,7 @@ class Data_Ciselnik extends Data_Iterator
 	/**
 	 * Najde a vrátí jeden řádek tabulky v DB se zadaným ID,
 	 * vrací jen řádky kde hodnota valid = 1.
+         * @param string $databaze označení databáze - je uvedeno v App_Config
          * @param type $nazevCiselniku
          * @param int $id
          * @param boolean $vsechnyRadky
@@ -63,7 +64,7 @@ class Data_Ciselnik extends Data_Iterator
          * @param $databaze identifikátor databáze (viz App_Kontext::getDbh()
          * @return object Data_Ciselnik 
          */
-	public static function najdiPodleId($nazevCiselniku, $id, $vsechnyRadky = FALSE, $bezKontroly = FALSE, $databaze=NULL)
+	public static function najdiPodleId($databaze, $nazevCiselniku, $id, $vsechnyRadky = FALSE, $bezKontroly = FALSE)
 	{
 //TODO: testování, zda je ciselnikOK trvá asi 5ms - chtělo by to ?? hlídat poslední změnu tabulky ?? možnost vypnout kontrolu pro produkční verzi ?? něco
             if (!$bezKontroly)
@@ -87,7 +88,7 @@ class Data_Ciselnik extends Data_Iterator
             if(!$radek)
             return false;
 
-            return new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
+            return new Data_Ciselnik($databaze, $nazevCiselniku, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
             $radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
 	}
 
@@ -103,7 +104,7 @@ class Data_Ciselnik extends Data_Iterator
          * @param $databaze identifikátor databáze (viz App_Kontext::getDbh()
          * @return array() Pole instanci tridy odpovidajici radkum v číselníku v DB
 	 */
-        public static function vypisVse($nazevCiselniku, $filtr = "", $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $vsechnyRadky = FALSE, $bezKontroly = FALSE, $databaze=NULL)
+        public static function vypisVse($databaze, $nazevCiselniku, $filtr = "", $nazevIdProjekt = NULL, $nazevIdKancelar = NULL, $nazevIdBeh = NULL, $vsechnyRadky = FALSE, $bezKontroly = FALSE)
 	//TODO: sjednotot pořadí argumentů metod vypisVse v Ciselnik, FlatTable, HlavniObjekt
         {
             if (!$bezKontroly)
@@ -124,7 +125,7 @@ class Data_Ciselnik extends Data_Iterator
             $radky = $dbh->prepare($query)->execute(self::PREFIX_NAZEV_C.$nazevCiselniku)->fetchall_assoc();
 
             foreach($radky as $radek)
-            $vypis[] = new Data_Ciselnik($nazevCiselniku, $dbh, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
+            $vypis[] = new Data_Ciselnik($databaze, $nazevCiselniku, $radek[self::RAZENI], $radek[self::KOD], $radek[self::TEXT], $radek[self::PLNY_TEXT],
             $radek[self::VALID], $vsechnyRadky, $radek[self::PREFIX_NAZEV_ID.self::PREFIX_NAZEV_C.$nazevCiselniku]);
 
             return $vypis;
@@ -146,10 +147,10 @@ class Data_Ciselnik extends Data_Iterator
 			throw new Data_Exception('*** Chyba v '.__METHOD__.':<BR>'."Parametr název  číselniku musí být zadán");
 		}
 		// Musí existovat tabulka číselníku v DB
-                $dbh = App_Kontext::getDbh($databaze);
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
                 switch($dbh->dbType){
                 case 'MySQL':
-                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
                     $query = Helper_SqlQuery::getShowTablesQueryMySQL();            
                     break;
                 case 'MSSQL':
@@ -167,7 +168,7 @@ class Data_Ciselnik extends Data_Iterator
                 //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky
                 switch($dbh->dbType){
                 case 'MySQL':
-                    $dbhi = App_Kontext::getDbMySQLInformationSchema();
+                    $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
                     $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
                     break;
                 case 'MSSQL':

@@ -13,6 +13,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 	public $hodinyDen;
 	public $minPocetUc;
 	public $maxPocetUc;
+        public $valid;        
 
 	// Nazev tabulky a sloupcu v DB
 	const TABULKA = "s_typ_akce";
@@ -22,17 +23,19 @@ class Data_Seznam_STypAkce extends Data_Iterator
 	const HODINY_ZA_DEN = "hodiny/den";
 	const MIN_POCET_UC = "min_pocet_uc";
 	const MAX_POCET_UC = "max_pocet_uc";
+        const VALID = "valid";
 
-	public function __construct($nazev, $trvaniDni, $hodinyDen, $minPocetUc, $maxPocetUc, $id = null)
+	public function __construct($nazev, $trvaniDni, $hodinyDen, $minPocetUc, $maxPocetUc, $valid, $id = null)
 	{
-		$this->id = $id;
-		$this->nazev = $nazev;
-		$this->trvaniDni = $trvaniDni;
-		$this->hodinyDen = $hodinyDen;
-		$this->minPocetUc = $minPocetUc;
-		$this->maxPocetUc = $maxPocetUc;
+            $this->id = $id;
+            $this->nazev = $nazev;
+            $this->trvaniDni = $trvaniDni;
+            $this->hodinyDen = $hodinyDen;
+            $this->minPocetUc = $minPocetUc;
+            $this->maxPocetUc = $maxPocetUc;
+            $this->valid = $valid;
 
-                parent::__construct(__CLASS__);
+            parent::__construct(__CLASS__);
 	}
 
 
@@ -44,7 +47,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3 AND valid = 1";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -52,7 +55,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 		return false;
 
 		return new Data_Seznam_STypAkce($radek[self::NAZEV], $radek[self::TRVANI_DNI], $radek[self::HODINY_ZA_DEN],
-		$radek[self::MIN_POCET_UC], $radek[self::MAX_POCET_UC], $radek[self::ID]);
+		$radek[self::MIN_POCET_UC], $radek[self::MAX_POCET_UC], $radek[self::VALID], $radek[self::ID]);
 	}
 
 
@@ -64,7 +67,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "")
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT ~1 FROM ~2".
 			($filtr == "" ? " WHERE (valid = 1)" : " WHERE (valid = 1 AND {$filtr})").
 			($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
@@ -84,7 +87,7 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public static function smaz($sTypAkce)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $sTypAkce->id);
 	}
@@ -97,22 +100,23 @@ class Data_Seznam_STypAkce extends Data_Iterator
 
 	public function uloz()
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 		if($this->id == null)
 		{
-			$query = "INSERT INTO ~1 (~2, ~3, ~4, ~5, ~6) VALUES (:7, :8, :9, :10, :11)";
+			$query = "INSERT INTO ~1 (~2, ~3, ~4, ~5, ~6, ~7) VALUES (:8, :9, :10, :11, :12, :13)";
 			return $dbh->prepare($query)->execute(
-			self::TABULKA, self::NAZEV, self::TRVANI_DNI, self::HODINY_ZA_DEN, self::MIN_POCET_UC, self::MAX_POCET_UC,
-			$this->nazev, $this->trvaniDni, $this->hodinyDen, $this->minPocetUc, $this->maxPocetUc
+			self::TABULKA, 
+                        self::NAZEV, self::TRVANI_DNI, self::HODINY_ZA_DEN, self::MIN_POCET_UC, self::MAX_POCET_UC, self::VALID,
+			$this->nazev, $this->trvaniDni, $this->hodinyDen, $this->minPocetUc, $this->maxPocetUc, $this->valid
 			)->last_insert_id();
 		}
 		else
 		{
-			$query = "UPDATE ~1 SET ~2=:3, ~4=:5, ~6=:7, ~8=:9, ~10=:11 WHERE ~12=:13";
+			$query = "UPDATE ~1 SET ~2=:3, ~4=:5, ~6=:7, ~8=:9, ~10=:11,~12=:13 WHERE ~14=:15";
 			$dbh->prepare($query)->execute(
 			self::TABULKA, self::NAZEV, $this->nazev, self::TRVANI_DNI, $this->trvaniDni, self::HODINY_ZA_DEN,
-			$this->hodinyDen, self::MIN_POCET_UC, $this->minPocetUc, self::MAX_POCET_UC, $this->maxPocetUc,
+			$this->hodinyDen, self::MIN_POCET_UC, $this->minPocetUc, self::MAX_POCET_UC, $this->maxPocetUc, self::VALID, $this->valid,
 			self::ID, $this->id
 			);
 			return true;

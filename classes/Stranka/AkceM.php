@@ -35,7 +35,7 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 
 	protected function main°potomekNeni()
 	{ 
-		$akcem = Data_Akce::vypisVse("", $this->parametry["razeniPodle"], $this->parametry["razeni"]);
+		$akcem = Data_Akce::vypisVse($this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"]);
                 $this->generujSeznamSTlacitky($akcem);
         }
 
@@ -53,7 +53,17 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 	{
 		$this->generujPolozkuSTlacitky("id_akce");
 	}
-
+	
+	protected function main°potomek°Stranka_Zajemci°prihlasovaci()
+	{ 
+		$this->generujPolozkuSTlacitky("id_akce");
+	}
+	
+	protected function main°potomek°Stranka_Zajemci°prihlaseni()
+	{
+		$this->generujPolozkuSTlacitky("id_akce");
+	}
+        
         /*
         *  ~~~~~~~~AKCE ÚČASTNÍKA~~~~~~~~~~
         */
@@ -89,7 +99,6 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
-
 
         protected function akceUcastnika°potomek°Stranka_Ucastnici°prihlasovaci() 
         {
@@ -127,13 +136,13 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                 $this->generujSeznamSTlacitky($akcem);               
         }
 
-        protected function akceZajemce°potomek°Stranka_Ucastnici°prihlaseni() 
+        protected function akceZajemce°potomek°Stranka_Zajemci°prihlaseni() 
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
 
 
-        protected function akceZajemce°potomek°Stranka_Ucastnici°prihlasovaci() 
+        protected function akceZajemce°potomek°Stranka_Zajemci°prihlasovaci() 
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
@@ -200,10 +209,7 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                         new Stranka_Element_Tlacitko("Přihlásit účastníka", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlasovaci", array("id_akce" => $akcej->id))),
                         new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlaseni", array("id_akce" => $akcej->id)))
                     );
-                    $akcej->odeberVsechnyVlastnostiIterator();
-                    foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                        $akcej->pridejVlastnostIterator($sloupec->nazevVlastnosti);
-                    }
+                    $this->pouzijHlavicku($akcej, $hlavickaTabulky);
                     $this->novaPromenna("polozka", $akcej);
                 }
             }
@@ -226,10 +232,7 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Přihlásit účastníka", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlasovaci", array("id_akce" => $akcej->id))),
                             new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlaseni", array("id_akce" => $akcej->id)))
                         );
-                        $akcej->odeberVsechnyVlastnostiIterator();
-                        foreach ($hlavickaTabulky->sloupce as $sloupec) {
-                            $akcej->pridejVlastnostIterator($sloupec->nazevVlastnosti);
-                        }
+                        $this->pouzijHlavicku($akcej, $hlavickaTabulky);
                     }
                     $this->novaPromenna("seznam", $akcem);
                 } else {
@@ -242,9 +245,11 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 		/* Hlavicka tabulky */
 		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
 		$hlavickaTabulky->pridejSloupec("id", "ID", Data_Akce::ID);
+		$hlavickaTabulky->pridejSloupec("nazevHlavnihoObjektu", "Název hlavního objektu", Data_Akce::NAZEV_HLAVNIHO_OBJEKTU);                
 		$hlavickaTabulky->pridejSloupec("nazev", "Název", Data_Akce::NAZEV);
 		$hlavickaTabulky->pridejSloupec("popis", "Popis", Data_Akce::POPIS);
-		$hlavickaTabulky->pridejSloupec("startDatum", "Datum začátku", Data_Akce::START_DATUM);
+		$hlavickaTabulky->pridejSloupec("datumZacatek", "Datum začátku", Data_Akce::DATUM_ZACATEK);
+		$hlavickaTabulky->pridejSloupec("datumKonec", "Datum konce", Data_Akce::DATUM_KONEC);
                 return $hlavickaTabulky;
         }
               

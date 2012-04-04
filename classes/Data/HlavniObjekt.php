@@ -78,12 +78,12 @@ abstract class Data_HlavniObjekt extends Data_Iterator
                 // - metoda vrací FALSE
                 if ($vlastnost == "projekt") 
                 {
-                    $this->projekt = Data_Ciselnik::najdiPodleId("projekt", $this->idCProjektFK);
+                    $this->projekt = Data_Ciselnik::najdiPodleId($this->databaze, "projekt", $this->idCProjektFK);
                     return $this->projekt;
                 }
                 if ($vlastnost == "kancelar") 
                 {
-                    $this->kancelar = Data_Ciselnik::najdiPodleId("kancelar", $this->idCKancelarFK);
+                    $this->kancelar = Data_Ciselnik::najdiPodleId($this->databaze, "kancelar", $this->idCKancelarFK);
                     return $this->kancelar;
                 }
                 if ($vlastnost == "beh") 
@@ -97,7 +97,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
             {
                 //instancuje "lazy load" vlastnost
                 $tabulka = $this->prefix.$this->_mapovaniObjektTabulka[$vlastnost];
-                $ft = Data_Flat_FlatTable::najdiPodleId($tabulka, $this->id, TRUE, $this->tabulka, $this->jmenoId, FALSE, $this->databaze);
+                $ft = Data_Flat_FlatTable::najdiPodleId($this->databaze, $tabulka, $this->id, TRUE, $this->tabulka, $this->jmenoId, FALSE);
                 $this->_vlatnostiObjekty[$vlastnost] = $ft;
             }
         }

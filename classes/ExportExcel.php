@@ -29,10 +29,10 @@ class ExportExcel
         if (!$validLocale) {
                 echo 'Nepodařilo se nastavit lokalizaci '.$locale." - zůstává nastavena výchozí en_us<br />\n";
         }
-        $dbh = App_Kontext::getDbh($databaze);
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         switch($dbh->dbType){
         case 'MySQL':
-            $dbhi = App_Kontext::getDbMySQLInformationSchema;
+            $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
             $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
             break;
         case 'MSSQL':

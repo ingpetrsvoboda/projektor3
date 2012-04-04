@@ -55,7 +55,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                 $this->generujPolozkuSTlacitky();            
 //                $this->novaPromenna("tlacitka", $tlacitka);
                 /* Nadpis stranky */
-                $this->novaPromenna("nadpis", "Zájemce");
+                $this->novaPromenna("nadpis", "Akce zájemce");
         }
         
         public function main°potomek°Stranka_Zajemce°smaz()
@@ -264,7 +264,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                 $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Zajemce::IDENTIFIKATOR);
                 //sloupce pro zobrazení vlastností odpovidajících těm sloupcům v db tabulce zajemce, které obsahují cizí klíče
                 $hlavickaTabulky->pridejSloupec("idSBehProjektuFK", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "Data_Seznam_SBehProjektu::najdiPodleId(%ID%)", "text");
-                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId('kancelar', %ID%)", "text");                
+                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse(App_Config::DATABAZE_PROJEKTOR, 'kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, 'kancelar', %ID%)", "text");                
                 //sloupec pro zobrazení vlastnosti, která nemá odpovídající sloupec v db tabulce zajemce (byla vytvořena v konstruktoru Data_Zajemce)
                 $hlavickaTabulky->pridejSloupec("celeJmeno", "Celé jméno");
                 //sloupce pro zobrazení vlastností některého ObjektuVlastnosti (např. za_xxxx_flat_table) hlavního objektu (Zajemce)
@@ -314,7 +314,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 //                $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Zajemce::IDENTIFIKATOR);
                 //sloupce pro zobrazení vlastností odpovidajících těm sloupcům v db tabulce zajemce, které obsahují cizí klíče
                 $hlavickaTabulky->pridejSloupec("idSBehProjektuFK", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "Data_Seznam_SBehProjektu::najdiPodleId(%ID%)", "text");
-                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse('kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId('kancelar', %ID%)", "text");                
+                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse(App_Config::DATABAZE_PROJEKTOR, 'kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, 'kancelar', %ID%)", "text");                
                 //sloupec pro zobrazení vlastnosti, která nemá odpovídající sloupec v db tabulce zajemce (byla vytvořena v konstruktoru Data_Zajemce)
                 $hlavickaTabulky->pridejSloupec("celeJmeno", "Celé jméno");
                 //sloupce pro zobrazení vlastností některého ObjektuVlastnosti (např. za_xxxx_flat_table) hlavního objektu (Zajemce)

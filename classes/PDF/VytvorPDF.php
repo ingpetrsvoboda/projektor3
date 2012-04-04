@@ -34,35 +34,36 @@ class PDF_VytvorPDF extends PDF_ExtFPDF
     
     function DebugCell ($obj, $w=0, $h=0, $txtUTF8='', $border=0, $ln=0, $align='', $fill=false, $link='')
     {
-    	$pdfdebug = PDF_Kontext::dejDebug();
+        $pdfdebug = PDF_Kontext::dejDebug();
         $txt1250 = iconv("UTF-8","windows-1250",$txtUTF8);
-                    print_r($pdfhlavicka->text);
-        
-    	switch ($pdfdebug->debug) 
-    	{
-    		case 0:
-    			$this->Cell($w, $h, $txt1250, $border, $ln, $align, $fill, $link);
-    		break;
-    		case 1:
-				$this->SetDrawColor(255, 0, 63);	
-					$this->Cell($w, $h, $txt1250, 1, $ln, $align, 1);
-				$this->SetDrawColor(255,255,255);
-    		break;
-    		case 2:
-				if (!$txt1250) $txt1250=iconv("UTF-8","windows-1250", "text je prázdný");
-				$txt1250 =  get_class($obj) . ": " . $txt1250;
-				$this->SetFillColor(191, 191, 0);
-				$this->SetDrawColor(255, 0, 63);
-				if (is_a  ($obj, PDF_Bunka)) 
-				{
-					$deb=iconv("UTF-8","windows-1250", $obj->debugPrazdna);
-					$this->Cell(self::AutoSirka($deb), 6, $deb, 1, $ln, $align, 1);
-				}
-				$this->Cell(self::AutoSirka($txt1250), 6, $txt1250, 1, $ln, $align, 1);
-        		$this->SetFillColor(255,255,255);
-        		$this->SetDrawColor(255,255,255);
-    		break;
-		}
+        print_r($pdfhlavicka->text);
+
+        switch ($pdfdebug->debug) 
+        {
+            case 0:
+                $this->Cell($w, $h, $txt1250, $border, $ln, $align, $fill, $link);
+                //                    $this->MultiCell($w, $h, $txt1250, $border, $align, $fill);
+                break;
+            case 1:
+                $this->SetDrawColor(255, 0, 63);	
+                $this->Cell($w, $h, $txt1250, 1, $ln, $align, 1);
+                $this->SetDrawColor(255,255,255);
+                break;
+            case 2:
+                if (!$txt1250) $txt1250=iconv("UTF-8","windows-1250", "text je prázdný");
+                $txt1250 =  get_class($obj) . ": " . $txt1250;
+                $this->SetFillColor(191, 191, 0);
+                $this->SetDrawColor(255, 0, 63);
+                if (is_a  ($obj, PDF_Bunka)) 
+                {
+                $deb=iconv("UTF-8","windows-1250", $obj->debugPrazdna);
+                $this->Cell(self::AutoSirka($deb), 6, $deb, 1, $ln, $align, 1);
+                }
+                $this->Cell(self::AutoSirka($txt1250), 6, $txt1250, 1, $ln, $align, 1);
+                $this->SetFillColor(255,255,255);
+                $this->SetDrawColor(255,255,255);
+                break;
+        }
     }
 	
     function Header()
@@ -70,31 +71,23 @@ class PDF_VytvorPDF extends PDF_ExtFPDF
         $pdfhlavicka = PDF_Kontext::dejHlavicku();
         if ($pdfhlavicka->obrazekSoubor)
         {
-            if ($pdfhlavicka->zarovnani=="C")
-                $xobr = ($this->w-$pdfhlavicka->obrazekW)/2;
-            if ($pdfhlavicka->zarovnani=="R")
-                $xobr = ($this->w-($pdfhlavicka->obrazekW+$pdfhlavicka->Odsazeni+$this->rMargin));
-            if ($pdfhlavicka->zarovnani=="L")
-                $xobr = ($pdfhlavicka->Odsazeni+$this->lMargin);
+            if ($pdfhlavicka->zarovnani=="C") $xobr = ($this->w-$pdfhlavicka->obrazekW)/2;
+            if ($pdfhlavicka->zarovnani=="R") $xobr = ($this->w-($pdfhlavicka->obrazekW+$pdfhlavicka->Odsazeni+$this->rMargin));
+            if ($pdfhlavicka->zarovnani=="L") $xobr = ($pdfhlavicka->Odsazeni+$this->lMargin);
             $xobr = $xobr + $pdfhlavicka->obrazekX;		// x pozice obrázku je vztažena k levé straně hlavičky
-            $this->Image($pdfhlavicka->obrazekSoubor, $xobr, $pdfhlavicka->obrazekY, 
-        	$pdfhlavicka->obrazekW, $pdfhlavicka->obrazekH, $pdfhlavicka->obrazekTyp);
+            $this->Image($pdfhlavicka->obrazekSoubor, $xobr, $pdfhlavicka->obrazekY, $pdfhlavicka->obrazekW, $pdfhlavicka->obrazekH, $pdfhlavicka->obrazekTyp);
         }
     	if ($pdfhlavicka->text)
         {
             $this->SetFont('times','B',$pdfhlavicka->vyskaPisma);
             $w=self::AutoSirka($pdfhlavicka->text);
-            if ($pdfhlavicka->zarovnani=="C")
-                $this->SetX(($this->w-$w)/2);
-            if ($pdfhlavicka->zarovnani=="R")
-                $this->SetX(($this->w-($w+$pdfhlavicka->Odsazeni+$this->rMargin)));
-            if ($pdfhlavicka->zarovnani=="L")
-                $this->SetX($pdfhlavicka->Odsazeni+$this->lMargin);
+            if ($pdfhlavicka->zarovnani=="C") $this->SetX(($this->w-$w)/2);
+            if ($pdfhlavicka->zarovnani=="R") $this->SetX(($this->w-($w+$pdfhlavicka->Odsazeni+$this->rMargin)));
+            if ($pdfhlavicka->zarovnani=="L") $this->SetX($pdfhlavicka->Odsazeni+$this->lMargin);
                                  
             $this->SetDrawColor($pdfhlavicka->barvaRamecku);
             $this->SetFillColor($pdfhlavicka->barvaPozadi);
             $this->SetTextColor($pdfhlavicka->barvaPisma);
-            
             $this->SetLineWidth(1);
             $this->Cell( $w,$pdfhlavicka->vyskaPisma/2,$pdfhlavicka->text,1,1,$pdfhlavicka->zarovnani,true);
             $this->Ln($pdfhlavicka->vyskaPisma);
@@ -186,7 +179,7 @@ class PDF_VytvorPDF extends PDF_ExtFPDF
 
         	if ($sadaBunek->nadpis) 
         	{
-        		$this->SetFont('Times','B',$vyskaNadpisu);
+        		$this->SetFont('Times','B',$$sadaBunek->vyskaPismaNadpisu);
         		$this->Ln(1);
 				$this->DebugCell($sadaBunek, 0,($sadaBunek->vyskaPismaNadpisu)/2,$sadaBunek->nadpis,0,1,'L'); 
 				$this->Ln(1);  
@@ -299,34 +292,34 @@ class PDF_VytvorPDF extends PDF_ExtFPDF
 			$this->SetFont('Times','',$odstavec->vyskaPismaTextu );
 			if ($paragraf)	//tiskne se jen neprázdný odstavec (pro prázdný se ani neodřádkuje)
 			{
-				$this->x = $this->lMargin + $odstavec->odsazeniZleva;
-				$zacatek = $this->x;
-				$radek = "";
-				$space = "";      // před prvním slovem odstavce není mezera, mezi slovy pak ano
-				foreach ($slova as $slovo)
-				{
-					if (($zacatek+$this->GetStringWidth($radek.$space.$slovo)) > $sirkaOdstavce)
-					{
-						// zalomení
-						$this->DebugCell($odstavec, $this->GetStringWidth($radek), ($odstavec->vyskaPismaTextu)/2, $radek , 0, 0, $odstavec->zarovnaniTextu);
-						$this->Ln();
-						$radek = $slovo;
-						$space = " ";
-						$this->x = $this->lMargin + $odstavec->odsazeniZleva + $odstavec->predsazeni;
-					}
-					else
-					{
-						$radek = $radek.$space.$slovo;
-						$space = " ";
-					}
-				}
-				$this->DebugCell($odstavec, $this->GetStringWidth($radek), ($odstavec->vyskaPismaTextu)/2, $radek , 0, 0, $odstavec->zarovnaniTextu);
-                 $this->Ln($odstavec->vyskaPismaTextu/2);        
-            }
-            elseif ($pdfdebug->debug > 1)
-            {
-				$this->DebugCell($odstavec, 0, ($odstavec->vyskaPismaTextu)/2, "Text odstavce je prázdný" , 0, 0, $odstavec->zarovnaniTextu);
-            }
+                            $this->x = $this->lMargin + $odstavec->odsazeniZleva;
+                            $zacatek = $this->x;
+                            $radek = "";
+                            $space = "";      // před prvním slovem odstavce není mezera, mezi slovy pak ano
+                            foreach ($slova as $slovo)
+                            {
+                                if (($zacatek+$this->GetStringWidth($radek.$space.$slovo)) > $sirkaOdstavce)
+                                {
+                                    // zalomení
+                                    $this->DebugCell($odstavec, $this->GetStringWidth($radek), ($odstavec->vyskaPismaTextu)/2, $radek , 0, 0, $odstavec->zarovnaniTextu);
+                                    $this->Ln();
+                                    $radek = $slovo;
+                                    $space = " ";
+                                    $this->x = $this->lMargin + $odstavec->odsazeniZleva + $odstavec->predsazeni;
+                                }
+                                else
+                                {
+                                    $radek = $radek.$space.$slovo;
+                                    $space = " ";
+                                }
+                            }
+                            $this->DebugCell($odstavec, $this->GetStringWidth($radek), ($odstavec->vyskaPismaTextu)/2, $radek , 0, 0, $odstavec->zarovnaniTextu);
+                            $this->Ln($odstavec->vyskaPismaTextu/2);        
+                        }
+                        elseif ($pdfdebug->debug > 1)
+                        {
+                            $this->DebugCell($odstavec, 0, ($odstavec->vyskaPismaTextu)/2, "Text odstavce je prázdný" , 0, 0, $odstavec->zarovnaniTextu);
+                        }
 		}
 	}
 

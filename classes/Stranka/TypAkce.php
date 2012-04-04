@@ -31,7 +31,9 @@ class Stranka_TypAkce extends Stranka implements Stranka_Interface
 				"typakce_trvaniDni" => $typakce->trvaniDni,
 				"typakce_hodinyDen" => $typakce->hodinyDen,
 				"typakce_minPocetUc" => $typakce->minPocetUc,
-				"typakce_maxPocetUc" => $typakce->maxPocetUc
+				"typakce_maxPocetUc" => $typakce->maxPocetUc,
+				"typakce_valid" => $typakce->valid
+                                
 			));
 		}
 		
@@ -42,6 +44,7 @@ class Stranka_TypAkce extends Stranka implements Stranka_Interface
 		$form->addElement("text", "typakce_hodinyDen", "Hodiny/den");
 		$form->addElement("text", "typakce_minPocetUc", "Minimální počet účastníků");
 		$form->addElement("text", "typakce_maxPocetUc", "Maximální počet účastníků");		
+		$form->addElement("text", "typakce_valid", "valid");		
 			
 		$form->addElement("submit", "typakce_submit", "Ulozit");
 		
@@ -75,12 +78,13 @@ class Stranka_TypAkce extends Stranka implements Stranka_Interface
 
 			$typakce = new Data_Seznam_STypAkce
 			(
-			$data["typakce_nazev"],
-			$data["typakce_trvaniDni"],
-			$data["typakce_hodinyDen"],
-			$data["typakce_minPocetUc"],
-			$data["typakce_maxPocetUc"],
-			$data["typakce_id"]
+                            $data["typakce_nazev"],
+                            $data["typakce_trvaniDni"],
+                            $data["typakce_hodinyDen"],
+                            $data["typakce_minPocetUc"],
+                            $data["typakce_maxPocetUc"],
+                            $data["typakce_valid"],
+                            $data["typakce_id"]
 			);
 			
 			if($typakce->uloz())

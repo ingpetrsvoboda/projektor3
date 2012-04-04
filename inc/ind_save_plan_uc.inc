@@ -22,7 +22,7 @@ $pole = $_POST;
 
 //*******************************************************************************************
 //*** doplneni textovych retezcu  do sloupcu tabulky uc_plan_flat_table  ..._text a priprava pro pdf
-$dbh = App_Kontext::getDbMySQLProjektor();
+$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 
 //***** zztp

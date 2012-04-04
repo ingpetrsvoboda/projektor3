@@ -28,7 +28,7 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
-                $this->novaPromenna("id", $this->nazev);                            
+            $this->novaPromenna("id", $this->nazev);                            
             /* Nadpis stranky */
             $this->novaPromenna("nadpis", "Předpoklady");
 
@@ -44,24 +44,12 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
 	protected function main°potomekNeni()
 	{
             $predpoklady = Data_Seznam_SAkcePredpoklad::vypisVse($this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"]);
-
-            if($predpoklady)
-            {
-                $seznam = $this->dalsiSloupce($predpoklady);
-                $this->novaPromenna("seznam", $seznam);
-            }
-            else
-                $this->novaPromenna("zprava", "Nic nenalezeno!");
-	}
+            $this->generujSeznamSTlacitky($predpoklady);
+        }
 
 	protected function main°potomek°Stranka_Predpoklad°detail()
 	{ 
-            if($this->dalsi->parametry["id"])
-            {
-                $predpoklady[] = Data_Seznam_SAkcePredpoklad::najdiPodleId($this->dalsi->parametry["id"]);
-                $this->dalsiSloupce($predpoklady);
-                $this->novaPromenna("seznam", $predpoklady);
-            }
+		$this->generujPolozkuSTlacitky("id");
 	}
 
         
@@ -70,11 +58,17 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
          */
         public function proTypAkce($parametry = null)
 	{
-            return $this->vytvorStranku("proTypAkce", self::SABLONA_MAIN, $parametry);
+            /* Vygenerovani filtrovaciho formulare */
+            $hlavickaTabulky = $this->generujHlavickuTabulky();
+            $filtrovaciFormular = $this->filtrovani("predpoklady", $hlavickaTabulky);
+            $formularHTML = $filtrovaciFormular->toHtml();
+
+            return $this->vytvorStranku("proTypAkce", self::SABLONA_MAIN, $parametry, "", $formularHTML);
 	}
 
 	protected function proTypAkce°vzdy()
 	{
+            $this->novaPromenna("id", $this->nazev);                            
             /* Nadpis stranky */
             $this->novaPromenna("nadpis", "Předpoklady pro typ akce");
 
@@ -83,62 +77,71 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
             $this->novaPromenna("tlacitka", $tlacitka);
 
             /* Hlavicka tabulky */
-            $hlavickaTabulky = $this->hlavickaTabulky();
+            $hlavickaTabulky = $this->generujHlavickuTabulky();
             $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);
 	}
 
 	protected function proTypAkce°potomekNeni()
 	{
-            $data = Data_Seznam_SAkcePredpoklad::vypisPro
+            $predpoklady = Data_Seznam_SAkcePredpoklad::vypisPro
             (
                 Data_Seznam_STypAkce::najdiPodleId($this->parametry["id_typ_akce"]),
                 $this->parametry["razeniPodle"],
                 $this->parametry["razeni"]
             );
-
-            if(!$data)
-            {
-                $this->novaPromenna("zprava", "Tento typ akce nemá žádné předpoklady!");
-                return 1;
-            }
-
-            $predpoklady = $this->dalsiSloupce($data);
-            $this->novaPromenna("seznam", $predpoklady);
+            $this->generujSeznamSTlacitky($predpoklady);            
 	}
 
 	protected function proTypAkce°potomek°Stranka_Predpoklad°detail()
 	{
-            if($this->dalsi->parametry["id"])
-            {
-                $predpoklady[] = Data_Seznam_SAkcePredpoklad::najdiPodleId($this->dalsi->parametry["id"]);
-                $this->dalsiSloupce($predpoklady);
-                $this->novaPromenna("seznam", $predpoklady);
-            }
+		$this->generujPolozkuSTlacitky("id");
 	}
 
-
-         /*
-         *  ~~~~~~~~PRIVATNI FUNKCE~~~~~~~~
-         */
-        private function dalsiSloupce($data)
-        {
-            foreach($data as $predpoklad)
+//------ privátní funkce třídy ---------------------------------------------------------------------------------------------------------------        
+	private function generujPolozkuSTlacitky($nazevID)
+	{
+            if($this->dalsi->parametry[$nazevID])
             {
-                $predpoklad->odkaz = $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "zmraz" => 1));
-                $predpoklad->tlacitka = array
-                (
-                    new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "zmraz" => 1))),
-                    new Stranka_Element_Tlacitko("Upravit", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id))),
-                    new Stranka_Element_Tlacitko("Smazat", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "smaz" => 1))),
-                );
-                $predpoklad->sTypAkceFK = Data_Seznam_STypAkce::najdiPodleId($predpoklad->idSTypAkceFK)->nazev;
-                $predpoklad->sTypAkcePredFK = Data_Seznam_STypAkce::najdiPodleId($predpoklad->idSTypAkcePredFK)->nazev;
-                $predpoklad->sStavUcastnikAkcePredFK = Data_Seznam_SStavUcastnikAkce::najdiPodleId($predpoklad->idSStavUcastnikAkcePredFK)->text;
-                $predpoklad->odeberVlastnostIterator("idSTypAkceFK")->odeberVlastnostIterator("idSTypAkcePredFK")->odeberVlastnostIterator("idSStavUcastnikAkcePredFK");
-                $predpoklad->pridejVlastnostIterator("sTypAkceFK")->pridejVlastnostIterator("sTypAkcePredFK")->pridejVlastnostIterator("sStavUcastnikAkcePredFK");
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky); 
+                    
+                $predpoklad = Data_Seznam_SAkcePredpoklad::najdiPodleId($this->dalsi->parametry[$nazevID]);
+                if ($predpoklad)
+                {
+                    $predpoklad->tlacitka = array
+                    (
+                        new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "zmraz" => 1))),
+                        new Stranka_Element_Tlacitko("Upravit", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id))),
+                        new Stranka_Element_Tlacitko("Smazat", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "smaz" => 1))),
+                    );
+                    $this->pouzijHlavicku($predpoklad, $hlavickaTabulky);
+                    $this->novaPromenna("polozka", $predpoklad);
+                }
             }
-            
-           return $data;
+	}
+        
+        private function generujSeznamSTlacitky($predpoklady)
+        {
+            if ($predpoklady) {
+                $hlavickaTabulky = $this->generujHlavickuTabulky();
+                $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);             
+                foreach($predpoklady as $predpoklad)
+                {
+                    $predpoklad->tlacitka = array
+                    (
+                        new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "zmraz" => 1))),
+                        new Stranka_Element_Tlacitko("Upravit", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id))),
+                        new Stranka_Element_Tlacitko("Smazat", $this->cestaSem->generujUriDalsi("Stranka_Predpoklad.detail", array("id" => $predpoklad->id, "smaz" => 1))),
+                    );
+//                    $predpoklad->sTypAkceFK = Data_Seznam_STypAkce::najdiPodleId($predpoklad->idSTypAkceFK)->nazev;
+//                    $predpoklad->sTypAkcePredFK = Data_Seznam_STypAkce::najdiPodleId($predpoklad->idSTypAkcePredFK)->nazev;
+//                    $predpoklad->sStavUcastnikAkcePredFK = Data_Seznam_SStavUcastnikAkce::najdiPodleId($predpoklad->idSStavUcastnikAkcePredFK)->text;
+                        $this->pouzijHlavicku($predpoklad, $hlavickaTabulky);
+                }
+                $this->novaPromenna("seznam", $predpoklady);
+            } else {
+            $this->novaPromenna("zprava", "Nic nenalezeno!");
+            }
         }
 
         private function generujHlavickuTabulky()
@@ -147,9 +150,11 @@ class Stranka_Predpoklady extends Stranka implements Stranka_Interface
             $hlavickaTabulky->pridejSloupec("id","ID", Data_Seznam_SAkcePredpoklad::ID);
             $hlavickaTabulky->pridejSloupec("text","Název", Data_Seznam_SAkcePredpoklad::TEXT);
             $hlavickaTabulky->pridejSloupec("fullText","Popis", Data_Seznam_SAkcePredpoklad::FULL_TEXT);
-            $hlavickaTabulky->pridejSloupec("idSTypAkceFK","Typ akce", Data_Seznam_SAkcePredpoklad::ID_S_TYP_AKCE_FK, "Data_Seznam_STypAkce::vypisVse()", "nazev");
-            $hlavickaTabulky->pridejSloupec("idSTypAkcePredFK","Typ akce před", Data_Seznam_SAkcePredpoklad::ID_S_TYP_AKCE_PRED_FK, "Data_Seznam_STypAkce::vypisVse()", "nazev");
-            $hlavickaTabulky->pridejSloupec("idSStavUcastnikAkcePredFK","Stav účastníka před", Data_Seznam_SAkcePredpoklad::ID_S_STAV_UCASTNIK_AKCE_PRED_FK, "Data_Seznam_SStavUcastnikAkce::vypisVse()", "text");
+//                $hlavickaTabulky->pridejSloupec("idSBehProjektuFK", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "Data_Seznam_SBehProjektu::najdiPodleId(%ID%)", "text");
+//                $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Zajemce::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse(App_Config::DATABAZE_PROJEKTOR, 'kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, 'kancelar', %ID%)", "text");             
+            $hlavickaTabulky->pridejSloupec("idSTypAkceFK","Typ akce", Data_Seznam_SAkcePredpoklad::ID_S_TYP_AKCE_FK, "Data_Seznam_STypAkce::vypisVse()", "Data_Seznam_STypAkce::najdiPodleId(%ID%)", Data_Seznam_STypAkce::NAZEV);
+            $hlavickaTabulky->pridejSloupec("idSTypAkcePredFK","Typ akce před", Data_Seznam_SAkcePredpoklad::ID_S_TYP_AKCE_PRED_FK, "Data_Seznam_STypAkce::vypisVse()", "Data_Seznam_STypAkce::najdiPodleId(%ID%)", Data_Seznam_STypAkce::NAZEV);
+            $hlavickaTabulky->pridejSloupec("idSStavUcastnikAkcePredFK","Stav účastníka před", Data_Seznam_SStavUcastnikAkce::ID, "Data_Seznam_SStavUcastnikAkce::vypisVse()", "Data_Seznam_SStavUcastnikAkce::najdiPodleId(%ID%)", Data_Seznam_SStavUcastnikAkce::TEXT);
 
             return $hlavickaTabulky;
         }

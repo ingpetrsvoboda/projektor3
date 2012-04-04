@@ -18,7 +18,7 @@ class Data_Vzb_UcastnikAkce
 	{
 		$stavyAkciUcastnika = array();
 		$pocitadlo = 0;
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT ~1 FROM ~2 WHERE ~3 = :4 AND ~5 = :6";
                 $preparedQuery = $dbh->prepare($query);
 		foreach($akceUcastnika as $akce)

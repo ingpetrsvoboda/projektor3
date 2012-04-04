@@ -29,7 +29,7 @@ abstract class Data_Flat_CacheStruktury
         // Musí existovat tabulka číselníku v DB
         switch($dbh->dbType){
         case 'MySQL':
-            $dbhi = App_Kontext::getDbMySQLInformationSchema();
+            $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
             $query = Helper_SqlQuery::getShowTablesQueryMySQL();            
             break;
         case 'MSSQL':
@@ -44,7 +44,7 @@ abstract class Data_Flat_CacheStruktury
     //Nacteni struktury tabulky, datovych typu a ostatnich parametru tabulky        
         switch($dbh->dbType){
         case 'MySQL':
-            $dbhi = App_Kontext::getDbMySQLInformationSchema();
+            $dbhi = App_Kontext::getDbh(App_Config::DATABAZE_INFORMATION_SCHEMA);
             $query = Helper_SqlQuery::getShowColumnsQueryMySQL();            
             break;
         case 'MSSQL':

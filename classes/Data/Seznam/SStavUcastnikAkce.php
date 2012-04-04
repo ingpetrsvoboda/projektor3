@@ -26,7 +26,7 @@ class Data_Seznam_SStavUcastnikAkce extends Data_Iterator
 
 	static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -38,7 +38,7 @@ class Data_Seznam_SStavUcastnikAkce extends Data_Iterator
 
 	static function vypisVse()
 	{
-    $dbh = App_Kontext::getDbMySQLProjektor();
+    $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT ~1 FROM ~2 WHERE ".($filtr == "" ? "valid = 1" : "(valid = 1 AND ({$filtr}))");
 		$radky = $dbh->prepare($query)->execute(self::ID, self::TABULKA)->fetchall_assoc();
 

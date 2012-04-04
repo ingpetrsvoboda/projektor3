@@ -26,7 +26,7 @@ class Data_Seznam_SStavUcastnikAkceDen extends Data_Iterator
 
 	static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+		$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 

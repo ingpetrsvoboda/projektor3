@@ -50,4 +50,9 @@ class Data_Konverze_Datum
 	{
 		return $this->dateTime->format(self::SQL_FORMAT);
 	}
+        
+        public function dejRok()
+        {
+            return $this->dateTime->format("Y");
+        }
 }

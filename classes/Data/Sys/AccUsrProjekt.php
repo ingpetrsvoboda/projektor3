@@ -28,7 +28,7 @@ class Data_Sys_AccUsrProjekt extends Data_Iterator
 	 */
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
@@ -47,14 +47,14 @@ class Data_Sys_AccUsrProjekt extends Data_Iterator
 	 */
 	public static function dejPovoleneProjekty($userid)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT ~1 FROM ~2 WHERE ~3 = :4";
                 $povoleneProjekty = $dbh->prepare($query)->execute(Data_Sys_AccUsrProjekt::ID, Data_Sys_AccUsrProjekt::TABULKA,
                                     Data_Sys_AccUsrProjekt::ID_SYS_USERS, $userid
                                     )->fetchall_assoc();
                 foreach($povoleneProjekty as $povolenyProjekt) 
                 {
-                    $p = Data_Ciselnik::najdiPodleId("projekt", Data_Sys_AccUsrProjekt::najdiPodleId ($povolenyProjekt[Data_Sys_AccUsrProjekt::ID])->idCProjekt);
+                    $p = Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, "projekt", Data_Sys_AccUsrProjekt::najdiPodleId ($povolenyProjekt[Data_Sys_AccUsrProjekt::ID])->idCProjekt);
                     if ($p) $projekty[] = $p;       //vrací jen validní
                 }    
 

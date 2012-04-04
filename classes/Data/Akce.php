@@ -8,25 +8,31 @@ class Data_Akce extends Data_Iterator
 {
 
 	public $id;
+	public $nazevHlavnihoObjektu;
+	public $datumZacatek;
+	public $datumKonec;
         public $nazev;
         public $popis;
-	public $startDatum;
 	public $idSStavAkceFK;
 	public $idSTypAkceFK;
 
 	const TABULKA = "akce";
 	const ID = "id_akce";
-	const START_DATUM = "start_datum";
+        const NAZEV_HLAVNIHO_OBJEKTU = "nazev_hlavniho_objektu";
+	const DATUM_ZACATEK = "datum_zacatek";
+        const DATUM_KONEC = "datum_konec";
 	const NAZEV = "nazev";
 	const POPIS = "popis";
 	const ID_S_STAV_AKCE_FK = "id_s_stav_akce_FK";
 	const ID_S_TYP_AKCE_FK = "id_s_typ_akce_FK";
 
 
-	public function __construct($startDatum, $nazev, $popis, $idSStavAkceFK, $idSTypAkceFK, $id = null)
+	public function __construct($nazevHlavnihoObjektu, $datumZacatek, $datumKonec, $nazev, $popis, $idSStavAkceFK, $idSTypAkceFK, $id = null)
 	{
 		$this->id = $id;
-		$this->startDatum = $startDatum;
+                $this->nazevHlavnihoObjektu = $nazevHlavnihoObjektu;
+		$this->datumZacatek = $datumZacatek;
+                $this->datumKonec = $datumKonec;
 		$this->nazev = $nazev;
 		$this->popis = $popis;
 		$this->idSStavAkceFK = $idSStavAkceFK;
@@ -44,14 +50,14 @@ class Data_Akce extends Data_Iterator
 
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
 		if(!$radek)
                     return false;
 
-		return new Data_Akce($radek[self::START_DATUM], $radek[self::NAZEV], $radek[self::POPIS], $radek[self::ID_S_STAV_AKCE_FK], $radek[self::ID_S_TYP_AKCE_FK], $radek[self::ID]);
+		return new Data_Akce($radek[self::NAZEV_HLAVNIHO_OBJEKTU], $radek[self::DATUM_ZACATEK], $radek[self::DATUM_KONEC], $radek[self::NAZEV], $radek[self::POPIS], $radek[self::ID_S_STAV_AKCE_FK], $radek[self::ID_S_TYP_AKCE_FK], $radek[self::ID]);
 	}
 
 
@@ -63,7 +69,7 @@ class Data_Akce extends Data_Iterator
 
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "")
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		
 		$query = "SELECT ~1 FROM ~2".
 			($filtr == "" ? "" : " WHERE ({$filtr})").
@@ -85,7 +91,7 @@ class Data_Akce extends Data_Iterator
 
 	public static function smaz()
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
 	}
@@ -98,22 +104,29 @@ class Data_Akce extends Data_Iterator
 
 	public function uloz()
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 		if($this->id == null)
 		{
-			$query = "INSERT INTO ~1 (~2, ~3, ~4, ~5, ~6) VALUES (:7, :8, :9, :10, :11)";
+			$query = "INSERT INTO ~1 (~2, ~3, ~4, ~5, ~6, ~7, ~8) VALUES (:9, :10, :11, :12, :13, :14, :15)";
 			return $dbh->prepare($query)->execute(
-			self::TABULKA, self::START_DATUM, self::NAZEV, self::POPIS, self::ID_S_STAV_AKCE_FK, self::ID_S_TYP_AKCE_FK,
-			$this->startDatum, $this->nazev, $this->popis, $this->idSStavAkceFK, $this->idSTypAkceFK
+			self::TABULKA, self::NAZEV_HLAVNIHO_OBJEKTU, self::DATUM_ZACATEK, self::DATUM_KONEC, self::NAZEV, self::POPIS, self::ID_S_STAV_AKCE_FK, self::ID_S_TYP_AKCE_FK,
+                        $this->nazevHlavnihoObjektu, $this->datumZacatek, $this->datumKonec, $this->nazev, $this->popis, $this->idSStavAkceFK, $this->idSTypAkceFK
 			)->last_insert_id();
 		}
 		else
 		{
-			$query = "UPDATE ~1 SET ~2=:3, ~4=:5, ~6=:7, ~8=:9, ~10=:11 WHERE ~12=:13";
+			$query = "UPDATE ~1 SET ~2=:3, ~4=:5, ~6=:7, ~8=:9, ~10=:11, ~12=:13, ~14=:15 WHERE ~16=:17";
 			$dbh->prepare($query)->execute(
-			self::TABULKA, self::START_DATUM, $this->startDatum, self::NAZEV, $this->nazev, self::POPIS,
-			$this->popis, self::ID_S_STAV_AKCE_FK, $this->idSStavAkceFK, self::ID_S_TYP_AKCE_FK, $this->idSTypAkceFK, self::ID, $this->id
+			self::TABULKA, 
+                        self::NAZEV_HLAVNIHO_OBJEKTU, $this->nazevHlavnihoObjektu, 
+                        self::DATUM_ZACATEK, $this->datumZacatek, 
+                        self::DATUM_KONEC, $this->datumKonec,                                 
+                        self::NAZEV, $this->nazev, 
+                        self::POPIS, $this->popis, 
+                        self::ID_S_STAV_AKCE_FK, $this->idSStavAkceFK, 
+                        self::ID_S_TYP_AKCE_FK, $this->idSTypAkceFK, 
+                        self::ID, $this->id
 			);
 			return true;
 		}
@@ -153,7 +166,7 @@ class Data_Akce extends Data_Iterator
 		if($this->stavUcastnika($ucastnik))
 			throw new Exception("Ucastnik ID {$ucastnik->id} je jiz na Akci ID {$this->id} prihlasen.");
 
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "INSERT INTO ~1 (~2, ~3, ~4) VALUES (:5, :6, :7)";
 		$dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::TABULKA, Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK,
 		Data_Vzb_UcastnikAkce::ID_AKCE_FK, Data_Vzb_UcastnikAkce::ID_S_STAV_UCASTNIK_AKCE_FK,
@@ -192,7 +205,7 @@ class Data_Akce extends Data_Iterator
 		if(!Data_Seznam_SPrechodUcastnikAkce::jeMozny($this->stavUcastnika($ucastnik), $sStavUcastnikAkce))
 			throw new Exception("Ucastnik Akce ve stavu ID: {$this->stavUcastnika($ucastnik)->id} nemuze prejit do stavu ID: {$sStavUcastnikAkce->id}");
 
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "UPDATE ~1 SET ~2=:3 WHERE (~4 = :5 AND ~6 = :7)";
 		$dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::TABULKA,
 		Data_Vzb_UcastnikAkce::ID_S_STAV_UCASTNIK_AKCE_FK,
@@ -214,7 +227,7 @@ class Data_Akce extends Data_Iterator
 
 	public function stavUcastnika($ucastnik)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
 		$query = "SELECT ~1 FROM ~2 WHERE (~3=:4 AND ~5=:6)";
 		$radek = $dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::ID_S_STAV_UCASTNIK_AKCE_FK, Data_Vzb_UcastnikAkce::TABULKA,
@@ -261,7 +274,7 @@ class Data_Akce extends Data_Iterator
 		if(!Data_Seznam_SPrechodAkce::jeMozny($this->dejSStavAkce(), $sStavAkce))
 			throw new Exception("Prechod ze stavu Akce ID: {$this->dejSStavAkce()->id} do stavu ID: {$sStavAkce->id} neni mozny.");
 			
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "UPDATE ~1 SET ~2=:3 WHERE ~4=:5";
 		$dbh->prepare($query)->execute(self::TABULKA, self::ID_S_STAV_AKCE_FK, $sStavAkce->id, self::ID, $this->id);
 
@@ -314,7 +327,7 @@ class Data_Akce extends Data_Iterator
 
 	public static function vsechnyAkceUcastnika($ucastnik)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT ~1 FROM ~2 WHERE ~3=:4";
 		$radky = $dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::ID_AKCE_FK, Data_Vzb_UcastnikAkce::TABULKA,
 		Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK, $ucastnik->id)->fetchall_assoc();

@@ -5,18 +5,14 @@
  * and open the template in the editor.
  */
 
-class PDF_Dokument extends PDF_VytvorPDF
+class PDF_Dokument
 {
     public $pdf;
-    public $identifikator;
     
-    public function __construct($objekt) 
+    public function __construct() 
     {
         define('FPDF_FONTPATH','classes/PDF/Fonts/');
-        if (!$objekt->identifikator)  throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.': '."Není zadán parametr objekt nebo objekt nemá vlastnost identifikator  ".$objekt->identifikator);
-        parent::__construct();
-
-        $this->identifikator = $objekt->identifikator;
+        $this->pdf =  new PDF_VytvorPDF;
     }           
 
 }

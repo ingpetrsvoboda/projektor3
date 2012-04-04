@@ -1,9 +1,9 @@
 <?php
 //require_once("classes/PHPTAL.PHP");
 
-class Stranka_Index extends Stranka implements Stranka_Interface
+class Stranka_Ajax extends Stranka implements Stranka_Interface
 {
-	const JMENO = "Stranka_Index";
+	const JMENO = "Stranka_Ajax";
 	const MAIN = "main";
 	const SABLONA_MAIN = "index.xhtml";
 

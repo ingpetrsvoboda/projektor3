@@ -129,7 +129,7 @@ else {
     <?php       
     }
     
-    $dbh = App_Kontext::getDbMySQLProjektor();
+    $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
     ?>
     
 
@@ -356,7 +356,7 @@ Poradce doporučuje - popis:<br>
 
 <?php 
 //-- cist doporucene kurzy pro ucastnika 
-$dbh = App_Kontext::getDbMySQLProjektor();
+$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 
    $query=" SELECT * FROM uc_doporucenirk_flat_table
               JOIN s_typ_kurzu_rk ON (uc_doporucenirk_flat_table.id_doporucen_kurz_1 = s_typ_kurzu_rk.id_s_typ_kurzu_rk)

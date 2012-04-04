@@ -5,7 +5,7 @@ class DB_Mysql implements DB_Connection {
   protected $dbHost;
   protected $dbName;
   protected $dbh;
-  protected $dbType   = "MySQL" ;
+  protected $dbType;
   
 
 
@@ -15,6 +15,7 @@ class DB_Mysql implements DB_Connection {
     $this->pass = $pass;
     $this->dbHost = $dbHost;
     $this->dbName = $dbName;
+    $this->dbType = App_Config::DB_TYPE_MYSQL;    
   }
   
   protected function connect() 

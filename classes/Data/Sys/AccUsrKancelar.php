@@ -27,8 +27,8 @@ class Data_Sys_AccUsrKancelar extends Data_Iterator
 	 */
 	public static function najdiPodleId($id)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
-		$query = "SELECT * FROM ~1 WHERE ~2 = :3";
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
+                $query = "SELECT * FROM ~1 WHERE ~2 = :3";
 		$radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
 		if(!$radek)
@@ -46,14 +46,14 @@ class Data_Sys_AccUsrKancelar extends Data_Iterator
 	 */
 	public static function dejPovoleneKancelare($userid)
 	{
-		$dbh = App_Kontext::getDbMySQLProjektor();
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
 		$query = "SELECT ~1 FROM ~2 WHERE ~3 = :4";
                 $povoleneKancelare = $dbh->prepare($query)->execute(Data_Sys_AccUsrKancelar::ID, Data_Sys_AccUsrKancelar::TABULKA,
                 Data_Sys_AccUsrKancelar::ID_SYS_USERS, $userid
                 )->fetchall_assoc();
 		foreach($povoleneKancelare as $povolenaKancelar)
                 {
-                    $k = Data_Ciselnik::najdiPodleId("kancelar", Data_Sys_AccUsrKancelar::najdiPodleId ($povolenaKancelar[Data_Sys_AccUsrKancelar::ID])->idCKancelar);
+                    $k = Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, "kancelar", Data_Sys_AccUsrKancelar::najdiPodleId ($povolenaKancelar[Data_Sys_AccUsrKancelar::ID])->idCKancelar);
                     if ($k) $kancelare[] = $k;      //vrací jen validní
                 }
 

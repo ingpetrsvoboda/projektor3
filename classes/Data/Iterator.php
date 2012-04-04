@@ -6,7 +6,7 @@
  */
 abstract class Data_Iterator implements Iterator
 {
-    private $pozice = 0;
+    private $pozice;
     public $vlastnostiIterator;
     
     /**
@@ -19,7 +19,7 @@ abstract class Data_Iterator implements Iterator
      */
     public function __construct($nazevTridy)   //TODO: odstranit všude parametr $nazevTridy
     {
-
+        $this->pozice = 0;
     }
 
     public function current()
@@ -53,7 +53,7 @@ abstract class Data_Iterator implements Iterator
      */
     public function odeberVlastnostIterator($nazevVlastnosti)
     {
-    $index = array_search($nazevVlastnosti, $this->vlastnostiIterator);
+    if ($this->vlastnostiIterator) $index = array_search($nazevVlastnosti, $this->vlastnostiIterator);
     if ($index) {
         unset($this->vlastnostiIterator[$index]);
         $this->vlastnostiIterator = array_slice($this->vlastnostiIterator, 0);

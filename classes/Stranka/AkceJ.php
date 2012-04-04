@@ -26,20 +26,37 @@ class Stranka_AkceJ extends Stranka implements Stranka_Interface
 		/* Defaultni stavy */
 		if($akcej)
 		{
-			$form->setDefaults(array
-			(
-				"akcej_id" => $akcej->id,
-				"akcej_startDatum" => Data_Konverze_Datum::zSQL($akcej->startDatum)->dejDatumProQuickForm(),
-				"akcej_nazev" => $akcej->nazev,
-				"akcej_popis" => $akcej->popis,
-				"akcej_idSStavAkceFK" => $akcej->idSStavAkceFK,
-				"akcej_idSTypAkceFK" => $akcej->idSTypAkceFK
-			));
-		}
-		
+                    $datetimeZacatek = Data_Konverze_Datum::zSQL($akcej->datumZacatek);
+                    $datetimeKonec = Data_Konverze_Datum::zSQL($akcej->datumKonec);
+                    $rokZacatek = $datetimeZacatek->dejRok();
+                    $rokKonec = $datetimeKonec->dejRok();
+                    $form->setDefaults(array
+                    (
+                        "akcej_id" => $akcej->id,
+                        "akcej_nazev_hlavniho_objektu" => $akcej->nazevHlavnihoObjektu,
+                        "akcej_datum_zacatek" => $datetimeZacatek->dejDatumProQuickForm(),
+                        "akcej_datum_konec" => $datetimeKonec->dejDatumProQuickForm(),
+                        "akcej_nazev" => $akcej->nazev,
+                        "akcej_popis" => $akcej->popis,
+                        "akcej_idSStavAkceFK" => $akcej->idSStavAkceFK,
+                        "akcej_idSTypAkceFK" => $akcej->idSTypAkceFK
+                    ));
+		} else {
+                    $rokZacatek = date("Y");
+                    $rokKonec = date("Y");
+                }
+//		$options = array(
+//'language' => 'en',
+//'format' => 'Ymd',
+//'minYear' => 2007,
+//'maxYear' => date('Y') + 2,
+//'addEmptyOption' => true
+//);
 		/* Vytvareni elementu */
 		$form->addElement("hidden", "akcej_id");
-		$form->addElement("date", "akcej_startDatum", "Datum začátku akce", array("format" => "d.m.Y"));
+		$form->addElement("text", "akcej_nazev_hlavniho_objektu", "Název hlavního objektu");
+		$form->addElement("date", "akcej_datum_zacatek", "Datum začátku akce", array("format" => "d.m.Y", "minYear" => $rokZacatek-5, "maxYear" => $rokZacatek+10));
+		$form->addElement("date", "akcej_datum_konec", "Datum konce akce", array("format" => "d.m.Y", "minYear" => $rokKonec-5, "maxYear" => $rokKonec+10));
 		$form->addElement("text", "akcej_nazev", "Název akce");
 		$form->addElement("textarea", "akcej_popis", "Popis akce");
 		
@@ -61,6 +78,7 @@ class Stranka_AkceJ extends Stranka implements Stranka_Interface
 		$form->addElement("submit", "akcej_submit", "Ulozit");
 		
 		/* Vytvareni pravidel */
+		$form->addRule("akcej_nazev_hlavniho_objektu", "Chybí název!", "required");
 		$form->addRule("akcej_nazev", "Chybí název!", "required");
 		$form->addRule("akcej_idSTypAkceFK", "Vyberte typ akce!", "required");
 		$form->addRule("akcej_idSStavAkceFK", "Vyberte stav akce!", "required");
@@ -88,7 +106,9 @@ class Stranka_AkceJ extends Stranka implements Stranka_Interface
 
                     $akce = new Data_Akce
                     (
-                    Data_Konverze_Datum::zQuickForm($data["akcej_startDatum"])->dejDatumproSQL(),
+                    $data["akcej_nazev_hlavniho_objektu"],
+                    Data_Konverze_Datum::zQuickForm($data["akcej_datum_zacatek"])->dejDatumproSQL(),
+                    Data_Konverze_Datum::zQuickForm($data["akcej_datum_konec"])->dejDatumproSQL(),
                     $data["akcej_nazev"],
                     $data["akcej_popis"],
                     $data["akcej_idSStavAkceFK"],

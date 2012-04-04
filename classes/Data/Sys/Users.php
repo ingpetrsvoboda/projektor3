@@ -19,16 +19,16 @@ class Data_Sys_Users extends Data_Iterator
         const USERNAME = "username";
         const NAME = "name";
         const AUTHTYPE = "authtype";
-        const DEBUG = "debug";
+//        const DEBUG = "debug";
         const POVOLEN_ZAPIS = "povolen_zapis";
 
-    public function __construct($username, $name, $authtype, $debug, $povolen_zapis, $id=NULL)
+    public function __construct($username, $name, $authtype, $povolen_zapis, $id=NULL)
     {
         $this->id = $id;
         $this->username = $username;
         $this->name = $name;
         $this->authtype = $authtype;
-        $this->debug = $debug;
+//        $this->debug = $debug;
         $this->povolen_zapis = $povolen_zapis;
         parent::__construct(__CLASS__);
     }
@@ -41,13 +41,14 @@ class Data_Sys_Users extends Data_Iterator
 
     public static function najdiPodleId($id)
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query = "SELECT * FROM ~1 WHERE ~2 = :3";
         $radek = $dbh->prepare($query)->execute(self::TABULKA, self::ID, $id)->fetch_assoc();
 
         if(!$radek) return false;
 
-        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::DEBUG], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
+//        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::DEBUG], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
+        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
     }
 
     /**
@@ -57,13 +58,14 @@ class Data_Sys_Users extends Data_Iterator
     */
    public static function najdiPodleJmena($name)
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query = "SELECT * FROM ~1 WHERE username= :2";
         $radek = $dbh->prepare($query)->execute(self::TABULKA, $name)->fetch_assoc();
 
         if(!$radek) return false;
 
-        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::DEBUG], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
+//        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::DEBUG], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
+        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
     }
     
     /**
@@ -73,13 +75,14 @@ class Data_Sys_Users extends Data_Iterator
     */
    public static function najdiPodleJmenaHesla($name, $password)
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query = "SELECT * FROM ~1 WHERE username= :2 AND password =:3";
         $radek = $dbh->prepare($query)->execute(self::TABULKA, $name,md5($password))->fetch_assoc();
 
         if(!$radek) return false;
 
-        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::DEBUG], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
+//        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::DEBUG], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
+        return new Data_Sys_Users($radek[self::USERNAME], $radek[self::NAME], $radek[self::AUTHTYPE], $radek[self::POVOLEN_ZAPIS], $radek[self::ID]);
     }
     
     /**
@@ -89,7 +92,7 @@ class Data_Sys_Users extends Data_Iterator
     */
     public static function vypisVse($filtr = "", $orderBy = "", $order = "")
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query = "SELECT ~1 FROM ~2".
             ($filtr == "" ? "" : " WHERE ({$filtr})").
             ($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
@@ -108,7 +111,7 @@ class Data_Sys_Users extends Data_Iterator
     */
     public static function smaz()
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         $query = "UPDATE ~1 SET valid = 0 WHERE ~2=:3";
         $dbh->prepare($query)->execute(self::TABULKA, self::ID, $this->id);
     }
@@ -119,7 +122,7 @@ class Data_Sys_Users extends Data_Iterator
     */
     public function uloz()
     {
-        $dbh = App_Kontext::getDbMySQLProjektor();
+        $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
         if($this->id == null)
         {
             $query = "INSERT INTO ~1 (~2, ~3, ~4, ~5) VALUES (:6, :7, :8, :9)";

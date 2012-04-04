@@ -20,6 +20,7 @@
 class Data_Ucastnik extends Data_HlavniObjekt
 {
     const HLAVNI_OBJEKT = "Ucastnik";
+    const DATABAZE = App_Config::DATABAZE_PROJEKTOR;
     const TABULKA = "ucastnik"; 
 //TODO: přejmenovat sloupec v db na id_ucastnik_FK a změnit konstantu    
     const ID = "id_ucastnik";
@@ -55,7 +56,7 @@ class Data_Ucastnik extends Data_HlavniObjekt
     public function __construct($cisloHlavnihoObjektu = 0, $identifikator =0, $idCProjektFK = null, $idSBehProjektuFK = null, $idCKancelarFK = null,
                                 $updated = 0, $id = null)
     {
-            parent::__construct(__CLASS__, self::TABULKA, self::PREFIX, self::ID, self::KONTEXT_IDENTIFIKATORU, 
+            parent::__construct(__CLASS__, self::DATABAZE, self::TABULKA, self::PREFIX, self::ID, self::KONTEXT_IDENTIFIKATORU, 
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id);
 

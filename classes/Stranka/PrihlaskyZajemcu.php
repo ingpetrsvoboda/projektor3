@@ -7,10 +7,17 @@ class Stranka_PrihlaskyZajemcu extends Stranka_FlatTableM
 	
         public static function priprav($cesta)
 	{
-            //tato třida stranka používá data z jine databáze, je třeba vytvořit databázový handler a předat ho jako parametr $dbh
-            //používaná tabulka v databázi self::NAZEV_FLAT_TABLE nemá sloupec valid, je třeba jako parametr vesechny_radky zadat hodnoty TRUE,
-            //pak se ve filtru nepoužije klauzule WHERE valid=1, která by způsobila chybu
-            return new self($cesta, __CLASS__, self::NAZEV_FLAT_TABLE, self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE, self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE, TRUE, App_Kontext::PERSONAL_SERVICE);
+            //tato třida stranka používá data z jine databáze, je třeba vytvořit vlastnost databáze
+            //používaná db tabulka self::NAZEV_FLAT_TABLE nemá sloupec valid, je třeba jako vlastnost vesechny_radky zadat hodnoty TRUE,
+            //pak se ve filtru nepoužije klauzule WHERE valid=1, která by způsobila chybu            
+            $stranka = new self($cesta, __CLASS__);
+            $stranka->databaze = App_Config::DATABAZE_PERSONAL_SERVICE;
+            $stranka->nazev_flattable = self::NAZEV_FLAT_TABLE;
+            $stranka->nazev_jednotne = self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE;
+            $stranka->nazev_mnozne = self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE;
+            $stranka->vsechny_radky = TRUE;
+            
+            return $stranka;
 	}
 
         /*
@@ -39,10 +46,10 @@ class Stranka_PrihlaskyZajemcu extends Stranka_FlatTableM
                 $hlavickaTabulky->pridejSloupec("prijmeni", "Příjmení", "prijmeni");
                 $hlavickaTabulky->pridejSloupec("titul", "Titul", "titul");
                 $hlavickaTabulky->pridejSloupec("obec", "Obec", "obec");
-                $hlavickaTabulky->pridejSloupec("sdeleni", "Sdělení", "sdeleni");                
+                $hlavickaTabulky->pridejSloupec("sdeleni", "Sdělení", "sdeleni");
                 $hlavickaTabulky->pridejSloupec("id_c_region_FK", "idCRegion", 
-                            "id_c_region_FK", "Data_Ciselnik::vypisVse('region', '', '', '', '', TRUE, TRUE, App_Kontext::PERSONAL_SERVICE)",
-                            "Data_Ciselnik::najdiPodleId('region', %ID%, TRUE, TRUE, App_Kontext::PERSONAL_SERVICE)","text");
+                            "id_c_region_FK", "Data_Ciselnik::vypisVse(App_Config::DATABAZE_PERSONAL_SERVICE, 'region', '', '', '', '', TRUE, TRUE)",
+                            "Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PERSONAL_SERVICE, 'region', %ID%, TRUE, TRUE)","text");
                 return $hlavickaTabulky;
                 
         }

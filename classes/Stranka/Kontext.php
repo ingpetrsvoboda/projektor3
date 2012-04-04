@@ -87,9 +87,9 @@ private function kontextSelect()
                 $data = $form->exportValues();
                 if ($data["Vyber"]) {
                     unset($data["Vyber"]);
-                    $projekt = Data_Ciselnik::najdiPodleId("projekt", $data["projektbeh"][0]);
+                    $projekt = Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, "projekt", $data["projektbeh"][0]);
                     $beh = Data_Seznam_SBehProjektu::najdiPodleId($data["projektbeh"][1]); 
-                    $kancelar = Data_Ciselnik::najdiPodleId("kancelar", $data["kancelar"]);
+                    $kancelar = Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, "kancelar", $data["kancelar"]);
                     $kontextUser->projekt = $projekt;
                     $kontextUser->beh = $beh;
                     $kontextUser->kancelar = $kancelar;

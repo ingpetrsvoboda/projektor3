@@ -43,14 +43,7 @@ abstract class Stranka
         /**
          * Nazev stranky
          */
-        public $nazev;
-        
-        public $nazev_flattable;
-        public $nazev_jednotne;
-        public $nazev_mnozne;
-        public $vsechny_radky;
-        public $databaze;
-        
+        public $nazev;        
 
 	/**
 	 * HTML kod stranky.
@@ -86,19 +79,12 @@ abstract class Stranka
 	 * Konstruktor stranky.
 	 * @param $cesta Ukazatel na na globalni cestu.
 	 */
-	protected function __construct($cesta, $nazev = null, $nazev_flattable="", $nazev_jednotne="", $nazev_mnozne="", $vsechny_radky=FALSE, $databaze=NULL)
+	protected function __construct($cesta, $nazev = null, $nazev_flattable="", $nazev_jednotne="", $nazev_mnozne="", $vsechny_radky=FALSE)
 	{
 		$this->cesta = $cesta; // ulozime si cestu
 		$this->cestaSem = $this->cesta->sem(); // ulozime si cestu k teto strance/tride
 		$this->dalsi = $this->cesta->dalsi(); // posuneme se v ceste na dalsi pozici a ulozime si ji do promenne
-                $this->nazev = $nazev.++self::$instance; //název třídy s číslem instance třídy
-                $this->nazev_flattable = $nazev_flattable;
-                $this->nazev_jednotne = $nazev_jednotne;
-                $this->nazev_mnozne = $nazev_mnozne;
-                $this->vsechny_radky = $vsechny_radky;
-// TODO: nedrž "databaze ve strance -> vlastnost Data objektů
-                $this->databaze = $databaze;
-                
+                $this->nazev = $nazev.++self::$instance; //název třídy s číslem instance třídy                
 	}
 
 	/**
@@ -237,7 +223,7 @@ abstract class Stranka
             $form = new HTML_QuickForm($nazevFormulare, "post", $this->cestaSem->generujUri());
             
             // volba Tableless rendereru
-            $renderer =& new HTML_QuickForm_Renderer_Tableless();            
+//            $renderer = new HTML_QuickForm_Renderer_Tableless();            
             
             foreach ($hlavickaTabulky->sloupce as $sloupec) {
                 if ($sloupec->prikazGenerujiciPoleReferencovanychObjektu AND $sloupec->nazevVlastnostiReferencovanehoObjektu)

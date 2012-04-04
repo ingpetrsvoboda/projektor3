@@ -7,7 +7,14 @@ class Stranka_Firmy extends Stranka_FlatTableM
 	
         public static function priprav($cesta)
 	{
-            return new self($cesta, __CLASS__, self::NAZEV_FLAT_TABLE, self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE, self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE);
+            $stranka = new self($cesta, __CLASS__);
+            $stranka->databaze = App_Config::DATABAZE_PROJEKTOR;
+            $stranka->nazev_flattable = self::NAZEV_FLAT_TABLE;
+            $stranka->nazev_jednotne = self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE;
+            $stranka->nazev_mnozne = self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE;
+            $stranka->vsechny_radky = FALSE;
+            
+            return $stranka;
 	}
 
         /*

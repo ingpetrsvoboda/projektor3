@@ -1,6 +1,12 @@
  <?php
 abstract class Stranka_FlatTableJ extends Stranka implements Stranka_Interface
-{
+{        
+        protected $nazev_flattable;
+        protected $nazev_jednotne;
+        protected $nazev_mnozne;
+        protected $vsechny_radky;
+        protected $databaze;
+        
 	const SABLONA_DETAIL = "detail.xhtml";
 
 	public function detail($parametry = null)
@@ -9,9 +15,9 @@ abstract class Stranka_FlatTableJ extends Stranka implements Stranka_Interface
                 /* Konstrukce objektu formulare a datoveho objektu */
 		$form = new HTML_QuickForm("objekt", "post", $this->cestaSem->generujUri());
                 if ($parametry["id"]) {
-                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, $parametry["id"], FALSE, "", NULL, $this->vsechny_radky, $this->databaze);                    
+                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->databaze, $this->nazev_flattable, $parametry["id"], FALSE, "", NULL, $this->vsechny_radky);                    
                 } else {
-                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->nazev_flattable, NULL, FALSE, "", NULL, $this->vsechny_radky, $this->databaze);                                        
+                    $dataObjekt = Data_Flat_FlatTable::najdiPodleId($this->databaze, $this->nazev_flattable, NULL, FALSE, "", NULL, $this->vsechny_radky);                                        
                 }
 
                 $elementy = $this->pripravElementyFormulareZFlatTableObjektu($dataObjekt);

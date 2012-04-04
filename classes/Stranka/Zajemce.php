@@ -19,10 +19,12 @@ class Stranka_Zajemce extends Stranka_HlavniObjekt
             if (!$parametry["pdfDokument"]) 
                 throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.': '."Není zadán parametr pdfDokument: ".  print_r($parametry, TRUE));
             $zajemce = Data_Zajemce::najdiPodleId($parametry["id"]);  
-            $p = PDF_Dokument_AGPSouhlas::vytvor($zajemce);
-            if (!$p->uloz()) 
+            $pdfDokument = new PDF_Dokument_AGPSouhlas($zajemce);
+            $pdfDokument->vytvor();
+            $soubor = $pdfDokument->uloz();
+            if (!$soubor) 
                 throw new Exception('*** Chyba v '.__CLASS__."->".__METHOD__.': '."Nepodařilo se uložit pdfDokument ". PDF_Dokument_AGPSouhlas::FILENAME_PREFIX);
-            
+            VynucenyDownload::download($soubor);
         }
         
     /* prihlaseni */
