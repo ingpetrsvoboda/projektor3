@@ -13,5 +13,6 @@ class Stranka_Firma extends Stranka_FlatTableJ
             $stranka->nazev_jednotne = self::NAZEV_DATOVEHO_OBJEKTU_JEDNOTNE;
             $stranka->nazev_mnozne = self::NAZEV_DATOVEHO_OBJEKTU_MNOZNE;
             $stranka->vsechny_radky = TRUE;
+            return $stranka;            
         }
 }

@@ -114,9 +114,9 @@ class Data_Zajemce extends Data_HlavniObjekt
      * Najde a vrati vsechny Ucastniky prihlasene k Akce
      * @return array() Pole instanci Ucastnik
      */
-    public static function vypisPrihlaseneNaAkci($idAkce)
+    public static function vypisPrihlaseneNaAkci($idAkce, $filtr = "", $orderBy = "", $order = "")
     {
-        return parent::najdiPodleId($idAkce, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
+        return parent::vypisPrihlaseneNaAkci($idAkce, $filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU, FALSE, self::DATABAZE);        
     }    
     
     /**

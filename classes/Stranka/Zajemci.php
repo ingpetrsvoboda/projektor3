@@ -23,7 +23,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
-                $this->novaPromenna("id", $this->nazev);                
+//                $this->novaPromenna("id", $this->nazev);                
 	}
 
 	protected function main°potomekNeni()
@@ -45,19 +45,24 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 	protected function main°potomek°Stranka_Zajemce°detail()
 	{
                 $this->generujPolozkuSTlacitky();
-//                $this->novaPromenna("tlacitka", $tlacitka);
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Zájemce");
 	}
 
-        protected function main°potomek°Stranka_AkceM°akceZAjemce()
+        protected function main°potomek°Stranka_AkceM°akceObjektu()
         {
                 $this->generujPolozkuSTlacitky();            
-//                $this->novaPromenna("tlacitka", $tlacitka);
                 /* Nadpis stranky */
-                $this->novaPromenna("nadpis", "Akce zájemce");
+                $this->novaPromenna("nadpis", "Zájemce");
         }
         
+        protected function main°potomek°Stranka_AkceM°prihlasovaci()
+        {
+                $this->generujPolozkuSTlacitky();            
+                /* Nadpis stranky */
+                $this->novaPromenna("nadpis", "Akce zájemce");            
+        }
+                
         public function main°potomek°Stranka_Zajemce°smaz()
         {
             $this->main°potomekNeni();  // po smazání vytvoří seznam zájemců
@@ -77,7 +82,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 
 	protected function prihlasovaci°vzdy()
 	{
-                $this->novaPromenna("id", $this->nazev);                            
+//                $this->novaPromenna("id", $this->nazev);                            
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Výběr zájemce");
 
@@ -93,21 +98,24 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 	protected function prihlasovaci°potomekNeni()
 	{
 		$zajemci = Data_Zajemce::vypisVse($this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"]);
-                $this->generujSeznamSTlacitky($zajemci);
+                $this->generujSeznamSTlacitkyPrihlas($zajemci);
         }
 	
 	protected function prihlasovaci°potomek°Stranka_Zajemce°prihlaseni()
 	{
                 $this->generujPolozkuSTlacitky();
-//                $this->novaPromenna("tlacitka", $tlacitka);
         }
 	
 	protected function prihlasovaci°potomek°Stranka_Zajemce°detail()
 	{
 //		$this->prihlasovaci°potomek°Stranka_Zajemce°prihlaseni();
                 $this->generujPolozkuSTlacitky();
-//                $this->novaPromenna("tlacitka", $tlacitka);
 	}
+        
+        protected function prihlasovaci°potomek°Stranka_AkceM°akceObjektu()
+        {
+                $this->generujPolozkuSTlacitky();            
+        }
 
         /*
         *  ~~~~~~~~PRIHLASENI~~~~~~~~~~
@@ -119,7 +127,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 
 	protected function prihlaseni°vzdy()
 	{
-                $this->novaPromenna("id", $this->nazev);                            
+//                $this->novaPromenna("id", $this->nazev);                            
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Zájemci přihlášení na akci");
 
@@ -143,7 +151,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
 //                $this->novaPromenna("tlacitka", $tlacitka);
         }	
 
-        protected function prihlaseni°potomek°Stranka_AkceM°akceUcastnika()
+        protected function prihlaseni°potomek°Stranka_AkceM°akceObjektu()
         {
                 $this->generujPolozkuSTlacitky();            
 //                $this->novaPromenna("tlacitka", $tlacitka);
@@ -220,7 +228,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Uprav zaměstnání", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "zamestnani", "textDoNadpisuStranky" => "zaměstnání"))),
                             new Stranka_Element_Tlacitko("Test", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "test", "textDoNadpisuStranky" => "test", "zmraz" => 1))),
                             new Stranka_Element_Tlacitko("Uprav test", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "objektVlastnost" => "test", "textDoNadpisuStranky" => "test"))),
-                            new Stranka_Element_Tlacitko("Akce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceZajemce", array("id" => $zajemce->id))),
+                            new Stranka_Element_Tlacitko("Akce zájemce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceObjektu", array("id" => $zajemce->id))),
                             new Stranka_Element_Tlacitko("Smaž zájemce", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.smaz", array("id" => $zajemce->id))),
                             new Stranka_Element_Tlacitko("Souhlas", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.exportPDF", array("id" => $zajemce->id, "pdfDokument" => "AGPSouhlas")))
                         );
@@ -243,8 +251,7 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                         $zajemce->tlacitka = array
                         (
                                 new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "zmraz" => 1)), "tlacitko"),
-//                                new Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $ucastnik->id)), "tlacitko")
-                                new Stranka_Element_Tlacitko("Akce zájemce", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceZajemce", array("id" => $zajemce->id)))
+                                new Stranka_Element_Tlacitko("Přihlaš na akci", $this->cestaSem->generujUriDalsi("Stranka_AkceM.prihlasovaci", array("id" => $zajemce->id, "nazev_hlavniho_objektu" => Data_Zajemce::HLAVNI_OBJEKT)), "tlacitko"),
                         );
                         $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
                     }    
@@ -254,7 +261,57 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                 $this->novaPromenna("zprava", "Nic nenalezeno!");
                 }
         }
-
+        /**
+         * funkce pro metodu prihlaseni, má o tlačítko víc 
+         * @param type $zajemci 
+         */
+        private function generujSeznamSTlacitkyPrihlas($zajemci, $id_akce)
+        {
+                if ($zajemci) 
+                {                  
+                    $hlavickaTabulky = $this->generujHlavickuTabulky();
+                    $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);  
+                    
+                    foreach($zajemci as $zajemce)
+                    {
+                        $zajemce->tlacitka = array
+                        (
+                                new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "zmraz" => 1)), "tlacitko"),
+                                new Stranka_Element_Tlacitko("Přihlaš na akci", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.prihlaska", array("id_akce" => $id_akce)), "tlacitko"),
+                        );
+                        $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
+                    }    
+                    $this->novaPromenna("seznam", $zajemci);
+                    $this->novaPromenna("zprava", "Celkem nalezeno:".  count($zajemci));
+                } else {
+                $this->novaPromenna("zprava", "Nic nenalezeno!");
+                }
+        }
+        
+        /*
+         * funkce pro metodu vhodniNaPozici, používá metodu generujHlavickuTabulkyPredpoklady pro generování hlavičky 
+         */
+        private function generujSeznamSTlacitkyPredpoklady($zajemci)
+        {
+                if ($zajemci) 
+                {                  
+                    $hlavickaTabulky = $this->generujHlavickuTabulkyPredpoklady();
+                    $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);  
+                    
+                    foreach($zajemci as $zajemce)
+                    {
+                        $zajemce->tlacitka = array
+                        (
+                                new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "zmraz" => 1)), "tlacitko"),
+                        );
+                        $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
+                    }    
+                    $this->novaPromenna("seznam", $zajemci);
+                } else {
+                $this->novaPromenna("zprava", "Nic nenalezeno!");
+                }
+        }
+        
         private function generujHlavickuTabulky() 
         {
 		/* Hlavicka tabulky */
@@ -278,31 +335,6 @@ class Stranka_Zajemci extends Stranka implements Stranka_Interface
                 
                 
                 return $hlavickaTabulky;
-        }
-        
-        /*
-         * funkce pro metodu vhodniNaPozici, používá metodu generujHlavickuTabulkyPredpoklady pro generování hlavičky 
-         */
-        private function generujSeznamSTlacitkyPredpoklady($zajemci)
-        {
-                if ($zajemci) 
-                {                  
-                    $hlavickaTabulky = $this->generujHlavickuTabulkyPredpoklady();
-                    $this->novaPromenna("hlavickaTabulky", $hlavickaTabulky);  
-                    
-                    foreach($zajemci as $zajemce)
-                    {
-                        $zajemce->tlacitka = array
-                        (
-                                new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $zajemce->id, "zmraz" => 1)), "tlacitko"),
-//                                new Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $ucastnik->id)), "tlacitko")
-                        );
-                        $this->pouzijHlavicku($zajemce, $hlavickaTabulky);
-                    }    
-                    $this->novaPromenna("seznam", $zajemci);
-                } else {
-                $this->novaPromenna("zprava", "Nic nenalezeno!");
-                }
         }
 
         private function generujHlavickuTabulkyPredpoklady() 

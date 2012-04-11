@@ -141,6 +141,7 @@ abstract class Data_HlavniObjekt extends Data_Iterator
                 $radky = $dbh->prepare($query)->execute($tabulka)->fetchall_assoc();
 
                 $tridaHlavnihoObjektu = "Data_".$jmenoHlavnihoObjektu;
+                $vypis = array();
                 foreach($radky as $radek)
                         $vypis[] = new $tridaHlavnihoObjektu($radek[$nazevCislaCbjektu], $radek[self::IDENTIFIKATOR], $radek[self::ID_C_PROJEKT_FK],
                         $radek[self::ID_S_BEH_PROJEKTU_FK], $radek[self::ID_C_KANCELAR_FK], $radek[self::UPDATED], $radek[$nazevIdTabulky]);
@@ -232,11 +233,13 @@ abstract class Data_HlavniObjekt extends Data_Iterator
 
     /**
      * Najde a vrati vsechny Ucastniky prihlasene k Akce
-     * @return array() Pole instanci Ucastnik
+     * Najde a vrati vsechny radky tabulky v DB odpovidajici prislusnemu filtru a soucasne kontextu.
+     * @param string $filtr Filtr odpovidajici SQL dotazu za WHERE
+     * @return array() Pole instanci tridy odpovidajici radkum v DB
      */
-    public static function vypisPrihlaseneNaAkci($idAkce, $jmenoHlavnihoObjektu, $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="")
+    public static function vypisPrihlaseneNaAkci($idAkce, $filtr = "", $orderBy = "", $order = "", $jmenoHlavnihoObjektu="", $tabulka="", $nazevIdTabulky="", $nazevCislaCbjektu="", $vsechnyRadky = FALSE, $databaze=NULL)
     {
-            $dbh = App_Kontext::getDbh($this->databaze);
+            $dbh = App_Kontext::getDbh($databaze);
             $query = "SELECT ~1 FROM ~2 WHERE ~3=:4";
             $radky = $dbh->prepare($query)->execute(Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK, Data_Vzb_UcastnikAkce::TABULKA,
                         Data_Vzb_UcastnikAkce::ID_AKCE_FK, $idAkce)->fetchall_assoc();
@@ -244,8 +247,9 @@ abstract class Data_HlavniObjekt extends Data_Iterator
             if(!$radky) return false;
             $tridaHlavnihoObjektu = "Data_".$jmenoHlavnihoObjektu;
             foreach($radky as $radek)
-                    $vypis[] = $tridaHlavnihoObjektu::najdiPodleId($radek[Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK], $tridaHlavnihoObjektu::HLAVNI_OBJEKT, $tridaHlavnihoObjektu::TABULKA, $tridaHlavnihoObjektu::ID, $tridaHlavnihoObjektu::CISLO_OBJEKTU);
+                    $objekt = $tridaHlavnihoObjektu::najdiPodleId($radek[Data_Vzb_UcastnikAkce::ID_UCASTNIK_FK], $tridaHlavnihoObjektu::HLAVNI_OBJEKT, $tridaHlavnihoObjektu::TABULKA, $tridaHlavnihoObjektu::ID, $tridaHlavnihoObjektu::CISLO_OBJEKTU, $vsechnyRadky, $databaze);
+                if ($objekt) $vypis[] = $objekt;
             return $vypis;
-    }    
+    }  
 }
 ?>

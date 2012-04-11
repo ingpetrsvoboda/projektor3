@@ -70,7 +70,6 @@ class Data_Akce extends Data_Iterator
 	public static function vypisVse($filtr = "", $orderBy = "", $order = "")
 	{
                 $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
-		
 		$query = "SELECT ~1 FROM ~2".
 			($filtr == "" ? "" : " WHERE ({$filtr})").
 			($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
@@ -84,6 +83,27 @@ class Data_Akce extends Data_Iterator
 	}
 
 
+	/**
+	 * Najde a vrati vsechny radky tabulky v DB odpovidajici prislusnemu filtru.
+	 * @param string $filtr Filtr odpovidajici SQL dotazu za WHERE
+	 * @return array() Pole instanci tridy odpovidajici radkum v DB
+	 */
+
+	public static function vypisVseProObjekt($nazevHlavnihoObjektu, $filtr = "", $orderBy = "", $order = "")
+	{
+                $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
+		$query = "SELECT ~1 FROM ~2".
+			($filtr == "" ? " WHERE ~3 = :4" : " WHERE ~3 = :4 AND ({$filtr})").
+			($orderBy == "" ? "" : " ORDER BY `{$orderBy}`")." ".$order;
+		
+		$radky = $dbh->prepare($query)->execute(self::ID, self::TABULKA, self::NAZEV_HLAVNIHO_OBJEKTU, $nazevHlavnihoObjektu)->fetchall_assoc();
+
+		foreach($radky as $radek)
+		$vypis[] = self::najdiPodleId($radek[self::ID], $radek[self::NAZEV_HLAVNIHO_OBJEKTU]);
+		 
+		return $vypis;
+	}
+        
 	/**
 	 * Nastavi v radku v databaze odpovidajici parametru $id tridy hodnotu valid = 0
 	 * @return unknown_type

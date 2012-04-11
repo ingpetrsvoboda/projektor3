@@ -60,7 +60,7 @@ class Data_Ucastnik extends Data_HlavniObjekt
                                 $cisloHlavnihoObjektu, $identifikator, $idCProjektFK, $idSBehProjektuFK, $idCKancelarFK,
                                 $updated, $id);
 
-            //poze pro účely vytvoření celého jména včetně titulů se vytvoří a pak zruší vlastnost smlouva
+        //pouze pro účely vytvoření celého jména včetně titulů se vytvoří a pak zruší vlastnost smlouva
             $this->celeJmeno = $this->smlouva->prijmeni." ".$this->smlouva->jmeno
                         .($this->smlouva->titul ? ", ".$this->smlouva->titul : "")
                         .($this->smlouva->titul_za ? ", ".$this->smlouva->titul_za : "");
@@ -68,20 +68,20 @@ class Data_Ucastnik extends Data_HlavniObjekt
     }
     
     public static function najdiPodleId($id) {
-        return parent::najdiPodleId($id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
+        return parent::najdiPodleId($id, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU, FALSE, self::DATABAZE);
     }
     
     public static function vypisVse($filtr = "", $orderBy = "", $order = "") {
-        return parent::vypisVse($filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);        
+        return parent::vypisVse($filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU, FALSE, self::DATABAZE);        
     }   
 
     /**
      * Najde a vrati vsechny Ucastniky prihlasene k Akce
      * @return array() Pole instanci Ucastnik
      */
-    public static function vypisPrihlaseneNaAkci($idAkce)
+    public static function vypisPrihlaseneNaAkci($idAkce, $filtr = "", $orderBy = "", $order = "")
     {
-        return parent::vypisPrihlaseneNaAkci($idAkce, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU);
+        return parent::vypisPrihlaseneNaAkci($idAkce, $filtr, $orderBy, $order, self::HLAVNI_OBJEKT, self::TABULKA, self::ID, self::CISLO_OBJEKTU, FALSE, self::DATABAZE);
     }    
 }
 ?>

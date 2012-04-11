@@ -13,34 +13,35 @@ class Stranka_Ucastnik extends Stranka_HlavniObjekt
             return parent::detail(self::HLAVNI_OBJEKT, $parametry);
         }
         
-    /* prihlaseni */
-	public function prihlaseni($parametry = null)
+    /* prihlaska */
+	public function prihlaska($parametry = null)
 	{
-		return $this->vytvorStranku("prihlaseni", self::SABLONA_DETAIL, $parametry);
+		return $this->vytvorStranku("prihlaska", self::SABLONA_DETAIL, $parametry);
 	}
 
-	protected function prihlaseni°vzdy()
+	protected function prihlaska°vzdy()
 	{
 		$akce = Data_Akce::najdiPodleId($this->parametry["id_akce"]);
-                $this->novaPromenna("nadpis", "Přihlášení na akci");
+                $this->novaPromenna("nadpis", "Přihlášení účastníka na akci");
 
                 try
 		{
-                    //TODO: Nedodělek - pevně zadaný parament 2!
+                    //TODO: Nedodělek - pevně zadaný parametr 2!
 			$akce->prihlas(Data_Ucastnik::najdiPodleId($this->parametry["id"]), Data_Seznam_SStavUcastnikAkce::najdiPodleId(2), Data_Seznam_SStavUcastnikAkceDen::najdiPodleId(2));
-                        $this->novaPromenna("prihlaseni_na_akci", "Prihlaseni bylo uspesne!");
+                        $this->novaPromenna("hlaseni", "Prihlaseni bylo uspesne!");
 		}
 		catch(Exception $e)
 		{
-                        $this->novaPromenna("prihlaseni_na_akci", $e->getMessage());
+                        $this->novaPromenna("hlaseni", $e->getMessage());
 		}
 
 		$this->detail°vzdy();
 	}
 
-	protected function prihlaseni°potomekNeni()
+	protected function prihlaska°potomekNeni()
 	{
 		$this->detail°potomekNeni();
 	}
+                
 
 }

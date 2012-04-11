@@ -67,16 +67,16 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
         /*
         *  ~~~~~~~~AKCE ÚČASTNÍKA~~~~~~~~~~
         */
-	public function akceUcastnika($parametry = null)
+	public function akceObjektu($parametry = null)
 	{ 
             /* Vygenerovani filtrovaciho formulare */
             $hlavickaTabulky = $this->generujHlavickuTabulky();
-            $filtrovaciFormular = $this->filtrovani("akcemAkceUcastnika", $hlavickaTabulky);
+            $filtrovaciFormular = $this->filtrovani("akcemAkceObjektu", $hlavickaTabulky);
             $formularHTML = $filtrovaciFormular->toHtml();
-            return $this->vytvorStranku("akceUcastnika", self::SABLONA_MAIN, $parametry, "", $formularHTML);  
+            return $this->vytvorStranku("akceObjektu", self::SABLONA_MAIN, $parametry, "", $formularHTML);  
 	}
 
-	protected function akceUcastnika°vzdy()
+	protected function akceObjektu°vzdy()
 	{
                 $this->novaPromenna("id", $this->nazev);                            
                 /* Ovladaci tlacitka stranky */
@@ -86,63 +86,36 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 		);
                 $this->novaPromenna("tlacitka", $tlacitka);
                 /* Nadpis stranky */
-                $this->novaPromenna("nadpis", "Akce účastníka");         }
+                $this->novaPromenna("nadpis", "Akce na které je přihlášen/a:");         }
 	
-	protected function akceUcastnika°potomekNeni()
+	protected function akceObjektu°potomekNeni()
 	{
                 $ucastnik = Data_Ucastnik::najdiPodleId($this->parametry["id"]);
                 $akcem = Data_Akce::vsechnyAkceUcastnika($ucastnik);
                 $this->generujSeznamSTlacitky($akcem);               
         }
 
-        protected function akceUcastnika°potomek°Stranka_Ucastnici°prihlaseni() 
+        protected function akceObjektu°potomek°Stranka_Ucastnici°prihlaseni() 
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
 
-        protected function akceUcastnika°potomek°Stranka_Ucastnici°prihlasovaci() 
+        protected function akceObjektu°potomek°Stranka_Ucastnici°prihlasovaci() 
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
         
-        /*
-        *  ~~~~~~~~AKCE ZÁJEMCE~~~~~~~~~~
-        */
-	public function akceZajemce($parametry = null)
-	{ 
-            /* Vygenerovani filtrovaciho formulare */
-            $hlavickaTabulky = $this->generujHlavickuTabulky();
-            $filtrovaciFormular = $this->filtrovani("akcemAkceUcastnika", $hlavickaTabulky);
-            $formularHTML = $filtrovaciFormular->toHtml();
-            return $this->vytvorStranku("akceZajemce", self::SABLONA_MAIN, $parametry, "", $formularHTML);  
-	}
-
-	protected function akceZajemce°vzdy()
-	{
-                $this->novaPromenna("id", $this->nazev);                            
-                /* Ovladaci tlacitka stranky */
-		$tlacitka = array
-		(
-                    new Stranka_Element_Tlacitko("Zpět", $this->cestaSem->generujUriZpet()),
-		);
-                $this->novaPromenna("tlacitka", $tlacitka);
-                /* Nadpis stranky */
-                $this->novaPromenna("nadpis", "Akce zájemce");         }
-	
-	protected function akceZajemce°potomekNeni()
-	{
-                $zajemce = Data_Zajemce::najdiPodleId($this->parametry["id"]);
-                $akcem = Data_Akce::vsechnyAkceUcastnika($zajemce);
-                $this->generujSeznamSTlacitky($akcem);               
-        }
-
-        protected function akceZajemce°potomek°Stranka_Zajemci°prihlaseni() 
+        protected function akceObjektu°potomek°Stranka_Zajemci°prihlaseni() 
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
 
+        protected function akceObjektu°potomek°Stranka_Zajemce°prihlaska()
+        {
+		$this->generujPolozkuSTlacitky("id_akce");            
+        }
 
-        protected function akceZajemce°potomek°Stranka_Zajemci°prihlasovaci() 
+        protected function akceObjektu°potomek°Stranka_Zajemci°prihlasovaci() 
         {
 		$this->generujPolozkuSTlacitky("id_akce");
         }
@@ -174,16 +147,34 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
 	
 	protected function prihlasovaci°potomekNeni()
 	{
-		$akcem = Data_Akce::vypisVse($this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"]);
+		$akcem = Data_Akce::vypisVseProObjekt($this->parametry["nazev_hlavniho_objektu"], $this->filtr->generujSQL(), $this->parametry["razeniPodle"], $this->parametry["razeni"]);
                 $this->generujSeznamSTlacitky($akcem);
         }
 	
 	protected function prihlasovaci°potomek°Stranka_Ucastnik°prihlaseni()
 	{
                 $this->generujPolozkuSTlacitky();
-//                $this->novaPromenna("tlacitka", $tlacitka);
         }
 	
+	protected function prihlasovaci°potomek°Stranka_Zajemce°prihlaseni()
+	{
+                $this->generujPolozkuSTlacitky();
+        }        
+        
+        protected function prihlasovaci°potomek°Stranka_Ucastnik°prihlaska()
+        {
+//            $this->akceObjektu();
+//            $this->akceObjektu°potomekNeni();
+//            $this->akceObjektu°vzdy();
+        }
+        
+        protected function prihlasovaci°potomek°Stranka_Zajemce°prihlaska()
+        {
+//            $this->akceObjektu();
+//            $this->akceObjektu°potomekNeni();
+//            $this->akceObjektu°vzdy();
+        }
+        
 	protected function prihlasovaci°potomek°Stranka_Ucastnik°detail()
 	{
                 $this->generujPolozkuSTlacitky();
@@ -201,13 +192,15 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                 $akcej = Data_Akce::najdiPodleId($this->dalsi->parametry[$nazevID]);
                 if ($akcej)
                 {
+                    $prihlasovaciStranka = "Stranka_".$akcej->nazevHlavnihoObjektu.".prihlasovaci";
+                    $prihlaseniStranka = "Stranka_".$akcej->nazevHlavnihoObjektu.".prihlaseni";  
                     $akcej->tlacitka = array
                     (
                         new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_AkceJ.detail", array("id" => $akcej->id, "zmraz" => 1))),
                         new Stranka_Element_Tlacitko("Upravit", $this->cestaSem->generujUriDalsi("Stranka_AkceJ.detail", array("id" => $akcej->id))),
                         new Stranka_Element_Tlacitko("Zrušit", $this->cestaSem->generujUriDalsi("Stranka_AkceJ.detail", array("id" => $akcej->id, "smaz" => 1, "zmraz" => 1))),
-                        new Stranka_Element_Tlacitko("Přihlásit účastníka", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlasovaci", array("id_akce" => $akcej->id))),
-                        new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlaseni", array("id_akce" => $akcej->id)))
+                        new Stranka_Element_Tlacitko("Přihlásit na akci", $this->cestaSem->generujUriDalsi($prihlasovaciStranka, array("id_akce" => $akcej->id))),
+                        new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi($prihlaseniStranka, array("id_akce" => $akcej->id)))
                     );
                     $this->pouzijHlavicku($akcej, $hlavickaTabulky);
                     $this->novaPromenna("polozka", $akcej);
@@ -223,14 +216,15 @@ class Stranka_AkceM extends Stranka implements Stranka_Interface
                     
                     foreach($akcem as $akcej)
                     {
-                        $akcej->odkaz = $this->cestaSem->generujUriDalsi("Stranka_Zajemce.detail", array("id" => $akcej->id));
+                        $prihlasovaciStranka = "Stranka_".$akcej->nazevHlavnihoObjektu.".prihlasovaci";
+                        $prihlaseniStranka = "Stranka_".$akcej->nazevHlavnihoObjektu.".prihlaseni";                        
                         $akcej->tlacitka = array
                         (
                             new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_AkceJ.detail", array("id" => $akcej->id, "zmraz" => 1))),
                             new Stranka_Element_Tlacitko("Upravit", $this->cestaSem->generujUriDalsi("Stranka_AkceJ.detail", array("id" => $akcej->id))),
                             new Stranka_Element_Tlacitko("Zrušit", $this->cestaSem->generujUriDalsi("Stranka_AkceJ.detail", array("id" => $akcej->id, "smaz" => 1, "zmraz" => 1))),
-                            new Stranka_Element_Tlacitko("Přihlásit účastníka", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlasovaci", array("id_akce" => $akcej->id))),
-                            new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi("Stranka_Ucastnici.prihlaseni", array("id_akce" => $akcej->id)))
+                            new Stranka_Element_Tlacitko("Přihlásit na akci", $this->cestaSem->generujUriDalsi($prihlasovaciStranka, array("id_akce" => $akcej->id))),
+                            new Stranka_Element_Tlacitko("Seznam přihlášených", $this->cestaSem->generujUriDalsi($prihlaseniStranka, array("id_akce" => $akcej->id)))
                         );
                         $this->pouzijHlavicku($akcej, $hlavickaTabulky);
                     }

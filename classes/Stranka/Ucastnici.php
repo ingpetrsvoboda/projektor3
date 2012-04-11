@@ -22,7 +22,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 
 	protected function main°vzdy()
 	{
-                $this->novaPromenna("id", $this->nazev);                
+//                $this->novaPromenna("id", $this->nazev);                
 	}
 
 	protected function main°potomekNeni()
@@ -49,7 +49,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                 $this->novaPromenna("nadpis", "Účastník");
 	}
 
-        protected function main°potomek°Stranka_AkceM°akceUcastnika()
+        protected function main°potomek°Stranka_AkceM°akceObjektu()
         {
                 $this->generujPolozkuSTlacitky();            
                 $this->novaPromenna("tlacitka", $tlacitka);
@@ -63,13 +63,13 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 	{ 
             /* Vygenerovani filtrovaciho formulare */
             $hlavickaTabulky = $this->generujHlavickuTabulky();
-            $filtrovaciFormular = $this->filtrovani("prihlasovaciZajemci", $hlavickaTabulky); 
+            $filtrovaciFormular = $this->filtrovani("prihlasovaciUcastnici", $hlavickaTabulky); 
             return $this->vytvorStranku("prihlasovaci", self::SABLONA_MAIN, $parametry, "", $filtrovaciFormular->toHtml());
         }
 
 	protected function prihlasovaci°vzdy()
 	{ 
-                $this->novaPromenna("id", $this->nazev);                            
+//                $this->novaPromenna("id", $this->nazev);                            
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Výběr účastníka");
 
@@ -114,7 +114,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 
 	protected function prihlaseni°vzdy()
 	{
-                $this->novaPromenna("id", $this->nazev);                            
+//                $this->novaPromenna("id", $this->nazev);                            
                 /* Nadpis stranky */
                 $this->novaPromenna("nadpis", "Účastníci přihlášení na akci");
 
@@ -138,7 +138,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                 $this->novaPromenna("tlacitka", $tlacitka);
         }	
 
-        protected function prihlaseni°potomek°Stranka_AkceM°akceUcastnika()
+        protected function prihlaseni°potomek°Stranka_AkceM°akceObjektu()
         {
                 $this->generujPolozkuSTlacitky();            
                 $this->novaPromenna("tlacitka", $tlacitka);
@@ -173,7 +173,7 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                             new Stranka_Element_Tlacitko("Uprav zaměstnání", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id, "objektVlastnost" => "zamestnani", "textDoNadpisuStranky" => "zaměstnání"))),
                             new Stranka_Element_Tlacitko("Doplňující", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id, "objektVlastnost" => "doplnujici", "textDoNadpisuStranky" => "doplňující", "zmraz" => 1))),
                             new Stranka_Element_Tlacitko("Uprav doplňující", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id, "objektVlastnost" => "doplnujici", "textDoNadpisuStranky" => "doplňující"))),
-                            new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $ucastnik->id)))
+                            new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceObjektu", array("id" => $ucastnik->id)))
                         );
                         $this->pouzijHlavicku($ucastnik, $hlavickaTabulky);
                         $this->novaPromenna("polozka", $ucastnik);
@@ -190,16 +190,16 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
                     
                     foreach($ucastnici as $ucastnik)
                     {
-                        $ucastnik->odkaz = $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id));
                         $ucastnik->tlacitka = array
                         (
                             new Stranka_Element_Tlacitko("Detail", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id, "zmraz" => 1)), "tlacitko"),
 //                            new Tlacitko("Uprav", $this->cestaSem->generujUriDalsi("Stranka_Ucastnik.detail", array("id" => $ucastnik->id)), "tlacitko")
-                            new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceUcastnika", array("id" => $ucastnik->id)))
+                            new Stranka_Element_Tlacitko("Akce účastníka", $this->cestaSem->generujUriDalsi("Stranka_AkceM.akceObjektu", array("id" => $ucastnik->id)))
                         );
                         $this->pouzijHlavicku($ucastnik, $hlavickaTabulky);
                     }
                     $this->novaPromenna("seznam", $ucastnici);
+                    $this->novaPromenna("zprava", "Celkem nalezeno:".  count($ucastnici));                    
                 } else {
                 $this->novaPromenna("zprava", "Nic nenalezeno!");
                 }
@@ -210,8 +210,8 @@ class Stranka_Ucastnici extends Stranka implements Stranka_Interface
 		/* Hlavicka tabulky */
 		$hlavickaTabulky = new Stranka_Element_Hlavicka($this->cestaSem);
                 //sloupce pro zobrazení vlastností odpovidajících sloupcům v db tabulce zajemce
-                $hlavickaTabulky->pridejSloupec("id", "ID", Data_Zajemce::ID);
-                $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Zajemce::IDENTIFIKATOR);
+                $hlavickaTabulky->pridejSloupec("id", "ID", Data_Ucastnik::ID);
+                $hlavickaTabulky->pridejSloupec("identifikator", "Identifikátor", Data_Ucastnik::IDENTIFIKATOR);
                 //sloupce pro zobrazení vlastností odpovidajících těm sloupcům v db tabulce zajemce, které obsahují cizí klíče
                 $hlavickaTabulky->pridejSloupec("idSBehProjektuFK", "Turnus", Data_Seznam_SBehProjektu::TEXT, "Data_Seznam_SBehProjektu::vypisVse()", "Data_Seznam_SBehProjektu::najdiPodleId(%ID%)", "text");
                 $hlavickaTabulky->pridejSloupec("idCKancelarFK", "Kancelář", Data_Ucastnik::ID_C_KANCELAR_FK, "Data_Ciselnik::vypisVse(App_Config::DATABAZE_PROJEKTOR, 'kancelar', '', '', 'id_c_kancelar')", "Data_Ciselnik::najdiPodleId(App_Config::DATABAZE_PROJEKTOR, 'kancelar', %ID%)", "text");                

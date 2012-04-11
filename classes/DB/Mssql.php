@@ -20,10 +20,12 @@ class DB_Mssql implements DB_Connection {
   
   protected function connect() 
   {
-      $this->dbh = mssql_connect($this->dbHost, $this->user, $this->pass);
+//      $this->dbh = mssql_connect($this->dbHost, $this->user, $this->pass);
+      $this->dbh = sqlsrv_connect( $this->dbHost, array( "Database"=>  $this->dbName, "UID"=>  $this->user, "PWD"=>  $this->pass));
     if(!is_resource($this->dbh)) 
     {
-      throw new DB_Mssql_Exception;
+        print_r( sqlsrv_errors());
+      throw new DB_Mssql_Exception(print_r( sqlsrv_errors(), true));
     }
   }
 
