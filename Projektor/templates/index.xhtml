@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Projektor | Grafia.cz |</title>
+        <link rel="icon" type="image/gif" href="favicon.gif"></link>
+        <link rel="stylesheet" type="text/css" href="css/default.css" />
+        <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    </head>
+
+    <body>
+        <div  tal:condition="logout | nothing" id="login-logout-ie">
+            <div id="login-logout">
+            <form name="Logout" id="logout" tal:attributes="action action" method="get">
+                <input type="Submit" value="Odhlásit"></input>
+            </form>
+            </div>
+        </div>
+
+        <div  tal:condition="loginlogout | nothing" id="loginlogout">
+            <a href="" tal:content="loginlogout/popisek" tal:attributes="href loginlogout/odkaz" class="tlacitko"/>
+        </div>
+
+        <div tal:attributes="id id" class="index">
+            <p tal:content="con | nothing" id="index_con"></p>
+            <h1 tal:content="nadpis | nothing" id="nadpis">Projektor test</h1>
+            <div  tal:condition="debuguj | nothing" id="debuguj">
+                <a href="" tal:attributes="href debuguj"  tal:content="debugujtext | nothing">DEBUGUJ!</a>
+            </div>
+
+            <div  id="selecty">
+                <!-- %FORM% -->
+                <span tal:content="structure formular | nothing"></span>
+            </div>
+            <div  tal:condition="selecty | nothing">
+                <span tal:repeat="select selecty">
+                    <span tal:content="select"></span>>
+                </span>
+            </div>
+
+            <div  tal:condition="tlacitka | nothing">
+                <h2 id="menu">Menu</h2>
+                <ul>
+                    <li tal:repeat="tlacitko tlacitka">
+                        <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+                    </li>
+                </ul>
+            </div>
+            <!-- %NEXT% -->
+            <span tal:content="structure potomek | nothing"></span>
+        </div>
+    </body>
+</html>

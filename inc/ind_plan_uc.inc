@@ -25,7 +25,7 @@ else if (isset($Ucastnik->id)) {
 
 If($id_ucastnik){
 
-    If($Ucastnik = Ucastnik_mapper::find_by_id($id_ucastnik, $dbh)) {
+    If($Ucastnik = Ucastnik_mProjektor_Apper::find_by_id($id_ucastnik, $dbh)) {
         setcookie("id_ucastnik",$Ucastnik->id);
 
         $Flat_tab = new Flat_UcFlatTable($Ucastnik , $dbh);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
@@ -111,28 +111,28 @@ if ( ($User->username == "sys_admin" ))  {
 
 <?php
     if ( isset($_GET['id_ucastnik']) ) {
-    ?> 
+    ?>
       <form method="POST" action="index.php?akce=ind_plan_uc&save=1&id_ucastnik= <?php
     echo $id_ucastnik.'">';
     } else {
-    ?> 
+    ?>
       <form method="POST" action="index.php?akce=ind_plan_uc&save=1">
     <?php
     }
-    
+
     $zavolane_kolize_v_plan=array();
     //echo "<br>zavolane_kolize_v_plan NA ZACATKU " ; var_dump($zavolane_kolize_v_plan);
-    $Kolize_Lokace="zacatekformulare";  
+    $Kolize_Lokace="zacatekformulare";
     //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
     //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-    
-//$Beh = Beh_mapper::find_by_id($_COOKIE['beh_id'], $dbh); //sss 
+
+//$Beh = Beh_mProjektor_Apper::find_by_id($_COOKIE['beh_id'], $dbh); //sss
 /*
 echo "<BR>" ; print_r($Ucastnik);
 echo "<BR>" ; print_r($Ucastnik->id);
@@ -140,7 +140,7 @@ echo "<BR>" ; print_r($Ucastnik->projekt->kod);
 echo "<BR>" ; print_r($Ucastnik->beh->beh_cislo);
  */
 
-$dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
+$dbh = Projektor_App_Container::getDbh(Projektor_App_Config::DATABAZE_PROJEKTOR);
 
 //***priprava pro vsechny selecty, radky nereprezentujici kurz (---.., nezarazen, odmitl ucast)***
 $query="SELECT * FROM s_kurz where
@@ -164,19 +164,19 @@ $nekurz_pole_comb = array_combine($nekurz_id_pole, $nekurz_pole);
         //$kolize_ukonceni_zztp_interval = fce_kolize_ukonceni_interval ("zztp", $id_ucastnik);  //vraci objekt typu kolize
         //$kolize_ukonceni_zztp_pred = fce_kolize_ukonceni_pred ("zztp", $id_ucastnik);          //vraci objekt typu kolize
 
-$Kolize_Lokace="Motivační program";        
+$Kolize_Lokace="Motivační program";
 ?>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace; /*Motivační program*/ ?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-     
-     
+
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -185,24 +185,24 @@ $Kolize_Lokace="Motivační program";
                 and valid
                 order by razeni";
       // echo $query;
-       $data= $dbh->prepare($query)->execute();   
-?>    
+       $data= $dbh->prepare($query)->execute();
+?>
 
  <p> Kurz základních znalostí trhu práce:
 <select size="1" name="id_s_kurz_zztp_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_zztp_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_zztp_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {   ?>
-<option <?php if (trim(@$pole['id_s_kurz_zztp_FK']) == trim($kurz['id_s_kurz'] ))        
-                          {echo 'selected';}?> value=<?php echo $kurz['id_s_kurz']; ?>><?php 
+<option <?php if (trim(@$pole['id_s_kurz_zztp_FK']) == trim($kurz['id_s_kurz'] ))
+                          {echo 'selected';}?> value=<?php echo $kurz['id_s_kurz']; ?>><?php
          echo trim(text_retezec_kurz($kurz)); ?></option>
-<?php        
+<?php
 }
 ?>
 </select>
@@ -234,10 +234,10 @@ while($kurz = $data->fetch_assoc()) {   ?>
 <?php
 
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-     //  Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+     //  Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
 
-    
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -246,27 +246,27 @@ while($kurz = $data->fetch_assoc()) {   ?>
                 and valid
                 order by razeni";
        //echo $query;
-       $data= $dbh->prepare($query)->execute();       
-?>    
+       $data= $dbh->prepare($query)->execute();
+?>
 
 
 
   <p> Komunikační kurz:
 <select size="1" name="id_s_kurz_kom_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_kom_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_kom_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 
 <?php
 while($kurz = $data->fetch_assoc()) {   ?>
-<option <?php if (trim(@$pole['id_s_kurz_kom_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_kom_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-<?php        
+<?php
 }
 ?>
 </select>
@@ -296,18 +296,18 @@ while($kurz = $data->fetch_assoc()) {   ?>
 <?php
         //$kolize_ukonceni_pc_interval = fce_kolize_ukonceni_interval ("pc", $id_ucastnik);  //vraci objekt typu kolize
         //$kolize_ukonceni_pc_pred = fce_kolize_ukonceni_pred ("pc", $id_ucastnik);          //vraci objekt typu kolize
-$Kolize_Lokace="PC kurz";          
+$Kolize_Lokace="PC kurz";
 ?>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace;?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci=druh pc, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci=druh pc, pomoci definici v tabulce s_typ_kolize - konec *********
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-     
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -317,23 +317,23 @@ $Kolize_Lokace="PC kurz";
                 order by razeni";
        //echo $query;
        $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
-?>    
+?>
 
   <p>PC kurz:
 <select size="1" name="id_s_kurz_pc_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_pc_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_pc_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {   ?>
-<option <?php if (trim(@$pole['id_s_kurz_pc_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_pc_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-<?php        
+<?php
 }
 ?>
 </select>
@@ -361,18 +361,18 @@ while($kurz = $data->fetch_assoc()) {   ?>
 <?php
         //$kolize_ukonceni_bidi_interval = fce_kolize_ukonceni_interval ("bidi", $id_ucastnik);  //vraci objekt typu kolize
         //$kolize_ukonceni_bidi_pred = fce_kolize_ukonceni_pred ("bidi", $id_ucastnik);          //vraci objekt typu kolize
-$Kolize_Lokace="Bilační diagnostika";           
+$Kolize_Lokace="Bilační diagnostika";
 ?>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace; /*Bilační diagnostika*/?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-    
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -382,23 +382,23 @@ $Kolize_Lokace="Bilační diagnostika";
                 order by razeni";
        //echo $query;
        $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
-?>      
-  
+?>
+
   <p> Bilanční diagnostika:
 <select size="1" name="id_s_kurz_bidi_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_bidi_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_bidi_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {   ?>
-<option <?php if (trim(@$pole['id_s_kurz_bidi_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_bidi_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-<?php        
+<?php
 }
 ?>
 </select>
@@ -426,19 +426,19 @@ while($kurz = $data->fetch_assoc()) {   ?>
 <?php
         //$kolize_ukonceni_praxe_interval = fce_kolize_ukonceni_interval ("praxe", $id_ucastnik);  //vraci objekt typu kolize
         //$kolize_ukonceni_praxe_pred = fce_kolize_ukonceni_pred ("praxe", $id_ucastnik);          //vraci objekt typu kolize
-$Kolize_Lokace="Pracovní praxe";  
+$Kolize_Lokace="Pracovní praxe";
 ?>
 <DIV>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace;?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-     
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -448,23 +448,23 @@ $Kolize_Lokace="Pracovní praxe";
                 order by razeni";
        //echo $query;
        $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
-?>    
+?>
 
   <p>Pracovní praxe:
 <select size="1" name="id_s_kurz_praxe_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_praxe_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_praxe_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {   ?>
-<option <?php if (trim(@$pole['id_s_kurz_praxe_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_praxe_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-<?php        
+<?php
 }
 ?>
 </select>
@@ -474,16 +474,16 @@ while($kurz = $data->fetch_assoc()) {   ?>
 ?>
 <br>
    <p>Datum ukončeni praxe: <input ID="praxe_datum_ukonceni" type="text" name="praxe_datum_ukonceni" size="8" maxlength="10"
-                             value="<?php echo @$pole['praxe_datum_ukonceni'];?>"></p> 
+                             value="<?php echo @$pole['praxe_datum_ukonceni'];?>"></p>
   </FIELDSET>
 <br>
 
 
-</DIV> 
+</DIV>
 
 
 
-<?php 
+<?php
 //!!puvodne - jen pro projekt RNH !!   nyni - pro RNH í SPZP
 //nemusi se vytvaret neviditelne vstupni prvky  pro SPZP ,
 //protoze uz umime zapsat do flat tabulky jen  promenne z formulare , bez ovlivneni tech sloupcu co ve formulari nejsou(drive se do nich automaticky zapsalo NULL)
@@ -494,18 +494,18 @@ while($kurz = $data->fetch_assoc()) {   ?>
 <?php
     //$kolize_ukonceni_prdi_interval = fce_kolize_ukonceni_interval ("prdi", $id_ucastnik);  //vraci objekt typu kolize
     //$kolize_ukonceni_prdi_pred = fce_kolize_ukonceni_pred ("prdi", $id_ucastnik);          //vraci objekt typu kolize
-$Kolize_Lokace="Pracovni diagnostika";      
-?>    
+$Kolize_Lokace="Pracovni diagnostika";
+?>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace; ?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-     //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-     //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+     //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+     //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-     
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -515,24 +515,24 @@ $Kolize_Lokace="Pracovni diagnostika";
                 order by razeni";
        //echo $query;
        $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
-       
-?>      
-  
+
+?>
+
   <p>Pracovní diagnostika:
 <select size="1" name="id_s_kurz_prdi_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_prdi_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_prdi_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {   ?>
-<option <?php if (trim(@$pole['id_s_kurz_prdi_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_prdi_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-<?php        
+<?php
 }
 ?>
 </select>
@@ -542,7 +542,7 @@ while($kurz = $data->fetch_assoc()) {   ?>
 ?>
 <br>
   Počet absolvovaných hodin: <input ID="prdi_poc_abs_hodin" type="text" name="prdi_poc_abs_hodin" size="8" maxlength="10" value="<?php echo @$pole['prdi_poc_abs_hodin'];?>"><br>
-  V případě, že neabsolvoval plný počet hodin, uveďte proč: <input ID="prdi_duvod_absence" type="text" name="prdi_duvod_absence" size="120" maxlength="120" value="<?php echo @$pole['prdi_duvod_absence'];?>">  
+  V případě, že neabsolvoval plný počet hodin, uveďte proč: <input ID="prdi_duvod_absence" type="text" name="prdi_duvod_absence" size="120" maxlength="120" value="<?php echo @$pole['prdi_duvod_absence'];?>">
   </p>
 
   Dokončeno úspěšně:
@@ -565,18 +565,18 @@ while($kurz = $data->fetch_assoc()) {   ?>
 <?php
        // $kolize_ukonceni_prof1_interval = fce_kolize_ukonceni_interval ("prof1", $id_ucastnik);  //vraci objekt typu kolize
        // $kolize_ukonceni_prof1_pred = fce_kolize_ukonceni_pred ("prof1", $id_ucastnik);          //vraci objekt typu kolize
-$Kolize_Lokace="Profesní kurz"; 
+$Kolize_Lokace="Profesní kurz";
 ?>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace; ?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     // echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-     
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -586,25 +586,25 @@ $Kolize_Lokace="Profesní kurz";
                 order by razeni";
       // echo $query;
        $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
-?>   
+?>
 
   <p>Profesní kurz:
 <select size="1" name="id_s_kurz_prof1_FK">
 
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_prof1_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_prof1_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {  ?>
-<option <?php if (trim(@$pole['id_s_kurz_prof1_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_prof1_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-           
-<?php        
+
+<?php
 }
 ?>
 </select>
@@ -632,18 +632,18 @@ while($kurz = $data->fetch_assoc()) {  ?>
 <?php
     //    $kolize_ukonceni_prof2_interval = fce_kolize_ukonceni_interval ("prof2", $id_ucastnik);  //vraci objekt typu kolize
     //    $kolize_ukonceni_prof2_pred = fce_kolize_ukonceni_pred ("prof2", $id_ucastnik);          //vraci objekt typu kolize
-$Kolize_Lokace="Profesní kurz - další";     
+$Kolize_Lokace="Profesní kurz - další";
 ?>
 <FIELDSET style="width:;"><LEGEND><b><?php echo $Kolize_Lokace; ?></b></LEGEND>
 <?php
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_PLAN,$Kolize_Lokace);
      //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    //echo "<br><br>Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
-    //var_dump(Table_UcKolizeData::$zjistovane_kolize);
-    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Table_UcKolizeData::$zjistovane_kolize);
+    //echo "<br><br>Projektor_Table_UcKolizeData::zjistovane_kolize  ve formulari" ;
+    //var_dump(Projektor_Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_plan= array_merge($zavolane_kolize_v_plan,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     //echo "<br>zavolane_kolize_v_plan ve formulari" ; var_dump($zavolane_kolize_v_plan);
-     
+
 //----------------------------------------------------------------
        $query="SELECT * FROM s_kurz where
                 projekt_kod='" . $Ucastnik->projekt->kod . "' and
@@ -653,24 +653,24 @@ $Kolize_Lokace="Profesní kurz - další";
                 order by razeni";
       // echo $query;
        $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
-?>   
+?>
 
   <p>Profesní kurz - další:
 <select size="1" name="id_s_kurz_prof2_FK">
-<?php      
+<?php
 foreach ($nekurz_pole_comb as  $nekurz_id=>$nekurz) {  ?>
-         <option <?php if (trim(@$pole['id_s_kurz_prof2_FK']) == trim($nekurz_id))        
-                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php 
+         <option <?php if (trim(@$pole['id_s_kurz_prof2_FK']) == trim($nekurz_id))
+                          {echo 'selected';}?> value=<?php echo $nekurz_id; ?>><?php
          echo trim($nekurz); ?></option>
 <?php }   ?>
 
 <?php
 while($kurz = $data->fetch_assoc()) {  ?>
-<option <?php if (trim(@$pole['id_s_kurz_prof2_FK']) == trim($kurz['id_s_kurz'] )) 
+<option <?php if (trim(@$pole['id_s_kurz_prof2_FK']) == trim($kurz['id_s_kurz'] ))
                         {echo 'selected';}?> value=<?php  echo $kurz['id_s_kurz']; ?>><?php
         echo trim(text_retezec_kurz($kurz)); ?></option>
-           
-<?php        
+
+<?php
 }
 ?>
 
@@ -696,10 +696,10 @@ while($kurz = $data->fetch_assoc()) {  ?>
 
 
 <?php
-  //************** KOLIZE ******************* 
-  Table_UcKolizeData::Vypis_kolize_formulare_dosud_nezavolane($id_ucastnik,FORMULAR_PLAN,$zavolane_kolize_v_plan) ;
-  //************** KOLIZE ******************* 
-?> 
+  //************** KOLIZE *******************
+  Projektor_Table_UcKolizeData::Vypis_kolize_formulare_dosud_nezavolane($id_ucastnik,FORMULAR_PLAN,$zavolane_kolize_v_plan) ;
+  //************** KOLIZE *******************
+?>
 
 
 

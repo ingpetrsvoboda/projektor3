@@ -1,0 +1,80 @@
+<span tal:condition="jsFilePath1 | nothing" >  <script tal:attributes="src jsFilePath1"></script>  </span>
+<span tal:condition="jsFilePath2 | nothing" >  <script tal:attributes="src jsFilePath2"></script>  </span>
+<span tal:condition="jsFilePath3 | nothing" >  <script tal:attributes="src jsFilePath3"></script>  </span>
+
+<div tal:attributes="id id" class="seznam">
+     <span tal:condition="tlacitkozpet | nothing" class="tlacitkozpet">
+        <a href="" tal:content="tlacitkozpet/popisek" tal:attributes="href tlacitkozpet/odkaz" class="tlacitko"/>
+    </span>
+
+    <p tal:content="navigace | nothing" class="navigace"/>
+    <h3 tal:content="nadpis | nothing" />
+    <span tal:condition="tlacitka | nothing">
+        <span tal:repeat="tlacitko tlacitka">
+            <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+        </span>
+    </span>
+
+
+    <!-- %FORM% -->
+    <span tal:content="structure formular | nothing"></span>
+
+    <span tal:condition="seznam | nothing">
+        <!-- %FILTR% -->
+        <span tal:content="structure filtrovaciFormular | nothing"></span>
+    </span>
+    <p tal:content="zprava | nothing" />
+
+    <span id="ajax_seznam">
+        <span tal:content="structure formularTitulky | nothing"></span>
+        <table tal:condition="seznam | nothing">
+                <tr>
+                        <th tal:repeat="sloupec hlavickaTabulky/sloupce">
+                            <span tal:condition="sloupec/vzestupne">
+                                <a href="" tal:attributes="href sloupec/sestupne">
+                                    <span tal:condition="sloupec/razeniDescPouzito"><img src="img/descon.png" alt="Sestupně" title="Použito řazení sestupně" /></span>
+                                    <span tal:condition="not: sloupec/razeniDescPouzito"><img src="img/desc.png" alt="Sestupně" title="Řadit sestupně" /></span>
+                                </a>
+                            </span>
+                            <span tal:content="sloupec/titulek" />
+                            <span tal:condition="sloupec/sestupne">
+                                <a href="" tal:attributes="href sloupec/vzestupne">
+                                    <span tal:condition="sloupec/razeniAscPouzito"><img src="img/ascon.png" alt="Vzestupně" title="Použito řazení vzestupně" /></span>
+                                    <span tal:condition="not: sloupec/razeniAscPouzito"><img src="img/asc.png" alt="Vzestupně" title="Řadit vzestupně" /></span>
+                                </a>
+                            </span>
+                        </th>
+                </tr>
+                <tr tal:repeat="radek seznam">
+                        <td tal:repeat="sloupecek radek">
+                            <span tal:replace="sloupecek" />
+                        </td>
+        <!--                <span tal:condition="radek/tlacitka | nothing">   -->
+                        <td tal:repeat="tlacitko radek/tlacitka">
+                                <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz; class tlacitko/cssClass"/>
+                        </td>
+       <!--                 </span>   -->
+                </tr>
+        </table>
+    </span>
+
+    <table tal:condition="polozka | nothing">
+            <tr>
+                    <th tal:repeat="sloupec hlavickaTabulky/sloupce">
+                        <span tal:content="sloupec/popisek" />
+                    </th>
+            </tr>
+            <tr>
+                    <td tal:repeat="sloupecek polozka">
+                        <span tal:replace="sloupecek" />
+                    </td>
+                    <span tal:condition="polozka/tlacitka | nothing">
+                    <td tal:repeat="tlacitko polozka/tlacitka">
+                        <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz; class tlacitko/cssClass"/>
+                    </td>
+                    </span>
+            </tr>
+    </table>
+    <!-- %NEXT% -->
+    <span tal:content="structure potomek | nothing"></span>
+</div>

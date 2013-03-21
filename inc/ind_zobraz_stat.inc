@@ -45,10 +45,10 @@ echo '<ul id="menu"><li><a href="index.php?akce=unset_beh">Zpět k výběru turn
 echo "<li><h3>Přehled vyplnění dotazníku účastníky</h3></li>";
 echo "<h2>Dotazník:".$dotaznik['text']."</h2><br>";
 echo "<h2>Běh projektu:".$data['beh_cislo'];
-$datum = new Data_Konverze_Datum($data['zacatek'],"MySQL");
+$datum = new Projektor_Data_Konverze_Datum($data['zacatek'],"MySQL");
 echo " (od ".$datum->f_web;
 if( $data['konec'] !=NULL) {
-    $datum = new Data_Konverze_Datum($data['konec'],"MySQL");
+    $datum = new Projektor_Data_Konverze_Datum($data['konec'],"MySQL");
     echo " do ".$datum->f_web;
 }
 echo ")</h2>";
@@ -76,7 +76,7 @@ $data = $dbh->prepare($query)->execute($beh_id,$Kancelar->id,$dotaznik['id']);
 $datum_dnes = date('d.m.Y');
 
 while ($zaznam = $data->fetch_assoc()) {
-        $datum_vyplneni = new Data_Konverze_Datum($zaznam['datum_vyplneni'],'MySQL');
+        $datum_vyplneni = new Projektor_Data_Konverze_Datum($zaznam['datum_vyplneni'],'MySQL');
         echo '<table style="text-align: left; width: 700px;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>';
         echo '<td style="width: 500px;">'.$zaznam['jmeno_cele'];
         if(!(!is_null($zaznam['datum_vyplneni']) && $zaznam['dotaznik_id'] == $dotaznik['id'])) {

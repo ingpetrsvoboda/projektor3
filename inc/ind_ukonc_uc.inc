@@ -27,10 +27,10 @@ if ( ($User->username == "sys_admin" ))  {
 If($id_ucastnik){
     //echo "<BR>*ind_.inc - \$id_ucastnik je " . $id_ucastnik ;
     
-    If($Ucastnik = Data_UcastnikMapper::find_by_id($id_ucastnik)) {
+    If($Ucastnik = Projektor_Data_UcastnikMProjektor_Apper::find_by_id($id_ucastnik)) {
         setcookie("id_ucastnik",$Ucastnik->id);
         
-        $Flat_tab = new Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
+        $Flat_tab = new Projektor_Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
         $Flat_tab->precti();
         $Flat_tab_data = $Flat_tab->get_values_assoc();
         Foreach($Flat_tab_data as $key => $values) {
@@ -39,7 +39,7 @@ If($id_ucastnik){
            // }
            $pole_pro_zobrazeni[$key]=$values;   
         }     
-        $Flat_tab = new Data_Flat_UcPlanFlatTable($Ucastnik);         // !! tab. uc_plan_flat_table !ctu z ni údaje z plánu pro zobrazeni!
+        $Flat_tab = new Projektor_Data_Flat_UcPlanFlatTable($Ucastnik);         // !! tab. uc_plan_flat_table !ctu z ni údaje z plánu pro zobrazeni!
         $Flat_tab->precti();
         $Flat_tab_data = $Flat_tab->get_values_assoc();
         Foreach($Flat_tab_data as $key => $values) {
@@ -51,7 +51,7 @@ If($id_ucastnik){
         // v  $pole_pro_zobrazeni jsou udaje pro zobrazeni
         
                
-        $Flat_table = new Data_Flat_UcUkoncFlatTable($Ucastnik);         // !! tab. uc_ukonc_flat_table
+        $Flat_table = new Projektor_Data_Flat_UcUkoncFlatTable($Ucastnik);         // !! tab. uc_ukonc_flat_table
         $Flat_table->precti();
         $Flat_table_data = $Flat_table->get_values_assoc();
         Foreach($Flat_table_data as $key => $values) {
@@ -136,9 +136,9 @@ else {
     $zavolane_kolize_v_ukonc =array();
     $Kolize_Lokace="zacatekformulare";  
     //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_UKONC,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_UKONC,$Kolize_Lokace);
     //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-     $zavolane_kolize_v_ukonc= array_merge($zavolane_kolize_v_ukonc,Table_UcKolizeData::$zjistovane_kolize);
+     $zavolane_kolize_v_ukonc= array_merge($zavolane_kolize_v_ukonc,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     ?>
     
 
@@ -502,7 +502,7 @@ else {
 
 <?php
   //************** KOLIZE ******************* 
-  Table_UcKolizeData::Vypis_kolize_formulare_dosud_nezavolane($id_ucastnik,FORMULAR_UKONC,$zavolane_kolize_v_ukonc) ;
+  Projektor_Table_UcKolizeData::Vypis_kolize_formulare_dosud_nezavolane($id_ucastnik,FORMULAR_UKONC,$zavolane_kolize_v_ukonc) ;
   //************** KOLIZE ******************* 
 ?> 
 

@@ -5,7 +5,7 @@ require_once "save_zpracuj_cookie.inc";
 
 //Zpracování dat z formulare
 //echo "<BR>*\Ucastnik*";  print_r ($Ucastnik); /*exit;*/
-$Chyby = new App_Chyby;
+$Chyby = new Projektor_App_Chyby;
 
 if (array_key_exists('T1', $_POST)) {
     //jdu z tlacitka tisk ve smlouve , musim odstranit T1 z $pole, popr. _POST
@@ -54,7 +54,7 @@ if (!($pole[testpc_datum2])) {
     //exit;
     
     //Nacteni dat do falt tabulky (objektu)    
-    $flat_table = new   Data_Flat_UcTestPCFlatTable($Ucastnik);
+    $flat_table = new   Projektor_Data_Flat_UcTestPCFlatTable($Ucastnik);
     
      /* PP opatreni pro zachovani=neprepsani udaju v tabulce, neni-li sloupecek ve formulari */$flat_table->precti();
     foreach($pole as $klic => $hodnota) {
@@ -78,7 +78,7 @@ if (!($pole[testpc_datum2])) {
         
       if  ($User->povolen_zapis) {  
         if(!$Ucastnik->id) {
-         Data_UcastnikMapper::insert($Ucastnik);    //DDBBHH  aby se nevytvarelo pokazde nove pripojeni
+         Projektor_Data_UcastnikMProjektor_Apper::insert($Ucastnik);    //DDBBHH  aby se nevytvarelo pokazde nove pripojeni
           /*  $Osobni_udaje->save_values();  */
         }
         else {

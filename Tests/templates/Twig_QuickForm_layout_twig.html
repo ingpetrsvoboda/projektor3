@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Using Twig template engine to output the form</title>
+        <style type="text/css">
+            /* Set up custom font and form width */
+            body {
+                margin-left: 10px;
+                font-family: Arial,sans-serif;
+                font-size: small;
+            }
+
+            .quickform {
+                min-width: 500px;
+                max-width: 600px;
+                width: 560px;
+            }
+            {{ default_styles|raw }}
+        </style>
+        {{ js_libraries|raw }}
+    </head>
+    <body>
+
+        {% import 'macro_quickform_preview_values_twig.html' as quickform_preview_values %}
+        {% block preview_values %}
+            {{ quickform_preview_values.preview_values(submitvalues) }}
+        {% endblock preview_values %}
+
+        {% import 'macro_quickform_twig.html' as quickform %}
+        {% block form %}
+            {{ quickform.quickform(form) }}
+        {% endblock form %}
+
+    </body>
+</html>

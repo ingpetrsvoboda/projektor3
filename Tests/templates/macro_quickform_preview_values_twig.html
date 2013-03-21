@@ -1,0 +1,8 @@
+{% macro preview_values(submitvalues) %}
+        {% if submitvalues %}
+            <pre>
+            {{ submitvalues|raw }}
+            </pre>
+            <hr />
+        {% endif %}
+{% endmacro %}

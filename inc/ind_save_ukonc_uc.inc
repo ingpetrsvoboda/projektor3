@@ -5,7 +5,7 @@ require_once "save_zpracuj_cookie.inc";
 
 //Zpracování dat z formulare
 //echo "<BR>*\Ucastnik*";  print_r ($Ucastnik); /*exit;*/
-$Chyby = new App_Chyby;
+$Chyby = new Projektor_App_Chyby;
 
 if (array_key_exists('T1', $_POST)) {
     //jdu z tlacitka tisk ve smlouve , musim odstranit T1 z $pole, popr. _POST
@@ -28,7 +28,7 @@ $pole = $_POST;
      $idcka_skolizi_z_formulare =  array();
     
     //Nacteni dat do falt tabulky (objektu)
-    $flat_table = new Data_Flat_UcUkoncFlatTable($Ucastnik);
+    $flat_table = new Projektor_Data_Flat_UcUkoncFlatTable($Ucastnik);
     
     $flat_table->precti();  //PP opatreni pro zachovani=neprepsani udaju v tabulce, neni-li sloupecek ve formulari 
     foreach($pole as $klic => $hodnota) {
@@ -70,7 +70,7 @@ $pole = $_POST;
  
       if  ($User->povolen_zapis) { 
         if(!$Ucastnik->id) {
-         Data_UcastnikMapper::insert($Ucastnik);    //DDBBHH  aby se nevytvarelo pokazde nove pripojeni
+         Projektor_Data_UcastnikMProjektor_Apper::insert($Ucastnik);    //DDBBHH  aby se nevytvarelo pokazde nove pripojeni
         }
         else {
         }
@@ -89,7 +89,7 @@ $pole = $_POST;
                 $flat_table->uloz();
                 
               //*** KOLIZE - zapis  do tabulky uc_kolize_table
-              Table_UcKolizeData::Zapis_vsechny_kolize_v_zaveru_formulare($pole, $idcka_skolizi_z_formulare,  $Ucastnik->id, FORMULAR_UKONC); 
+              Projektor_Table_UcKolizeData::Zapis_vsechny_kolize_v_zaveru_formulare($pole, $idcka_skolizi_z_formulare,  $Ucastnik->id, FORMULAR_UKONC); 
               //*** KOLIZE - zapis  do tabulky uc_kolize_table - konec
                 
             }
@@ -131,7 +131,7 @@ $pole = $_POST;
     else                // nebyly chyby - vytvoř pdf a vygeneruj obsah stránky
                   
     {
-        $Flat_tab = new Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
+        $Flat_tab = new Projektor_Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
         $Flat_tab->precti();
         $Flat_tab_data = $Flat_tab->get_values_assoc();
         Foreach($Flat_tab_data as $key => $values) {

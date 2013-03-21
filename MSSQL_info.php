@@ -30,7 +30,7 @@ mssql_free_result($query);
 ////$c = new PDO("sqlsrv:Server=localhost;Database=test_projektor", "root", "spravce");
 //$c = new PDO("sqlsrv:Server=localhost;Database=test_projektor", "root", "spravce");
 //
-//$dbo = App_Kontext::getDbMSSQL();
+//$dbo = Projektor_App_Kontext::getDbMSSQL();
 //		$query = "SELECT * FROM ~1";
 //		$radek = $dbo->prepare($query)->execute("dbo.s_crm_firma")->fetch_assoc();
 ?>

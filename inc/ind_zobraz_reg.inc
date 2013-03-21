@@ -57,10 +57,10 @@ $data=$dbh->prepare($query)->execute($Projekt->id,$beh_id)->fetch_assoc();
 
 
 echo "<li><h3>Zobrazeni registrací: ".$data['text'];
-$datum = new Data_Konverze_Datum($data['zacatek'],"MySQL");
+$datum = new Projektor_Data_Konverze_Datum($data['zacatek'],"MySQL");
 echo " (od ".$datum->f_web;
 if( $data['konec'] !=NULL) {
-	$datum = new Data_Konverze_Datum($data['konec'],"MySQL");
+	$datum = new Projektor_Data_Konverze_Datum($data['konec'],"MySQL");
 	echo " do ".$datum->f_web;
 }
 echo ")</h3></li>";
@@ -69,7 +69,7 @@ echo ")</h3></li>";
 //}
 
 
-//$kolize_podle_nazvu = Table_UcKolizeData::Vyhodnot_kolizi("ZamDatum",111);
+//$kolize_podle_nazvu = Projektor_Table_UcKolizeData::Vyhodnot_kolizi("ZamDatum",111);
 
 
 ?>
@@ -170,16 +170,16 @@ while ($zaznam = $data->fetch_assoc()) {
         	if (isset($zaznam['vyplneno_vzdelani']) AND substr_count($zaznam['vyplneno_vzdelani'], "-") <> strlen($zaznam['vyplneno_vzdelani'])) 
         	{
                         //KOLIZE
-                        if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_REG_DOT)  and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                        if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_REG_DOT)  and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                              {echo "<td class='editace_kolize'><a title='editace - opravte chyby' "; }
                         else {echo "<td class='editace'><a title='editace' "; }
                 }
         	else
         	{
                        //KOLIZE
-                       if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_REG_DOT)  and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                       if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_REG_DOT)  and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                             {echo "<td class='editace_kolize'><a title='editace - opravte chyby' ";}
                        else {echo "<td class='novy'><a title='nový' ";}
                 }
@@ -201,17 +201,17 @@ while ($zaznam = $data->fetch_assoc()) {
                 {                               
                         //KOLIZE
                         //var_dump();
-                        if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_PLAN)
+                        if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_PLAN)
                             and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                              {echo "<td class='editace_kolize'><a title='editace - opravte chyby' "; }
                         else {echo "<td class='editace'><a title='editace' "; }
                         
                 }
                 else {                    
                        //KOLIZE
-                       if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_PLAN)and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                       if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_PLAN)and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                             {echo "<td class='editace_kolize'><a title='editace - opravte chyby' ";}
                        else {echo "<td class='novy'><a title='nový' ";}
                 }
@@ -301,15 +301,15 @@ while ($zaznam = $data->fetch_assoc()) {
            ){
                 if (isset($zaznam['duvod_ukonceni']) AND substr_count($zaznam['duvod_ukonceni'], "-") <> strlen($zaznam['duvod_ukonceni'])) 
         	{	//echo "<td class='editace'><a title='editace' ";
-                   if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_UKONC) and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                   if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_UKONC) and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                              {echo "<td class='editace_kolize'><a title='editace - opravte chyby' "; }
                    else {echo "<td class='editace'><a title='editace' "; }
                 }
         	else
         	{	//echo "<td class='novy'><a title='nový' ";
-                   if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_UKONC) and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                   if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_UKONC) and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                             {echo "<td class='editace_kolize'><a title='editace - opravte chyby' ";}
                    else {echo "<td class='novy'><a title='nový' ";}     
                 }
@@ -325,15 +325,15 @@ while ($zaznam = $data->fetch_assoc()) {
            ){ 
                 if (isset($zaznam['zam_datum_vstupu']) AND isset($zaznam['zam_nazev']) AND  isset($zaznam['zam_ic']) ) 
         	{	//echo "<td class='editace'><a title='editace' ";
-                   if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_ZAM) and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                   if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_ZAM) and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                              {echo "<td class='editace_kolize'><a title='editace - opravte chyby' "; }
                    else {echo "<td class='editace'><a title='editace' "; }
                 }
         	else
         	{	//echo "<td class='novy'><a title='nový' ";
-                   if (Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_ZAM) and
-                            Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
+                   if (Projektor_Table_UcKolizeData::Najdi_kolize_pro_formular($zaznam['id_ucastnik'], FORMULAR_ZAM) and
+                            Projektor_Table_UcKolizeData::$nastava_kolize_ve_zjistovanych )
                             {echo "<td class='editace_kolize'><a title='editace - opravte chyby' ";}
                    else {echo "<td class='novy'><a title='nový' ";}
                         

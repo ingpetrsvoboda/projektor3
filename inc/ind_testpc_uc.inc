@@ -18,11 +18,11 @@ else if (isset($Ucastnik->id)) {
 If($id_ucastnik){
      //echo "<BR>*ind_.inc - \$id_ucastnik je " . $id_ucastnik ;  //sss*
 
-    If($Ucastnik = Data_UcastnikMapper::find_by_id($id_ucastnik)) {
+    If($Ucastnik = Projektor_Data_UcastnikMProjektor_Apper::find_by_id($id_ucastnik)) {
         setcookie("id_ucastnik",$Ucastnik->id);
 
 
-        $Flat_tab = new Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
+        $Flat_tab = new Projektor_Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table !ctu z ni jmeno pro zobrazeni!
         $Flat_tab->precti();
         $Flat_tab_data = $Flat_tab->get_values_assoc();
         Foreach($Flat_tab_data as $key => $values) {
@@ -35,7 +35,7 @@ If($id_ucastnik){
 
 
 
-        $Flat_table = new  Data_Flat_UcTestPCFlatTable($Ucastnik);         // !! tab. uc_testpc_flat_table
+        $Flat_table = new  Projektor_Data_Flat_UcTestPCFlatTable($Ucastnik);         // !! tab. uc_testpc_flat_table
         $Flat_table->precti();
         $Flat_table_data = $Flat_table->get_values_assoc();
         Foreach($Flat_table_data as $key => $values) {
@@ -50,11 +50,11 @@ If($id_ucastnik){
   //     print_r($Flat_table->get_values_assoc());
   //      echo "<BR>**<BR>";
         //print_r($pole);                               //sss*
-        
-        
-        
-   /*     
-        $Flat_tableOK = new  Data_Flat_UcTestPCOKFlatTable($Ucastnik, $dbh);         // !! tab. uc_testpcOK_flat_table  se spravnymi odpovedmi
+
+
+
+   /*
+        $Flat_tableOK = new  Projektor_Data_Flat_UcTestPCOKFlatTable($Ucastnik, $dbh);         // !! tab. uc_testpcOK_flat_table  se spravnymi odpovedmi
         $Flat_tableOK->precti();
         $Flat_table_dataOK = $Flat_tableOK->get_values_assoc();
         Foreach($Flat_table_dataOK as $key => $values) {
@@ -64,12 +64,12 @@ If($id_ucastnik){
            $poleOK[$key]=$values;
         }
        echo "<br>*flat table testpcOK se spravnymi odpovedmi*" .  "<br>";  //sss
-        print_r($poleOK);        
-   */    
-        
-        
-        
-       $dbh = App_Kontext::getDbh(App_Config::DATABAZE_PROJEKTOR);
+        print_r($poleOK);
+   */
+
+
+
+       $dbh = Projektor_App_Container::getDbh(Projektor_App_Config::DATABAZE_PROJEKTOR);
         $query="SELECT * FROM s_test_pc_otazky WHERE cislo_testu = 1 ORDER BY otazka_poradi";    // vybiram otazky 1.testu
         $data= $dbh->prepare($query)->execute();       //->fetch_assoc();
           //echo "<br>" . $query;   //sss*
@@ -77,7 +77,7 @@ If($id_ucastnik){
         while($otazka = $data->fetch_assoc()) {
 	 //  echo "<br>"  ;   sss*
          // print_r($otazka);           //sss*
-          
+
           $pole_otazek[] = $otazka;
         }
         //echo "<br><br>"; print_r($pole_otazek);    //sss
@@ -129,7 +129,7 @@ else {
 -->
 <!-- *************************************** -->
 
-<?php  
+<?php
     if ( isset($_GET['id_ucastnik']) ) {
     ?>
       <form method="POST" action="index.php?akce=testpc_uc&save=1&id_ucastnik= <?php
@@ -140,8 +140,8 @@ else {
     <?php
     }
     ?>
-    
-    
+
+
 <?php
   $ii=1;
   foreach($pole_otazek as $data_otazky )   //jsou podle poradi
@@ -152,36 +152,36 @@ else {
 ?>
 <FIELDSET><LEGEND><b>Otázka č.<?php echo $ii++ ?></b></LEGEND>
   <?php echo $data_otazky['otazka_text']?><br>
- 
+
   <input ID="testpc_<?php echo $O_cislo?>_1" type="radio" value="1" name="testpc_<?php echo $O_cislo?>" <?php if (@$pole['testpc_'.$O_cislo] == '1') {echo 'checked';} ?>>
          <?php echo  $data_otazky['odpoved_1'] ?><br>
 
   <input ID="testpc_$<?php echo $O_cislo?>_2" type="radio" value="2" name="testpc_<?php echo $O_cislo?>" <?php if (@$pole['testpc_'.$O_cislo] == '2') {echo 'checked';} ?>>
          <?php echo  $data_otazky['odpoved_2'] ?><br>
-         
+
   <input ID="testpc_<?php echo $O_cislo?>_3" type="radio" value="3" name="testpc_<?php echo $O_cislo?>" <?php if (@$pole['testpc_'.$O_cislo] == '3') {echo 'checked';} ?>>
          <?php echo  $data_otazky['odpoved_3'] ?><br>
-         
+
   <input ID="testpc_<?php echo $O_cislo?>_4" type="radio" value="4" name="testpc_<?php echo $O_cislo?>" <?php if (@$pole['testpc_'.$O_cislo] == '4') {echo 'checked';} ?>>
          <?php echo  $data_otazky['odpoved_4'] ?><br>
 
-  <input ID="testpc_<?php echo $O_cislo?>_nevim" type="radio" 
+  <input ID="testpc_<?php echo $O_cislo?>_nevim" type="radio"
          name="testpc_<?php echo $O_cislo?>" value="-1" <?php
          if ( !(@$pole['testpc_'.$O_cislo]) or  (@$pole['testpc_'.$O_cislo])=="-1" )  {echo 'checked';}?>> nevím<br>
- 
+
 </FIELDSET>
 
- 
-<?php    
+
+<?php
   }
 ?>
    <input ID="testpc_datum1" type="hidden" value="<?php
                   if (!($pole[testpc_datum1])) {echo date("Y-m-d H:i:s");} else {echo $pole[testpc_datum1];}?>" name="testpc_datum1">
    <?php
-        //if (!($pole[testpc_datum1]))  {echo "*nebylo ulozeno";} ?>                                                 
-   
+        //if (!($pole[testpc_datum1]))  {echo "*nebylo ulozeno";} ?>
+
    <br>
-   
+
    <input ID="testpc_datum2" type="hidden" value="<?php echo $pole[testpc_datum2];?>" name="testpc_datum2">
    <br>
 
@@ -195,12 +195,12 @@ else {
 </p>
 
 <?php
-    
+
 /*    if ( isset($_GET['id_ucastnik']) ) {
           //    if ($id_ucastnik){
     echo ('<p><input type="submit" value="Tisk" name="T1">&nbsp;&nbsp;&nbsp;</p> ');
      }
-*/     
+*/
 ?>
 
 

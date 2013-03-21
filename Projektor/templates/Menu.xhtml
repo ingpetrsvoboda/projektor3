@@ -1,0 +1,17 @@
+<div tal:attributes="id id" class="menu">
+    <span tal:condition="tlacitkozpet | nothing"  class="tlacitkozpet">
+        <a href="" tal:content="tlacitkozpet/popisek" tal:attributes="href tlacitkozpet/odkaz" class="tlacitko"/>
+    </span>
+
+    <p tal:content="navigace | nothing" class="navigace"/>
+    <h3 tal:content="nadpis | nothing" />
+
+
+    <span tal:condition="tlacitka | nothing">
+        <span tal:repeat="tlacitko tlacitka">
+            <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+        </span>
+    </span>
+    <!-- %NEXT% -->
+    <span tal:content="structure potomek | nothing"></span>
+</div>

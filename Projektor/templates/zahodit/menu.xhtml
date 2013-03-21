@@ -1,0 +1,13 @@
+<div tal:attributes="id %STRANKA%/id" class="menu">
+    <p tal:content="%STRANKA%/zprava | nothing" id="zprava"></p>
+    <div  tal:condition="%STRANKA%/tlacitka | nothing">
+        <h2 id="menu">Menu</h2>
+        <ul>
+            <li tal:repeat="tlacitko %STRANKA%/tlacitka">
+                <a href="" tal:content="tlacitko/popisek" tal:attributes="href tlacitko/odkaz" class="tlacitko"/>
+            </li>
+        </ul>
+    </div>
+    <!-- %NEXT% -->
+    <span tal:content="%STRANKA%/potomek | nothing"></span>
+</div>

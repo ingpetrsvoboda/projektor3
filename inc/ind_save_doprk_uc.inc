@@ -24,7 +24,7 @@ if ( ($User->username == "sys_admin" ))  {
 
 //Zpracování dat z formulare
 //echo "<BR>*\Ucastnik*";  print_r ($Ucastnik); /*exit;*/
-$Chyby = new App_Chyby;
+$Chyby = new Projektor_App_Chyby;
 
 if (array_key_exists('T1', $_POST)) {
     //jdu z tlacitka tisk ve smlouve , musim odstranit T1 z $pole, popr. _POST
@@ -69,7 +69,7 @@ $pole = $_POST;
     //exit;
     
     //Nacteni dat do falt tabulky (objektu)
-    $flat_table = new Data_Flat_UcDoprkFlatTable($Ucastnik);
+    $flat_table = new Projektor_Data_Flat_UcDoprkFlatTable($Ucastnik);
     
      /* PP opatreni pro zachovani=neprepsani udaju v tabulce, neni-li sloupecek ve formulari */
        $flat_table->precti();
@@ -99,7 +99,7 @@ $pole = $_POST;
       
       if  ($User->povolen_zapis) { 
         if(!$Ucastnik->id) {
-         Data_UcastnikMapper::insert($Ucastnik);   
+         Projektor_Data_UcastnikMProjektor_Apper::insert($Ucastnik);   
           /*  $Osobni_udaje->save_values();  */
         }
         else {
@@ -170,7 +170,7 @@ $pole = $_POST;
            // }
            $pole_pro_zobrazeni[$key]=$values;   
         }  
-        $Flat_tab = new Data_Flat_UcPlanFlatTable($Ucastnik , $dbh);         // !! tab. uc_plan_flat_table !ctu z ni údaje z plánu pro zobrazeni!
+        $Flat_tab = new Projektor_Data_Flat_UcPlanFlatTable($Ucastnik , $dbh);         // !! tab. uc_plan_flat_table !ctu z ni údaje z plánu pro zobrazeni!
         $Flat_tab->precti();
         $Flat_tab_data = $Flat_tab->get_values_assoc();
         Foreach($Flat_tab_data as $key => $values) {

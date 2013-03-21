@@ -1,0 +1,15 @@
+    <div tal:attributes="id %STRANKA%/id" class="kontext">
+        <h1 tal:content="%STRANKA%/nadpis | nothing" id="nadpis">Kontext</h1>
+        <p tal:content="%STRANKA%/zprava | nothing" id="zprava"></p>
+        <div  id="selecty">
+            <!-- %FILTR%  -->
+            <span tal:content="structure %STRANKA%/formular | nothing"></span>
+        </div>
+        <div  tal:condition="%STRANKA%/selecty | nothing">
+            <span tal:repeat="select %STRANKA%/selecty">
+                <span tal:content="select"></span>>
+            </span>
+        </div>
+<!-- %NEXT% -->
+    <span tal:content="%STRANKA%/potomek | nothing"></span>
+    </div>

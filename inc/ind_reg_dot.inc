@@ -21,7 +21,7 @@ else if (isset($Ucastnik->id)) {
 If($id_ucastnik){
     //echo "<BR>*ind_reg_dot.inc - \$id_ucastnik je " . $id_ucastnik ;
     
-    If($Ucastnik = Data_UcastnikMapper::find_by_id($id_ucastnik)) {
+    If($Ucastnik = Projektor_Data_UcastnikMProjektor_Apper::find_by_id($id_ucastnik)) {
         setcookie("id_ucastnik",$Ucastnik->id);
        
       /*
@@ -39,7 +39,7 @@ If($id_ucastnik){
         $pole['datum_narozeni'] = $osobni_udaje->datum_narozeni->f_web;
         $pole['rodne_cislo'] = $osobni_udaje->rodne_cislo;*/
        
-        $Flat_table = new Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table
+        $Flat_table = new Projektor_Data_Flat_UcFlatTable($Ucastnik);         // !! tab. uc_flat_table
         $Flat_table->precti();
         $Flat_table_data = $Flat_table->get_values_assoc();
         Foreach($Flat_table_data as $key => $values) {
@@ -111,9 +111,9 @@ else {
     $zavolane_kolize_v_reg_dot=array();
     $Kolize_Lokace="zacatekformulare"; 
     //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize *****************
-       Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_REG_DOT,$Kolize_Lokace);
+       Projektor_Table_UcKolizeData::Vypis_kolize_pro_formular_a_lokaci($id_ucastnik,FORMULAR_REG_DOT,$Kolize_Lokace);
     //************** KOLIZE zjistovani kolizi pro tento formular a lokaci, pomoci definici v tabulce s_typ_kolize - konec *********
-    $zavolane_kolize_v_reg_dot= array_merge($zavolane_kolize_v_reg_dot,Table_UcKolizeData::$zjistovane_kolize);
+    $zavolane_kolize_v_reg_dot= array_merge($zavolane_kolize_v_reg_dot,Projektor_Table_UcKolizeData::$zjistovane_kolize);
     ?>
     
 
@@ -1003,7 +1003,7 @@ banky</td>
 
 <?php
   //************** KOLIZE ******************* 
-  Table_UcKolizeData::Vypis_kolize_formulare_dosud_nezavolane($id_ucastnik,FORMULAR_REG_DOT,$zavolane_kolize_v_reg_dot) ;
+  Projektor_Table_UcKolizeData::Vypis_kolize_formulare_dosud_nezavolane($id_ucastnik,FORMULAR_REG_DOT,$zavolane_kolize_v_reg_dot) ;
   //************** KOLIZE ******************* 
 ?> 
 

@@ -1,0 +1,20 @@
+{% macro quickform(form) %}
+    <div class="quickform">
+        <form{{ form.attributes|raw }}>
+        {% if form.hidden %}
+            <div style="display: none;">
+            {% for element in form.hidden %}
+                {{ element|raw }}
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        {% import 'macro_quickform_output_element_twig.html' as quickform_output_element %}
+
+        {% for element in form.elements %}
+            {{ quickform_output_element.output_element(element) }}
+        {% endfor %}
+        </form>
+    </div>
+    {{ form.javascript|raw }}
+{% endmacro %}

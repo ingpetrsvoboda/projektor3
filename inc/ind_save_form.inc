@@ -6,7 +6,7 @@ require_once "save_zpracuj_cookie.inc";
 
 //Zpracování dat z formulare
 //echo "<BR>*\Ucastnik*";  print_r ($Ucastnik); /*exit;*/
-$Chyby = new App_Chyby;
+$Chyby = new Projektor_App_Chyby;
 
 if (array_key_exists('T1', $_POST)) {
     //jdu z tlacitka tisk ve smlouve , musim odstranit T1 z $pole, popr. _POST
@@ -41,7 +41,7 @@ $pole = $_POST;
         $titul_pred_id = "NULL";
     }
     
-    $Osobni_udaje = new Data_Flat_UcOsobniUdaje($Ucastnik,1,$pole['jmeno'],$pole['prijmeni'],$pole['rodne_cislo'],$pole['datum_narozeni'],$pole['datum_reg'],"",$pohlavi_id,$titul_pred_id,null,null,null,$dbh);
+    $Osobni_udaje = new Projektor_Data_Flat_UcOsobniUdaje($Ucastnik,1,$pole['jmeno'],$pole['prijmeni'],$pole['rodne_cislo'],$pole['datum_narozeni'],$pole['datum_reg'],"",$pohlavi_id,$titul_pred_id,null,null,null,$dbh);
     //Overeni udaju
     $Osobni_udaje->check_values();
    
@@ -53,7 +53,7 @@ $pole = $_POST;
     $idcka_skolizi_z_formulare =  array();
     
     //Nacteni dat do falt tabulky (objektu)
-    $flat_table = new Data_Flat_UcFlatTable($Ucastnik);
+    $flat_table = new Projektor_Data_Flat_UcFlatTable($Ucastnik);
     
     $flat_table->precti();   // PP opatreni pro zachovani=neprepsani udaju v tabulce, neni-li sloupecek ve formulari 
     foreach($pole as $klic => $hodnota) {
@@ -105,7 +105,7 @@ $pole = $_POST;
        
         if  ($User->povolen_zapis) {
           if(!$Ucastnik->id) {
-           Data_UcastnikMapper::insert($Ucastnik);    //DDBBHH  aby se nevytvarelo pokazde nove pripojeni
+           Projektor_Data_UcastnikMProjektor_Apper::insert($Ucastnik);    //DDBBHH  aby se nevytvarelo pokazde nove pripojeni
           /*  $Osobni_udaje->save_values();  */
           }
           else {
@@ -122,7 +122,7 @@ $pole = $_POST;
                 $flat_table->uloz();
                 
                 //*** KOLIZE - zapis  do tabulky uc_kolize_table
-                Table_UcKolizeData::Zapis_vsechny_kolize_v_zaveru_formulare($pole, $idcka_skolizi_z_formulare,  $Ucastnik->id, FORMULAR_REG_DOT); 
+                Projektor_Table_UcKolizeData::Zapis_vsechny_kolize_v_zaveru_formulare($pole, $idcka_skolizi_z_formulare,  $Ucastnik->id, FORMULAR_REG_DOT); 
                 //*** KOLIZE - zapis  do tabulky uc_kolize_table - konec
                 
             }
