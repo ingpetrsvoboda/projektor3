@@ -1,4 +1,8 @@
 <?php
+
+//ini_set('xdebug.show_exception_trace', '1');
+//ini_set('xdebug.collect_params', '4');
+ini_set('xdebug.profiler_enable', '1');
 ob_start();
 
 // zajištění autoload pro Projektor

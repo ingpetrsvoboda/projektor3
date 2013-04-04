@@ -10,7 +10,7 @@
  *
  * @author pes2704
  */
-abstract class Projektor_Data_CollectionIterator  implements IteratorAggregate
+class Projektor_Data_CollectionIterator  implements IteratorAggregate
 {
     // proměnné iterátoru
     private $items = array();   //TODO: splObjectStorage

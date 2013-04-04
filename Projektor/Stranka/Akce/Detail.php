@@ -25,8 +25,8 @@ class Projektor_Stranka_Akce_Detail extends Projektor_Stranka_Detail
 		/* Defaultni stavy */
 		if($akcej)
 		{
-                    $datetimeZacatek = Projektor_Data_Konverze_Datum::zSQL($akcej->dbField°datum_zacatek);
-                    $datetimeKonec = Projektor_Data_Konverze_Datum::zSQL($akcej->dbField°datum_konec);
+                    $datetimeZacatek = Projektor_Helper_DatumCas::zSQL($akcej->dbField°datum_zacatek);
+                    $datetimeKonec = Projektor_Helper_DatumCas::zSQL($akcej->dbField°datum_konec);
                     $rokZacatek = $datetimeZacatek->dejRok();
                     $rokKonec = $datetimeKonec->dejRok();
                     $form->setDefaults(array
@@ -105,8 +105,8 @@ class Projektor_Stranka_Akce_Detail extends Projektor_Stranka_Detail
 
 
                     $akcej->dbField°nazev_hlavniho_objektu = $data["dbField°nazev_hlavniho_objektu"];
-                    $akcej->dbField°datum_zacatek = Projektor_Data_Konverze_Datum::zQuickForm($data["dbField°datum_zacatek"])->dejDatumproSQL();
-                    $akcej->dbField°datum_konec = Projektor_Data_Konverze_Datum::zQuickForm($data["dbField°datum_konec"])->dejDatumproSQL();
+                    $akcej->dbField°datum_zacatek = Projektor_Helper_DatumCas::zQuickForm($data["dbField°datum_zacatek"])->dejDatumproSQL();
+                    $akcej->dbField°datum_konec = Projektor_Helper_DatumCas::zQuickForm($data["dbField°datum_konec"])->dejDatumproSQL();
                     $akcej->dbField°nazev = $data["dbField°nazev"];
                     $akcej->dbField°popis = $data["akcej_popis"];
                     $akcej->dbField°id_s_stav_akce_FK = $data["dbField°id_s_stav_akce_FK"];

@@ -9,34 +9,6 @@ class Projektor_Stranka_Element_Hlavicka
 	{
             $this->nazevTridyDataItem = $nazevTridyDataItem;
             $this->uzel = $uzel;
-
-//            $typStranky = $trida::TYP_STRANKY;
-//            switch ($typStranky) {
-//                case self::TYP_SEZNAM:
-//                    $tridaData = $trida::TRIDA_DATA;
-//                    $collection = new $tridaData();
-//                    if (!is_subclass_of($collection, "Projektor_Data_Collection"));//exception
-//                    $this->stranka = new $trida($this->uzel, $collection, NULL, $this->strankaRodic);
-//                    break;
-//                case self::TYP_MENU:
-//                    $tridaData = $trida::TRIDA_DATA;
-//                    $item = new $tridaData();
-//                    if (!is_subclass_of($collection, "Projektor_Data_Item"));  //exception
-//                    $this->stranka = new $trida($this->uzel, NULL, $item, $this->strankaRodic);
-//                    break;
-//                case self::TYP_DETAIL:
-//                    $tridaData = $trida::TRIDA_DATA;
-//                    $collection = new $tridaData();
-//                    if (!is_subclass_of($collection, "Projektor_Data_Item"));  //exception
-//                    $this->stranka = new $trida($this->uzel, NULL, $item, $this->strankaRodic);
-//                    break;
-//                case self::TYP_SPECIFIC:
-//                    $this->stranka = new $trida($this->uzel, NULL, NULL, $this->strankaRodic);
-//                    break;
-//                default:
-//                    //exception
-//                    break;
-//            }
 	}
 
 	/**

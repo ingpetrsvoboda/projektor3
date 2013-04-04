@@ -1,6 +1,8 @@
 <?php
 /**
- * Description of Projektor_Data_Iterator
+ * Třída Projektor_Data_Iterator implemtuje rozhranní php Iterator. Navíc implementuje magickou metodu __get().
+ * Metodami rozhranní Iterator iteruje pole zadané jako parametr konstruktoru. Třída očekává, že zadané pole bude asociativní.
+ * Pokud je zadané pole asociativní, pak magická metoda __get() vrací jednotlivé prvky terovatelného pole.
  *
  * @author http://www.php.net/manual/en/language.oop5.iterations.php, pes2704
  */

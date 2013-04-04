@@ -41,14 +41,14 @@ $query="SELECT beh_cislo,text,zacatek,konec
         AND id_s_beh_projektu = :2";
 $data=$dbh->prepare($query)->execute($Projekt->id,$beh_id)->fetch_assoc();
 
-echo '<ul id="menu"><li><a href="index.php?akce=unset_beh">Zpět k výběru turnusu</a></li></ul>';      
+echo '<ul id="menu"><li><a href="index.php?akce=unset_beh">Zpět k výběru turnusu</a></li></ul>';
 echo "<li><h3>Přehled vyplnění dotazníku účastníky</h3></li>";
 echo "<h2>Dotazník:".$dotaznik['text']."</h2><br>";
 echo "<h2>Běh projektu:".$data['beh_cislo'];
-$datum = new Projektor_Data_Konverze_Datum($data['zacatek'],"MySQL");
+$datum = new Projektor_Helper_DatumCas($data['zacatek'],"MySQL");
 echo " (od ".$datum->f_web;
 if( $data['konec'] !=NULL) {
-    $datum = new Projektor_Data_Konverze_Datum($data['konec'],"MySQL");
+    $datum = new Projektor_Helper_DatumCas($data['konec'],"MySQL");
     echo " do ".$datum->f_web;
 }
 echo ")</h2>";
@@ -62,7 +62,7 @@ if(strlen($data['text'])>2) {
        <form name="Statistika" ID="Statistika" action="index.php" method="post">
        <input type="hidden" name="akce" value="uloz_vyplnil_stat">
        <input type="hidden" name="dotaznik_id" value="<?php echo $dotaznik['id'] ?>">
-<?php            
+<?php
 //Zobrazení zaregistrovaných osob
 $query = "SELECT v_ucastnici.id_ucastnik,jmeno_cele,datum_vyplneni,c_stat_dotazniky.id_c_stat_dotazniky AS dotaznik_id
           FROM v_ucastnici
@@ -76,7 +76,7 @@ $data = $dbh->prepare($query)->execute($beh_id,$Kancelar->id,$dotaznik['id']);
 $datum_dnes = date('d.m.Y');
 
 while ($zaznam = $data->fetch_assoc()) {
-        $datum_vyplneni = new Projektor_Data_Konverze_Datum($zaznam['datum_vyplneni'],'MySQL');
+        $datum_vyplneni = new Projektor_Helper_DatumCas($zaznam['datum_vyplneni'],'MySQL');
         echo '<table style="text-align: left; width: 700px;" border="0" cellpadding="2" cellspacing="2"><tbody><tr>';
         echo '<td style="width: 500px;">'.$zaznam['jmeno_cele'];
         if(!(!is_null($zaznam['datum_vyplneni']) && $zaznam['dotaznik_id'] == $dotaznik['id'])) {
@@ -93,4 +93,4 @@ while ($zaznam = $data->fetch_assoc()) {
 ?>
     </form>
     </div>
-            
+

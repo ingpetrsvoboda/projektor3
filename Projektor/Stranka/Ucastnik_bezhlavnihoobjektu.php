@@ -56,7 +56,7 @@ class Projektor_Stranka_Ucastnik extends Projektor_Stranka_Base implements Proje
                             if ($typy[$key] == "date") {
                                 $elementy["typ"][$index] = "date";
                                 $elementy["atributy"][$index] = array("format" => "d.m.Y", "minYear" => "1900", "maxYear" => "2050");
-                                $elementy["default"][$index] = Projektor_Data_Konverze_Datum::zSQL($objektVlastnost->$jmenoVlatnosti)->dejDatumProQuickForm() ;
+                                $elementy["default"][$index] = Projektor_Helper_DatumCas::zSQL($objektVlastnost->$jmenoVlatnosti)->dejDatumProQuickForm() ;
                             } else {
                                 if (intval($delky[$key]) <= self::MAX_POCET_ZNAKU_TYPU_TEXT) {
                                     $elementy["typ"][$index] = "text";
@@ -158,7 +158,7 @@ class Projektor_Stranka_Ucastnik extends Projektor_Stranka_Base implements Proje
                     $data = $form->exportValues();
                     foreach ($data as $key => $value) {
                         if ($elementy["typ"][$key] == "date") {
-                            $data[$key] = Projektor_Data_Konverze_Datum::zQuickForm($data[$key])->dejDatumproSQL();
+                            $data[$key] = Projektor_Helper_DatumCas::zQuickForm($data[$key])->dejDatumproSQL();
                         }
                     }
 

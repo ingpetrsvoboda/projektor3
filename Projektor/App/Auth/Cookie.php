@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Popis
+ * @author George Schlossnagle, kniha Pokročilé programování v PHP5, Zoner Press
  */
 class Projektor_App_Auth_Cookie {
     // Proměnné ukládané do cookie se jménem $cookiename metodou _pack() a načítané z cookie metodou _unpack()
@@ -83,7 +84,7 @@ class Projektor_App_Auth_Cookie {
             throw new Projektor_App_Auth_Exception("Vypršl čas platnosti cookie");
         }
         else if (time() - $this->created > self::$warning) {
-            $this->set();
+            return $this->set();
         }
     }
 
@@ -122,7 +123,7 @@ class Projektor_App_Auth_Cookie {
         mcrypt_generic_deinit ($this->td);
         return $plaintext;
     }
-
+    // to sem Schlossnagle napsal, sice se to nepoužívá, ale už to tady zůstalo
     private function _reissue() {
         $this->created = time();
     }

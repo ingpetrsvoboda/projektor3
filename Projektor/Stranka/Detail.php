@@ -104,7 +104,7 @@ abstract class Projektor_Stranka_Detail extends Projektor_Stranka_Base
                 $data = $form->exportValues();
                 foreach ($data as $key => $value) {
                     if ($elementy["typ"][$key] == "date") {
-                        $data[$key] = Projektor_Data_Konverze_Datum::zQuickForm($data[$key])->dejDatumproSQL();
+                        $data[$key] = Projektor_Helper_DatumCas::zQuickForm($data[$key])->dejDatumproSQL();
                     }
                 }
 
@@ -165,7 +165,7 @@ abstract class Projektor_Stranka_Detail extends Projektor_Stranka_Base
                 if ($strukturaSloupce->typ == "date") {
                     $elementy["typ"][$index] = "date";
                     $elementy["atributy"][$index] = array("format" => "d.m.Y", "minYear" => "1900", "maxYear" => "2050");
-                    $elementy["default"][$index] = Projektor_Data_Konverze_Datum::zSQL($value)->dejDatumProQuickForm() ;
+                    $elementy["default"][$index] = Projektor_Helper_DatumCas::zSQL($value)->dejDatumProQuickForm() ;
                 } else {
                     if (intval($strukturaSloupce->delka) <= self::MAX_POCET_ZNAKU_TYPU_TEXT) {
                         $elementy["typ"][$index] = "text";

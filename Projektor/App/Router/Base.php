@@ -3,12 +3,14 @@ class Projektor_App_Router_Base implements Projektor_App_Router_RouterInterface
 {
     /**
      * instanční proměnná
-     * Návratový objekt vracený objektem $this->dispatcher (Projektor_Dispatcher_DispatcherInterface), je předáván jako instanční proměnná při vytváření objektu dispatcher
+     * Návratový objekt vracený objektem $this->dispatcher (Projektor_Dispatcher_DispatcherInterface),
+     * je předáván jako instanční proměnná při vytváření objektu dispatcher
      * @var Projektor_App_Response_ResponseInterface
      */
     private $response;
 
     private $isEvaluated;
+    // proměnné přístupné přes gettery
     private $route;
     private $dispatcher;
     private $params = array();
@@ -18,21 +20,21 @@ class Projektor_App_Router_Base implements Projektor_App_Router_RouterInterface
     }
 
     public function getRoute() {
-        if (!$this->isEvaluated) $this->evaluate();
+        if (!isset($this->isEvaluated) OR !$this->isEvaluated) $this->evaluateRoute();
         return $this->route;
     }
 
     public function getDispatcher() {
-        if (!$this->isEvaluated) $this->evaluate();
+        if (!isset($this->isEvaluated) OR !$this->isEvaluated) $this->evaluateRoute();
         return $this->dispatcher;
     }
 
     public function getParams() {
-        if (!$this->isEvaluated) $this->evaluate();
+        if (!isset($this->isEvaluated) OR !$this->isEvaluated) $this->evaluateRoute();
         return $this->params;
     }
 
-    private function evaluate() {
+    private function evaluateRoute() {
         if (isset($_GET['route'])) {
             $this->route = $_GET['route'];
         } else {
@@ -47,13 +49,14 @@ class Projektor_App_Router_Base implements Projektor_App_Router_RouterInterface
                 $this->dispatcher = new Projektor_Dispatcher_Logout($this->response);
                 break;
             case 'strom':
-                if (isset($_GET['cesta'])) {
-                    $this->params['cesta'] = $_GET['cesta'];
-                }
-                if (isset($_GET["debug"])) {
-                    if ($_GET["debug"]=="0") $appStatus->debug = FALSE;
-                    if ($_GET["debug"]=="1") $appStatus->debug = TRUE;
-                }
+                $this->params = $_REQUEST;
+//                if (isset($_GET['cesta'])) {
+//                    $this->params['cesta'] = $_GET['cesta'];
+//                }
+//                if (isset($_GET["debug"])) {
+//                    if ($_GET["debug"]=="0") $appStatus->debug = FALSE;
+//                    if ($_GET["debug"]=="1") $appStatus->debug = TRUE;
+//                }
                 $this->dispatcher = new Projektor_Dispatcher_Cesta($this->response, $this->params);
                 break;
             case '':
@@ -64,5 +67,6 @@ class Projektor_App_Router_Base implements Projektor_App_Router_RouterInterface
                 throw new UnexpectedValueException('Unknown routing.');
                 break;
         }
+        $this->isEvaluated = TRUE;
     }
 }

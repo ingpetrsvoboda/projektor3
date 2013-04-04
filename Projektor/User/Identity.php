@@ -39,7 +39,7 @@ class Projektor_User_Identity implements Projektor_User_IdentityInterface {
                 $authCookieIdentity = $authCookie->get_userid();
                 if ($this->identity == $authCookieIdentity) return $this->identity;
                 return NULL;
-            } catch (Projektor_App_Auth_Exception $e) {  //TODO: nepracuje se s exception - fatální chyba nebo login?
+            } catch (Projektor_App_Auth_Exception $e) {  //TODO: nepracuje se s exception - má nastat fatální chyba nebo login?
                 return NULL;
             }
         }
@@ -47,7 +47,7 @@ class Projektor_User_Identity implements Projektor_User_IdentityInterface {
     }
 
     /**
-     * Metoda zapíše parametr $identity do storage zadané jako instanční proměnná objektu (parametr konstriktoru)
+     * Metoda zapíše parametr $identity do storage zadané jako instanční proměnná objektu (parametr konstruktoru)
      * a v přépadě, že nastavena instační proměnná checkAuthCookie na TRUE, zapíše parametr $identity také do Projektor_App_Auth_Cookie
      * @param type $identity
      * @return void
