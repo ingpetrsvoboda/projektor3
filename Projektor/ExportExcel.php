@@ -29,14 +29,14 @@ class Projektor_ExportExcel
         if (!$validLocale) {
                 echo 'Nepodařilo se nastavit lokalizaci '.$locale." - zůstává nastavena výchozí en_us<br />\n";
         }
-        $dbh = Projektor_App_Container::getDbh(Projektor_App_Config::DATABAZE_PROJEKTOR);
+        $dbh = Projektor_Container::getDbh(Framework_Config::DATABAZE_PROJEKTOR);
         switch($dbh->dbType){
         case 'MySQL':
-            $dbhi = Projektor_App_Container::getDbh(Projektor_App_Config::DATABAZE_INFORMATION_SCHEMA);
+            $dbhi = Projektor_Container::getDbh(Framework_Config::DATABAZE_INFORMATION_SCHEMA);
 XX            $query = Projektor_Helper_SqlQuery::getShowColumnsQueryMySQL();
             break;
         case 'MSSQL':
-            $dbhi = Projektor_App_Container::getDbh($dbh->dbName);
+            $dbhi = Projektor_Container::getDbh($dbh->dbName);
             $query = Projektor_Helper_SqlQuery::getShowColumnsQueryMSSQL();
             break;
         default: throw new Exception('*** Chyba v '.__METHOD__.':<BR>'."Typ databáze ".$dbh->dbType." neexistuje.");

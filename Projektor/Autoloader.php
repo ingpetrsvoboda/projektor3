@@ -1,10 +1,10 @@
 <?php
 /**
- * Zajišťuje autoloading tříd v package Atw.
+ * Zajišťuje autoloading tříd v package Projektor.
  *
- * Vyžaduje dodržení této konvence pojmenovávání tříd v package Atw: Package_[Subfolder_]File
- * a odpovídající umístění třídy ve struktuře složek. Např. třída umístěná v package Atw, podsložce Controller a v souboru User.php
- * musí být pojmenována Atw_Controller_User.
+ * Vyžaduje dodržení této konvence pojmenovávání tříd v package Projektor: Package_[Subfolder_]File
+ * a odpovídající umístění třídy ve struktuře složek. Např. třída umístěná v package Projektor, podsložce App a v souboru Status.php
+ * musí být pojmenována Framework_Status.
  */
 class Projektor_Autoloader
 {
@@ -13,6 +13,11 @@ class Projektor_Autoloader
      */
     static public function register()
     {
+        /** Projektor root directory */
+        if (!defined('PROJEKTOR_ROOT')) {
+            define('PROJEKTOR_ROOT', str_replace('\\', '/', dirname(__FILE__)) . '/');
+        }
+        
 //$aload = spl_autoload_functions();
 	if (!defined("SEPARATOR")) define("SEPARATOR", "_");   //oddělovač v názvech tříd
         if (!defined("PATH_SEPARATOR")) define("PATH_SEPARATOR", ";"); //oddělovač jednotlivých cest pro set_iclude_path

@@ -58,7 +58,7 @@ class Projektor_Helper_DatumCas
          */
         public function dejDateTime()
 	{
-		return $this->dateTime();
+		return $this->dateTime;
 	}
 
 	/**

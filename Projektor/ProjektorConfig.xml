@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Konfigurační informace aplikace
+-->
+<root>
+    <export>
+        <pdf>
+            <directory>C:/_Export Projektor/PDF/</directory>
+        </pdf>
+    </export>
+    <directories>
+        <twigtemplates>Templates/Twig</twigtemplates>
+        <phphtaltemplates>Templates/Phptal</phphtaltemplates>
+    </directories>
+    <auth>
+        <useauthcookie>1</useauthcookie>
+    </auth>
+    <autocode>
+        <dbfieldprefix>dbField°</dbfieldprefix>
+        <objectidname>id</objectidname>
+        <autocodeStart>###START_AUTOCODE</autocodeStart>
+        <autocodeEnd>###END_AUTOCODE</autocodeEnd>
+    </autocode>
+    <db databaze='Projektor'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>localhost</dbhost>
+        <dbname>projektor_3</dbname>
+        <dbtype>mysql</dbtype>
+    </db>
+    <db databaze='InformationSchema'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>localhost</dbhost>
+        <dbname>information_schema</dbname>
+        <dbtype>mysql</dbtype>
+    </db>
+    <db databaze='PersonalService'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>localhost</dbhost>
+        <dbname>personalservice_web</dbname>
+        <dbtype>mysql</dbtype>
+    </db>
+    <db databaze='test_projektor'>
+        <user>root</user>
+        <pass>spravce</pass>
+        <dbhost>NB-SVOBODA\SQLEXPRESS2008</dbhost>
+        <dbname>test_projektor</dbname>
+        <dbtype>sqlsrv</dbtype>
+    </db>
+</root>

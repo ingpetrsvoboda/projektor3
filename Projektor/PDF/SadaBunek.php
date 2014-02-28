@@ -1,5 +1,5 @@
 <?php
-class Projektor_Pdf_SadaBunek
+class Projektor2_PDF_SadaBunek
 {
     var $nadpis;
     var $bunky;
@@ -58,7 +58,7 @@ class Projektor_Pdf_SadaBunek
     function PridejBunku($textUTF8='', $promennaUTF8=false, $odradkovani=0, $sirka=0, $prazdnaHodnota=false, $vyska=0,  $ohraniceni=0, $zarovnani='', $vypln=false, $link='')
     {
         $this->id = $this->id+1;
-        $b = new Projektor_Pdf_Bunka($sirka, $vyska, $textUTF8, $promennaUTF8, $ohraniceni, $odradkovani, $zarovnani, $vypln, $link='', $this->id);
+        $b = new Projektor2_PDF_Bunka($sirka, $vyska, $textUTF8, $promennaUTF8, $ohraniceni, $odradkovani, $zarovnani, $vypln, $link='', $this->id);
         if ($prazdnaHodnota)
         {
         	if (substr_count($promennaUTF8, $prazdnaHodnota)*strlen($prazdnaHodnota) <> strlen($promennaUTF8))
@@ -96,8 +96,8 @@ class Projektor_Pdf_SadaBunek
      */
     function Spoust($prazdnaHodnota=false, $promennaUTF8=false)  
     {
-//	echo "SPOUST - strlen :";     echo (strlen($promennaUTF8));
-//	echo "SPOUST - substr_count :";     echo (substr_count($promennaUTF8, $prazdnaHodnota));
+	echo "SPOUST - strlen :";     echo (strlen($promennaUTF8));
+	echo "SPOUST - substr_count :";     echo (substr_count($promennaUTF8, $prazdnaHodnota));
 	
     	if (substr_count($promennaUTF8, $prazdnaHodnota) <> strlen($promennaUTF8))
       	{

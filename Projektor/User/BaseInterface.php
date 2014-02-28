@@ -5,9 +5,9 @@
  */
 interface Projektor_User_BaseInterface {
     public function getPovoleneProjektyCollection();
-    public function getPovoleneKancelareCollection();
-    public function login($name,$password);
-    public function logout();
+    public function getPovoleneKancelareVProjektuCollection();
+    public function signIn($name,$password);
+    public function signOut();
 }
 
 ?>

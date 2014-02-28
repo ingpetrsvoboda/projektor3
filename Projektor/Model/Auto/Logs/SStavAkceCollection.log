@@ -1,0 +1,53 @@
+Autocode pro C:\xampp\htdocs\p3\Projektor\Model\Auto\SStavAkceCollection.php
+    kontrola existence a syntaxe souboru C:\xampp\htdocs\p3\Projektor\Model\Auto\SStavAkceCollection.php pro class: Projektor_Model_Auto_SStavAkceCollection
+    kontrola existence a syntaxe nově vytvořeného souboru C:\xampp\htdocs\p3\Projektor\Model\Auto\SStavAkceCollection.php pro class: Projektor_Model_Auto_SStavAkceCollection
+Vygenerován nový autocode.
+*** Původní php kód:
+<?php
+class Projektor_Model_Auto_SStavAkceCollection extends Projektor_Model_Collection
+{
+    const NAZEV_TRIDY_ITEM = "Projektor_Model_Auto_SStavAkceItem";
+
+###START_AUTOCODE
+
+    /**
+     * Factory metoda provádí type hinting pro našeptávání v IDE.
+     * Metoda vrací objekt typu Projektor_Model_Auto_SStavAkceItem, prvek kolekce Projektor_Model_Auto_SStavAkceCollection.
+     * @param $id $object Tento parametr při volání metody zadávejte.
+     * @param Projektor_Model_Auto_SStavAkceItem $object Tento parametr při volání metody nikdy NEZADÁVEJTE. Jedná se pouze o hack pro type hinting.
+     * @return \Projektor_Model_Auto_SStavAkceItem
+     */
+    public function Item($id, Projektor_Model_Auto_SStavAkceItem &$object=NULL){
+        $object = new Projektor_Model_Auto_SStavAkceItem($id); //factory na Item
+        return $object;
+    }
+
+###END_AUTOCODE
+}
+?>
+Vytvořena záloha php souboru: C:\xampp\htdocs\p3\Projektor\Model\Auto\SStavAkceCollection.bak
+*** Nový php kód: <?php
+class Projektor_Model_Auto_SStavAkceCollection extends Projektor_Model_Collection
+{
+    const NAZEV_TRIDY_ITEM = "Projektor_Model_Auto_SStavAkceItem";
+
+###START_AUTOCODE
+
+    /**
+     * Factory metoda provádí type hinting pro našeptávání v IDE.
+     * Metoda vrací objekt typu Projektor_Model_Auto_SStavAkceItem, prvek kolekce Projektor_Model_Auto_SStavAkceCollection.
+     * @param $id $object Tento parametr při volání metody zadávejte.
+     * @param Projektor_Model_Auto_SStavAkceItem $object Tento parametr při volání metody nikdy NEZADÁVEJTE. Jedná se pouze o hack pro type hinting.
+     * @return \Projektor_Model_Auto_SStavAkceItem
+     */
+    public function Item($id, Projektor_Model_Auto_SStavAkceItem &$object=NULL){
+        $object = new Projektor_Model_Auto_SStavAkceItem($id); //factory na Item
+        return $object;
+    }
+
+###END_AUTOCODE
+}
+?>
+Ukládám vygenerovaný autocode do souboru C:\xampp\htdocs\p3\Projektor\Model\Auto\SStavAkceCollection.php pro class: Projektor_Model_Auto_SStavAkceCollection
+Smazána záloha php souboru: C:\xampp\htdocs\p3\Projektor\Model\Auto\SStavAkceCollection.bak
+

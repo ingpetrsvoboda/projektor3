@@ -1,0 +1,48 @@
+<?php
+/**
+ * Description of ZaFlatTableItem
+ *
+ * @author pes2704
+ */
+class Projektor_Model_Auto_ZaTestFlatTableItem extends Projektor_Model_Item implements Projektor_Model_AutoItemInterface
+{
+    const DATABAZE = Framework_Config::DATABAZE_PROJEKTOR;
+    const TABULKA = "za_test_flat_table";
+    const NAZEV_ZOBRAZOVANE_VLASTNOSTI = "dbField°id_zajemce";
+
+###START_AUTOCODE
+    // Nový kód pro databázi Projektor a tabulku za_test_flat_table
+    // Kód obsahuje definice všech vlastností odpovídajících názvům sloupců v db tabulce. Názvy vlastností jsou vytvořeny s prefixem dbField°
+    // následovaným názvem sloupce db tabulky a jsou deklarovány jako public, to zajistí fungování autokompletace (napovídání) v editoru.
+    // Vlastnost odpovídající primárnímu klíči tabulky takto vytvořena není, místo ní je vytvořena vlastnost se jménem id.
+    // S touto vlastností aplikace pacuje odlišně, předpokládá se, že primární klíč tabulky je vždy autoincrement.
+    // Dále kód obsahuje definici konstruktoru, ve které se všechny proměnné pro automaticky generované vlastnosti zruší - unset.
+    // To zajistí, že i pro tyto vlastnosti jsou volány magické metody __set a __get, ale pozor, jen poprvé. Obecně v php platí, že pokud je public
+    // proměnná nastavená, vložení hodnoty do takové proměnné již přímo vloží hodnotu (pro viditelné proměnné se nevolají magické metody).
+
+    /**
+     * Generovaná vlastnost pro tabulku za_test_flat_table a sloupec id_za_test_flat_table. Vlatnosti sloupce: typ=int, sloupec je primární klíč a je auto_increment
+     * je vygenerována public vlastnost se jménem $id
+     */
+    public $id;
+    /**
+     * Generovaná vlastnost pro tabulku za_test_flat_table a sloupec id_s_isco_FK. Vlatnosti sloupce: typ=int
+     * , sloupec je cizí klíč z tabulky s_isco a sloupce id_s_isco
+     */
+    public $dbField°id_s_isco_FK;
+    /**
+     * Generovaná vlastnost pro tabulku za_test_flat_table a sloupec id_zajemce. Vlatnosti sloupce: typ=int
+     * , sloupec je cizí klíč z tabulky zajemce a sloupce id_zajemce
+     */
+    public $dbField°id_zajemce;
+
+    public function reset()
+    {
+        unset($this->id);
+        unset($this->dbField°id_s_isco_FK);
+        unset($this->dbField°id_zajemce);
+    }
+
+###END_AUTOCODE}
+}
+?>

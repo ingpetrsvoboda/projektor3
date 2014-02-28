@@ -1,5 +1,5 @@
 <?php
-class Projektor_Data_Projektor_Kontrola_DatumCas 
+class Projektor_Model_Projektor_Kontrola_DatumCas 
 {
     private $den=0;
     private $mesic=0;

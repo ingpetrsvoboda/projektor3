@@ -1,5 +1,5 @@
 <?php
-class Projektor_Data_Projektor_Kontrola_RodneCislo {
+class Projektor_Model_Projektor_Kontrola_RodneCislo {
     public $cislo=0;
     public $cislo_bez_lom=0;
     public $ok=false;
