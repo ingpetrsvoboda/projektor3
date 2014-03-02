@@ -1,7 +1,4 @@
 {# empty Twig template #}
-    {% if login_warning %}
-        <span  style="color: red"><strong>{{ login_warning }}</strong></span>
-    {% endif %}
     {% import 'macro_quickform_twig.twig' as quickform %}
     {% block form %}
         {{ quickform.quickform(form) }}

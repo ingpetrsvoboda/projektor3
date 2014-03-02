@@ -40,8 +40,8 @@ class TestRouter extends Framework_Router_AbstractRouter {
     public function getDispatcher() {
         switch ($this->request->get('controller')) {
             case 'loginlogout':
-                return new Projektor_Dispatcher_Loginlogout();
-                break;
+//                return new Projektor_Dispatcher_Loginlogout();
+//                break;
             case 'test':
                 return new TestDispatcher();
                 break;
@@ -61,7 +61,7 @@ class TestDispatcher extends Framework_Dispatcher_AbstractDispatcher {
     public function __construct() {
         parent::__construct();
         $this->attachMiddlewareController(new TestController());
-        $this->attachMiddlewareController(new TestControllerMiddleware());
+        $this->attachMiddlewareController(new Projektor_Controller_Loginlogout());
         $this->setController(new TestControllerPrivate());;
     }
 }
@@ -85,7 +85,7 @@ class TestControllerMiddleware extends Framework_Controller_AbstractController {
     public function getOutput() {
         $application = Framework_Application_AbstractApplication::getInstance();
         $request = $application->getRequest();
-        $controller = new Projektor_Controller_Loginlogout($this->output);
+        $controller = new Projektor_Controller_Login($this->output);
         $this->output = $controller->getOutput();
 //        $htmlDocument = new Framework_Document_Html();
 //        $bodyElem = $htmlDocument->getHtmlElement()->getBodyElement();

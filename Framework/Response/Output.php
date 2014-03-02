@@ -16,6 +16,11 @@ class Framework_Response_Output {
     protected $proceedingAllowed;
     
     /**
+     * Zpráva kontroleru - proměnná libovolného typu
+     * @var mixed 
+     */
+    protected $message;
+    /**
      * HTML výstup View - html objekt pro zapsání do response body
      * @var Framework_Document_Html 
      */
@@ -45,6 +50,14 @@ class Framework_Response_Output {
     
     public function isProceedingAllowed() {
         return $this->proceedingAllowed;
+    }
+    
+    public function setMessage($message) {
+        $this->message = $message;
+    }
+    
+    public function getMessage() {
+        return $this->message;
     }
     
     /**
