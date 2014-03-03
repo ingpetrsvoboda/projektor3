@@ -11,28 +11,28 @@
  *
  * @author pes2704
  */
-class Projektor_Controller_Loginlogout extends Framework_Controller_AbstractController {
+class Projektor_Controller_Loginlogout extends Framework_Controller_AbstractMiddlewareController {
     public function getOutput() {
         $user = Projektor_Container::getUser();        
         if ($user->isSignedIn()) {
-            $controller = new Projektor_Controller_Logout(); 
+            $controller = new Projektor_Controller_Logout($this->output); 
             $this->output = $controller->getOutput();
             if ($this->output->getMessage() == "logout") {
-                $controller = new Projektor_Controller_Login(); 
+                $controller = new Projektor_Controller_Login($this->output); 
                 $this->output = $controller->getOutput();                
-                $this->output->setProceedingAllowed(FALSE);
+                $this->setProceedingAllowed(FALSE);
             } else {
-                $this->output->setProceedingAllowed(TRUE);
+                $this->setProceedingAllowed(TRUE);
             }
         } else {
-            $controller = new Projektor_Controller_Login(); 
+            $controller = new Projektor_Controller_Login($this->output); 
             $this->output = $controller->getOutput();
             if ($this->output->getMessage() == "login") {
-                $controller = new Projektor_Controller_Logout();         
+                $controller = new Projektor_Controller_Logout($this->output);         
                 $this->output = $controller->getOutput();                
-                $this->output->setProceedingAllowed(TRUE);
+                $this->setProceedingAllowed(TRUE);
             } else {
-                $this->output->setProceedingAllowed(FALSE);                
+                $this->setProceedingAllowed(FALSE);                
             }
         }
         return $this->output; 

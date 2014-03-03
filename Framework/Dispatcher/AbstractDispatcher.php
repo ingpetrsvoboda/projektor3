@@ -18,30 +18,33 @@ abstract class Framework_Dispatcher_AbstractDispatcher  implements Framework_Dis
     
     /**
      *
-     * @var Framework_Controller_ControllerInterface 
+     * @var SplObjectStorage 
      */
-    protected $controller;
+    protected $controllers;
 
     /**
      * 
      * @param Framework_Response_Response $response
-     * @param Framework_Controller_ControllerInterface $controller
+     * @param SplObjectStorage $controllers
      * @param SplObjectStorage $middlewareControllers
      */
-    public function __construct(Framework_Response_Response $response=NULL, Framework_Controller_ControllerInterface $controller = NULL, SplObjectStorage $middlewareControllers=NULL) {
+    public function __construct(Framework_Response_Response $response=NULL, SplObjectStorage $controllers=NULL, SplObjectStorage $middlewareControllers=NULL) {
         if ($response) {
             $this->response = $response;
+            Framework_Logger::setLog(get_class($this).': použit response objekt '.get_class($this->response));
         } else {
             $this->response = new Framework_Response_Response();
-            Framework_Logger::setLog(__CLASS__.' - použit defaultní response objekt '.get_class($this->response));
+            Framework_Logger::setLog(get_class($this).': použit defaultní response objekt '.get_class($this->response));
         }
         if ($middlewareControllers) {
             $this->middlewareControllers = $middlewareControllers;
         } else {
             $this->middlewareControllers = new SplObjectStorage();
         }
-        if ($controller) {
-            $this->setController($controller);
+        if ($controllers) {
+            $this->controllers = $controllers;
+        } else {
+            $this->controllers = new SplObjectStorage();
         }
     }
 
@@ -66,8 +69,8 @@ abstract class Framework_Dispatcher_AbstractDispatcher  implements Framework_Dis
      * Metoda nastaví kontroler. Tento kontroler je použit jako jediný kontroler nebo zavolán jako poslední.
      * @param Framework_Controller_ControllerInterface $controller
      */
-    public function setController(Framework_Controller_ControllerInterface $controller) {
-        $this->controller = $controller;
+    public function attachController(Framework_Controller_ControllerInterface $controller) {
+        $this->controllers->attach($controller);
     }
     
     /**
@@ -87,24 +90,26 @@ abstract class Framework_Dispatcher_AbstractDispatcher  implements Framework_Dis
      * @return type
      */
     private function getChainedOutput() {
-        if (count($this->middlewareControllers)>0) {
-            foreach ($this->middlewareControllers as $middlewareController) {
-                if (!isset($output)) {
-                    $output = $middlewareController->getOutput();
-                    if (!$output->isProceedingAllowed()) return $output;
-                } else {
-                    $middlewareOutput = $middlewareController->getOutput();
-                    $output->getDocument()->includeDocument($middlewareOutput->getDocument());                    
-                    if (!$middlewareOutput->isProceedingAllowed()) return $output;
-                }
-            }
-            $output->getDocument()->includeDocument($this->controller->getOutput()->getDocument());
-        } else {
-            $output = $this->controller->getOutput();
-        }        
+        $output = $this->chainControllerOutputs($this->middlewareControllers);
+        $output = $this->chainControllerOutputs($this->controllers, $output);
         return $output;
     }
     
+    private function chainControllerOutputs(SplObjectStorage $controllers, Framework_Response_Output $output=NULL) {
+        if (count($controllers)>0) {
+            foreach ($controllers as $controller) {
+                $nextOutput = $controller->getOutput();
+                if (isset($output)) {
+                    $output->getDocument()->includeDocument($nextOutput->getDocument(), $nextOutput->getSlot());    
+                } else {
+                    $output = $nextOutput;
+                }
+                if (!$nextOutput->isProceedingAllowed()) return $output;
+            }
+        }
+        return $output;
+    }  
+
     protected function setResponse(Framework_Response_Output $output) {
         return $this->response;
     }

@@ -43,23 +43,12 @@ abstract class Framework_Application_AbstractApplication {
     
     /**
      * 
-     * @param Framework_Request_Request $request If isn't set, object Framework_Application is constructed with new Framework_Request_Request as default.
-     * @param Framework_Application_StatusInterface $appStatus If isn't set, object Framework_Application is constructed with new Framework_Application_AbstractStatus as default.
+     * @param Framework_Request_Request $request 
+     * @param Framework_Application_StatusInterface $appStatus
      */
-    public function __construct(Framework_Request_Request $request=NULL, Framework_Application_StatusInterface $appStatus=NULL) {
-        Framework_Logger::resetLog();
-        if (isset($request)) {
-            $this->appRequest = $request;
-        } else {
-            $this->appRequest = new Framework_Request_Request();
-            Framework_Logger::setLog(__CLASS__.' - použit defaultní request objekt '.get_class($this->appRequest));
-        }
-        if (isset($appStatus)) {
-            $this->appStatus = $appStatus;
-        } else {
-            $this->appStatus = new Framework_Application_AbstractStatus();
-            Framework_Logger::setLog(__CLASS__.' - použit defaultní status objekt '.get_class($this->appStatus));
-        }
+    public function __construct(Framework_Request_Request $request, Framework_Application_StatusInterface $appStatus) {
+        $this->appRequest = $request;
+        $this->appStatus = $appStatus;
         static::$application = $this;          
     }
     

@@ -40,11 +40,7 @@ class TestRouter extends Framework_Router_AbstractRouter {
     public function getDispatcher() {
         switch ($this->request->get('controller')) {
             case 'loginlogout':
-//                return new Projektor_Dispatcher_Loginlogout();
-//                break;
             case 'test':
-                return new TestDispatcher();
-                break;
             case '':
                 return new TestDispatcher();
                 break;
@@ -60,16 +56,15 @@ class TestRouter extends Framework_Router_AbstractRouter {
 class TestDispatcher extends Framework_Dispatcher_AbstractDispatcher {
     public function __construct() {
         parent::__construct();
-        $this->attachMiddlewareController(new TestController());
-        $this->attachMiddlewareController(new Projektor_Controller_Loginlogout());
-        $this->setController(new TestControllerPrivate());;
+        $this->attachMiddlewareController(new TestController(new Framework_Response_Output()));
+        $this->attachMiddlewareController(new Projektor_Controller_Loginlogout(new Framework_Response_Output()));
+        $this->attachController(new TestControllerPrivate(new Framework_Response_Output()));
+        $this->attachController(new TestControllerPrivateChild(new Framework_Response_Output()));
     }
 }
 
 class TestController extends Framework_Controller_AbstractController {
-    
     public function getOutput() {
-        
         $view = new TestViewHead();
         $htmlDocument = new Framework_Document_Html();
         $headElem = $htmlDocument->getHtmlElement()->getHeadElement();
@@ -80,23 +75,7 @@ class TestController extends Framework_Controller_AbstractController {
     }
 }
 
-class TestControllerMiddleware extends Framework_Controller_AbstractController {
-    
-    public function getOutput() {
-        $application = Framework_Application_AbstractApplication::getInstance();
-        $request = $application->getRequest();
-        $controller = new Projektor_Controller_Login($this->output);
-        $this->output = $controller->getOutput();
-//        $htmlDocument = new Framework_Document_Html();
-//        $bodyElem = $htmlDocument->getHtmlElement()->getBodyElement();
-//        $bodyElem->appendText($view->render($this->context));
-//        $this->output->setDocument($htmlDocument);
-        return $this->output;
-    }
-}
-
 class TestControllerPrivate extends Framework_Controller_AbstractController {
-    
     public function getOutput() {
         $application = Framework_Application_AbstractApplication::getInstance();
         $request = $application->getRequest();
@@ -131,6 +110,18 @@ class TestControllerPrivate extends Framework_Controller_AbstractController {
     }
 }
 
+class TestControllerPrivateChild extends Framework_Controller_AbstractController {
+    public function getOutput() {
+        $view = new TestViewPrivateChild();
+        $htmlDocument = new Framework_Document_Html();
+        $bodyElem = $htmlDocument->getHtmlElement()->getBodyElement();
+        $bodyElem->appendText($view->render($this->context));
+        $this->output->setDocument($htmlDocument);  
+        $this->output->setSlot(Framework_Helper_Slot::getSlotHtmlCode('next'));
+        return $this->output;        
+    }
+}
+
 class TestViewHead extends Framework_View_View {
     public function render(array $context = NULL) {
         $content = '
@@ -160,16 +151,16 @@ class TestViewPrivate extends Framework_View_View {
         $content .= '<pre>'.print_r($context['cookies'], TRUE).'</pre>';
         $content .= '<p>Headers:</p>';
         $content .= '<pre>'.print_r($context['headers'], TRUE).'</pre>';
-
+        
+        $content .= Framework_Helper_Slot::getSlotHtmlCode('next');
+        
         $content .= '<form name="TestApplication" ID="TestApplication" action="'.$context['uri'].'?hodnota_get_z_action_formulare=GETsPOSTem" method="post">
                             <input type="text" name="hodnota_post"></input>
                            <input type="Submit" value="Odeslat POST" \>
                        </form>';
-        
-        $content .= '<p><a title="Test" href="'.$context['uri'].'?controller=login">Odeslat GET controller=login</a></p>';
-        $content .= '<p><a title="Test" href="'.$context['uri'].'?hodnota_get=GETTest">Odeslat GET hodnota_get=GETTest</a></p>';
-        $content .= '<p><a title="Test" href="'.$context['uri'].'?hodnota_get=Resource/:id">Odeslat GET hodnota_get=Resource/:id</a></p>';
-        $content .= '<p><a title="Test" href="'.$context['uri'].'?Resource/:id">Odeslat GET Resource/:id</a></p>';         
+        $content .= '<p><a title="Test" href="'.$context['uri'].'?controller=blabla">Odeslat GET controller=blabla</a></p>';
+        $content .= '<p><a title="Test" href="'.$context['uri'].'?hodnota_get=resource/:id">Odeslat GET hodnota_get=resource/:id</a></p>';
+        $content .= '<p><a title="Test" href="'.$context['uri'].'?resource/:id">Odeslat GET resource/:id</a></p>';         
 
         $content .= '<p>Minulý kuk: '.$context['kukByl'].'</p>';
         $content .= '<p>Současný kuk: '.$context['kukJe'].'</p>';
@@ -183,26 +174,16 @@ class TestViewPrivate extends Framework_View_View {
     }
 }
 
-class TestViewLogout extends Framework_View_View {
-    public function render(array $context = NULL) {  
-        $content .= '<H1>TestViewLogout</H1>';
-        $content .= '<p><a title="Test" href="'.$context['uri'].'?controller=logout">Odeslat GET controller=logout</a></p>';
-        return $content;
-    }
-}
-
-class TestViewLogin extends Framework_View_View {
-    public function render(array $context = NULL) {  
-        $content .= '<H1>TestViewLogin</H1>';
-        $content .= '<p><a title="Test" href="'.$context['uri'].'?controller=login">Odeslat GET controller=login</a></p>';
+class TestViewPrivateChild extends Framework_View_View {
+    public function render(array $context = NULL) {
+        $content = '<div><h2>Jsem TestViewPrivateChild</h2></div>';
         return $content;
     }
 }
 //###############################################################################
 
 
-$app = new TestApplication();
+$app = new TestApplication(new Framework_Request_Request(), new Framework_Application_Status());
 $app->run();
-echo '<pre>Log:';
-echo Framework_Logger::getLogText(),'</pre>';
+echo '<p>Log:</p><pre>'.Framework_Logger::getLogText().'</pre>';
 ?>

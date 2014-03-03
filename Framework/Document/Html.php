@@ -87,6 +87,7 @@ class Framework_Document_Html implements Framework_Document_DocumentInterface {
      * @throws LogicException Není možno sloučit html dokumenty s různými atributy !doctype.
      */
     public function includeDocument(Framework_Document_DocumentInterface $mergedHtmlDocument, $slot="") {
+        //TODO: JE HTML - includeDokument do rodičovského objektu dokumentů (AbstractDocument) a snad trochu univerzální
         if (get_class($mergedHtmlDocument)==get_class($this)) {
             $mergedDoctype = $mergedHtmlDocument->getDoctypeAttributesText();
             if ($this->doctype != $mergedDoctype) {

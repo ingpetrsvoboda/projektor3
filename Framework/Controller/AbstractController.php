@@ -29,12 +29,8 @@ abstract class Framework_Controller_AbstractController implements Framework_Cont
      */
     protected  $output;
     
-    public function __construct(Framework_Response_Output $output=NULL, array $controllerParams = null) {
-        if ($output) {
-            $this->output = $output;
-        } else {
-            $this->output = new Framework_Response_Output();  //html - default
-        }
+    public function __construct(Framework_Response_Output $output, array $controllerParams = null) {
+        $this->output = $output;
         $this->controllerParams = $controllerParams;
     }
     

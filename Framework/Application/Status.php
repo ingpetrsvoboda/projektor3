@@ -4,7 +4,7 @@
  *
  * @author pes2704
  */
-class Framework_Application_AbstractStatus implements Framework_Application_StatusInterface {
+class Framework_Application_Status implements Framework_Application_StatusInterface {
 
     const NAME = 'framework_application_status';
 
